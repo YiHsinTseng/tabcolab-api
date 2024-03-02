@@ -1,4 +1,5 @@
 // const log = require('debug')('app:server');
+require('dotenv').config();
 const app = require('./app');
 
 const host = process.env.SERVER_HOST || 'localhost';

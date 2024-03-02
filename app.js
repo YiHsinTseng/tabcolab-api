@@ -1,3 +1,7 @@
+require('dotenv').config();
+
+const { API_VERSION } = process.env;
+
 const express = require('express');
 
 const logger = require('morgan');
@@ -13,6 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/', indexRouter);
+app.use(`/api/${API_VERSION}`, indexRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
