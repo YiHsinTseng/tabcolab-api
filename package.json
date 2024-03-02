@@ -1,0 +1,24 @@
+{
+  "name": "tabcolab-api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon ./listener.js",
+    "debug": "DEBUG=app:server nodemon listener.js"
+  },
+  "dependencies": {
+    "debug": "~2.6.9",
+    "dotenv": "^16.4.5",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "express": "^4.18.3",
+    "morgan": "~1.9.1",
+    "nodemon": "^3.1.0",
+    "prettier": "^3.2.5"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.1"
+  }
+}
