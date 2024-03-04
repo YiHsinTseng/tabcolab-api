@@ -2,12 +2,14 @@ require('dotenv').config();
 
 const { API_VERSION } = process.env;
 
-const express = require('express');
+const jsonServer = require('json-server');
 
-const app = express();
+const app = jsonServer.create();
 
 const logger = require('morgan');
 const log = require('debug')('app:server');
+
+const express = require('express');
 
 // switch swagger mode
 const swagger = require('./swaggers/config/swaggerSetup');
