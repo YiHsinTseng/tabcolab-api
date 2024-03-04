@@ -11,6 +11,10 @@ const indexRouter = require('./routes/index');
 
 const app = express();
 
+// switch swagger mode
+const swagger = require('./swaggers/config/swaggerSetup');
+swagger.setupSwagger(app);
+
 app.use(logger('dev'));
 app.use(express.static('public'));
 app.use(express.json());
