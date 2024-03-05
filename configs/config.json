@@ -1,4 +1,17 @@
 {
+  "test": {
+    "app": {
+      "name": "server",
+      "path": "./server.js",
+      "host": "localhost",
+      "port": 0
+    },
+    "db": {
+      "host": "localhost",
+      "name": "testDB",
+      "path": "./mock-server/testDB.json"
+    }
+  },
   "development": {
     "app": {
       "name": "server",
