@@ -1,11 +1,9 @@
-let router;
-if (process.env.NODE_ENV === 'production') {
-  const express = require('express');
-  router = express.Router();
-} else {
-  const jsonServer = require('json-server');
-  router = jsonServer.router('./mock-server/db.json');
-  router.db._.id = 'group_id';
-}
+const createRouter = require('./router');
+
+const router = createRouter();
+
+const groupRoutes = require('./modules/groupsRoutes');
+
+router.use(groupRoutes);
 
 module.exports = router;
