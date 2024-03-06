@@ -1,3 +1,7 @@
+require('dotenv').config();
+
+const { API_VERSION } = process.env;
+
 const express = require('express');
 
 const logger = require('morgan');
@@ -7,12 +11,18 @@ const indexRouter = require('./routes/index');
 
 const app = express();
 
+
+// switch swagger mode
+const swagger = require('./swaggers/config/swaggerSetup');
+swagger.setupSwagger(app);
+
 app.use(logger('dev'));
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/', indexRouter);
+app.use(`/api/${API_VERSION}`, indexRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
