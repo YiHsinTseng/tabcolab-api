@@ -1,5 +1,4 @@
-// json-server model
-
+const db = require('../../db');
 const generateGroupId = require('../../utils/generateId');
 
 class Group {
@@ -13,6 +12,10 @@ class Group {
     this.group_icon = groupIcon;
     this.group_title = groupTitle;
     this.items = items;
+  }
+
+  static getAll() {
+    return db.getAllGroups();
   }
 }
 
