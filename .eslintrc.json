@@ -11,6 +11,7 @@
   },
   "rules": {
     "no-unused-vars": ["error", { "argsIgnorePattern": "next" }],
-    "projectDependencies": false
+    "global-require": 0,
+    "import/no-extraneous-dependencies": "off"
   }
 }
