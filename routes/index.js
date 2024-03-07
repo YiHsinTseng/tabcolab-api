@@ -1,10 +1,9 @@
-const express = require('express');
+const createRouter = require('./router');
 
-const router = express.Router();
+const router = createRouter();
 
-/* GET home page. */
-router.get('/', (req, res, next) => {
-  res.send('Hello, world!');
-});
+const groupRoutes = require('./modules/groupsRoutes');
+
+router.use(groupRoutes);
 
 module.exports = router;
