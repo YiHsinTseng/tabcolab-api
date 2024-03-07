@@ -1,5 +1,5 @@
 const db = require('../../db');
-const generateGroupId = require('../../utils/generateId');
+const { generateGroupId } = require('../../utils/generateId');
 
 class Group {
   /**
@@ -14,8 +14,17 @@ class Group {
     this.items = items;
   }
 
-  static getAll() {
-    return db.getAllGroups();
+  static async getAll() {
+    try {
+      return await db.getAllGroups();
+    } catch (error) {
+      console.error('Error getting all groups:', error);
+      throw error;
+    }
+  }
+
+  async createWithSidebarTab() {
+    return await db.createGroupWithSidebarTab(this);
   }
 }
 

@@ -7,8 +7,10 @@ module.exports = {
     try {
       return await db.get('groups').value();
     } catch (error) {
-      console('Error getting all groups:', error);
+      console.error('Error getting all groups:', error);
       throw error;
     }
   },
+
+  createGroupWithSidebarTab: async (group) => await db.get('groups').push(group).write(),
 };
