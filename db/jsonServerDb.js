@@ -13,4 +13,6 @@ module.exports = {
   },
 
   createGroupWithSidebarTab: async (group) => await db.get('groups').push(group).write(),
+
+  findGroupById: async (group_id) => await db.get('groups').find({ group_id }).value(),
 };

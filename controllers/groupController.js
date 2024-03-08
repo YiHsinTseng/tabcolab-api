@@ -1,13 +1,20 @@
-const Group = require('../models/mock-server/group');
+const Group = require('../models/group');
 const { generateGroupId, generateItemId } = require('../utils/generateId');
 
-const getGroups = async (req, res) => {
-  const groups = await Group.getAll();
+const getGroups = async (req, res, next) => {
+  try {
+    const result = await Group.getAll();
 
-  if (groups) {
-    res.status(200).json(groups);
-  } else {
-    res.status(404).json({ error: 'No group in workspace' });
+    if (result.success) {
+      res.status(200).json({
+        message: result.message,
+        groups: result.groups,
+      });
+    } else {
+      res.status(404).json({ message: result.error });
+    }
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -37,4 +44,31 @@ const createGroupWithSidebarTab = (req, res) => {
   });
 };
 
-module.exports = { getGroups, createGroupWithSidebarTab };
+const createGroupWithGroupTab = (req, res) => {
+  const {
+    sourceGroup_id, group_icon, group_title, item_id,
+  } = req.body;
+
+  const group = Group.findById(sourceGroup_id);
+  if (!group) {
+    return res.status(404).json({ error: 'Source group not found' });
+  }
+
+  const group_id = generateGroupId();
+
+  const newGroup = {
+    id: group_id, // FIXME
+    group_icon,
+    group_title,
+    items: group.items.filter((item) => item.id === item_id),
+  };
+
+  Group.createOne_mock(newGroup);
+
+  res.status(201).json({
+    message: 'Group created with tab from other group successfully',
+    group_id,
+  });
+};
+
+module.exports = { getGroups, createGroupWithSidebarTab, createGroupWithGroupTab };

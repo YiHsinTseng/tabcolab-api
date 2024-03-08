@@ -55,60 +55,6 @@
           "note_bgColor": "#ffffff"
         }
       ]
-    },
-    {
-      "group_id": {},
-      "group_icon": "icon10",
-      "group_title": "group10",
-      "items": [
-        {}
-      ]
-    },
-    {
-      "group_id": "35dbe4ec-32de-4313-bb35-1579878b34ee",
-      "group_icon": "icon10",
-      "group_title": "group10",
-      "items": [
-        {}
-      ]
-    },
-    {
-      "group_id": "2f16e76e-5c8a-499d-bbf5-de18376c2ccb",
-      "group_icon": "icon10",
-      "group_title": "group10",
-      "items": [
-        {
-          "browserTab_favIconURL": "123",
-          "browserTab_title": "456",
-          "browserTab_url": "789"
-        }
-      ]
-    },
-    {
-      "group_id": "d7f8cd98-cdbb-475e-83e6-300ddcdeee73",
-      "group_icon": "icon10",
-      "group_title": "group10",
-      "items": [
-        {
-          "browserTab_favIconURL": "123",
-          "browserTab_title": "456",
-          "browserTab_url": "789",
-          "item_id": "e9f73eae-4d09-446e-8c43-2184147790b8"
-        }
-      ]
-    },
-    {
-      "group_id": "418dba24-9459-4ac8-b140-e68b6ba0d528",
-      "group_icon": "icon10",
-      "group_title": "group10",
-      "items": [
-        {
-          "browserTab_favIconURL": "123",
-          "browserTab_title": "456",
-          "browserTab_url": "789",
-          "item_id": "10088425-ba63-4d93-b61b-c25ed66fcf25"
-        }
-      ]
     }
   ],
   "users": [
