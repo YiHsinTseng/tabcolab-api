@@ -12,7 +12,19 @@ module.exports = {
     }
   },
 
-  createGroupWithSidebarTab: async (group) => await db.get('groups').push(group).write(),
+  createGroupWithSidebarTab: async (group) => {
+    try {
+      let groups = db.get('groups');
+      if (!groups.value()) {
+        await db.defaults({ groups: [] }).write();
+        groups = db.get('groups');
+      }
+      await groups.push(group).write();
+      return { success: true, message: 'group created successfully' };
+    } catch (error) {
+      return { success: false, error: 'group not created', details: error.message };
+    }
+  },
 
-  findGroupById: async (group_id) => await db.get('groups').find({ group_id }).value(),
+  // findGroupById: async (group_id) => db.get('groups').find({ group_id }).value(),
 };

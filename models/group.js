@@ -18,15 +18,6 @@ class Group {
     this.items = items;
   }
 
-  // static async getAll() {
-  //   try {
-  //     return await db.getAllGroups();
-  //   } catch (error) {
-  //     console.error('Error getting all groups:', error);
-  //     throw error;
-  //   }
-  // }
-
   static async getAll() {
     const groups = await db.getAllGroups();
 
@@ -37,11 +28,15 @@ class Group {
   }
 
   async createWithSidebarTab() {
-    return await db.createGroupWithSidebarTab(this);
+    const result = await db.createGroupWithSidebarTab(this);
+    if (result.success) {
+      return { success: true, message: 'Sidebar group created successfully' };
+    }
+    return { success: false, error: 'group not created', details: result.details };
   }
 
-  async findById(group_id) {
-    return await db.findGroupById(group_id);
+  findById(group_id) {
+    return db.findGroupById(group_id);
   }
 }
 

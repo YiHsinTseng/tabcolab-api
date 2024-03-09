@@ -55,6 +55,48 @@
           "note_bgColor": "#ffffff"
         }
       ]
+    },
+    {
+      "group_id": "b30f95ac-3116-4474-b3a3-53fbb05eeff1",
+      "group_icon": "icon10",
+      "group_title": "group10",
+      "items": [
+        {
+          "item_id": "911359f0-6d20-4d9c-8049-3e3eeab966ee",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
+    },
+    {
+      "group_id": "dc6e11c4-233f-4022-8deb-e3fadf17466d",
+      "group_icon": "icon10",
+      "group_title": "group10",
+      "items": [
+        {
+          "item_id": "9b73c7a6-d240-4d6a-8433-1602286b2fb3",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
+    },
+    {
+      "group_id": "3580b1fd-ac17-4fd8-a9eb-78ff1f991c13",
+      "group_icon": "icon10",
+      "group_title": "group10",
+      "items": [
+        {
+          "item_id": "e6dd3922-a0bd-476a-9140-829d0ce73959",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
     }
   ],
   "users": [

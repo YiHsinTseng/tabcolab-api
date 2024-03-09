@@ -1,5 +1,5 @@
 const Group = require('../models/group');
-const { generateGroupId, generateItemId } = require('../utils/generateId');
+const { Tab } = require('../models/item');
 
 const getGroups = async (req, res, next) => {
   try {
@@ -18,9 +18,7 @@ const getGroups = async (req, res, next) => {
   }
 };
 
-const createGroupWithSidebarTab = (req, res) => {
-  const item_id = generateItemId();
-
+const createGroupWithSidebarTab = async (req, res) => {
   const {
     group_icon,
     group_title,
@@ -29,46 +27,49 @@ const createGroupWithSidebarTab = (req, res) => {
     browserTab_url,
   } = req.body;
 
-  const newItem = {
-    browserTab_favIconURL, browserTab_title, browserTab_url, item_id,
-  };
-
-  const newGroup = new Group(group_icon, group_title, [newItem]);
-
-  newGroup.createWithSidebarTab();
-
-  res.status(201).json({
-    message: 'Sidebar group created successfully',
-    group_id: newGroup.group_id,
-    item_id,
-  });
-};
-
-const createGroupWithGroupTab = (req, res) => {
-  const {
-    sourceGroup_id, group_icon, group_title, item_id,
-  } = req.body;
-
-  const group = Group.findById(sourceGroup_id);
-  if (!group) {
-    return res.status(404).json({ error: 'Source group not found' });
+  if (!group_icon || !group_title || !browserTab_favIconURL || !browserTab_title || !browserTab_url) {
+    return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const group_id = generateGroupId();
+  try {
+    const newTab = new Tab(browserTab_favIconURL, browserTab_title, browserTab_url);
+    const newGroup = new Group(group_icon, group_title, [newTab]);
 
-  const newGroup = {
-    id: group_id, // FIXME
-    group_icon,
-    group_title,
-    items: group.items.filter((item) => item.id === item_id),
-  };
-
-  Group.createOne_mock(newGroup);
-
-  res.status(201).json({
-    message: 'Group created with tab from other group successfully',
-    group_id,
-  });
+    const result = await newGroup.createWithSidebarTab();
+    if (result.success) {
+      return res.status(201).json({ message: result.message, group: newGroup });
+    }
+    return res.status(500).json({ error: result.error, details: result.details });
+  } catch (error) {
+    return res.status(500).json({ error: 'An error occurred while creating the group', details: error.message });
+  }
 };
 
-module.exports = { getGroups, createGroupWithSidebarTab, createGroupWithGroupTab };
+// const createGroupWithGroupTab = (req, res) => {
+//   const {
+//     sourceGroup_id, group_icon, group_title, item_id,
+//   } = req.body;
+
+//   const group = Group.findById(sourceGroup_id);
+//   if (!group) {
+//     return res.status(404).json({ error: 'Source group not found' });
+//   }
+
+//   const group_id = generateGroupId();
+
+//   const newGroup = {
+//     id: group_id, // FIXME
+//     group_icon,
+//     group_title,
+//     items: group.items.filter((item) => item.id === item_id),
+//   };
+
+//   Group.createOne_mock(newGroup);
+
+//   res.status(201).json({
+//     message: 'Group created with tab from other group successfully',
+//     group_id,
+//   });
+// };
+
+module.exports = { getGroups, createGroupWithSidebarTab };
