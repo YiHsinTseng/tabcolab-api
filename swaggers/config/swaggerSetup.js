@@ -2,52 +2,52 @@ require('dotenv').config();
 
 const { API_VERSION } = process.env;
 
-// const config = require('../../configs/config.json');
-
-// const env = process.env.NODE_ENV || 'development';
-// const { host, port } = config[env].app;
 const swaggerUi = require('swagger-ui-express');
+const config = require('../../configs/config.json');
+
+const env = process.env.NODE_ENV || 'development';
+const { host, port } = config[env].app;
 
 function setupSwagger(server) {
-  // const { name, version, description } = require('../../package.json');
+  const { name, version, description } = require('../../package.json');
 
   // Use Jsdoc
-  // const swaggerFile = require('swagger-jsdoc');
-  // const options = {
-  //   swaggerDefinition: {
-  //     openapi: '3.0.0',
-  //     info: {
-  //       title: `${name}`,
-  //       version: `${version}`,
-  //       description: `${description}`,
-  //     },
-  //     servers: [
-  //       {
-  //         url: `http:/${host}:${port}`,
-  //       },
-  //     ],
-  //     tags: [
-  //       {
-  //         name: 'Groups',
-  //         description: 'Operations related to groups management',
-  //       },
-  //       {
-  //         name: 'Items(Spec)',
-  //         description: 'Specific operations related to items management',
-  //       },
-  //       {
-  //         name: 'Items',
-  //         description: 'General operations related to items management',
-  //       },
-  //     ],
-  //   },
-  //   apis: [
-  //     './routes/*.js',
-  //     './routes/modules/*.js',
-  //     './controllers/*.js',
-  //     './models/*.js',
-  //   ], // files containing annotations as above
-  // };
+  const swaggerFile = require('swagger-jsdoc');
+  const options = {
+    swaggerDefinition: {
+      openapi: '3.0.0',
+      info: {
+        title: `${name}`,
+        version: `${version}`,
+        description: `${description}`,
+      },
+      servers: [
+        {
+          url: `http:/${host}:${port}`,
+        },
+      ],
+      tags: [
+        {
+          name: 'Groups',
+          description: 'Operations related to groups management',
+        },
+        {
+          name: 'Items(Spec)',
+          description: 'Specific operations related to items management',
+        },
+        {
+          name: 'Items',
+          description: 'General operations related to items management',
+        },
+      ],
+    },
+    apis: [
+      './routes/*.js',
+      './routes/modules/*.js',
+      './controllers/*.js',
+      './models/*.js',
+    ], // files containing annotations as above
+  };
   // const swaggerSpec = swaggerFile(options);
 
   // Read Swagger YAML

@@ -39,6 +39,11 @@ paths:
                         browserTab_url: http://tab_url.com
                         note_content: ''
                         note_bgColor: '#ffffff'
+                        browserTab_id: 123
+                        browserTab_index: 12
+                        browserTab_active: false
+                        browserTab_status: "complete"
+                        windowId: 1348438505
                       - item_id: '2'
                         item_type: 1
                         note_content: Note content
@@ -76,6 +81,11 @@ paths:
                   browserTab_url: https://example.com
                   group_icon: https://example.com/group_icon2.png
                   group_title: Group 2
+                  browserTab_id: 133
+                  browserTab_index: 15
+                  browserTab_active: false
+                  browserTab_status: "complete"
+                  windowId: 3850513484
               GroupCreatewithGroupTabtoBlank:
                 summary: Group Create with Group Tab to Blank
                 value:
@@ -116,10 +126,13 @@ paths:
                 - $ref: '#/components/requestBodies/GroupUpdate'
                 - $ref: '#/components/requestBodies/GroupChangePos'
             examples:
-              GroupUpdateExample:
-                summary: Modifying group information
+              GroupUpdateIconExample:
+                summary: Modifying group information (Icon)
                 value:
                   group_icon: https://example.com/updated_icon.png
+              GroupUpdateTitleExample:
+                summary: Modifying group information (Title)
+                value:
                   group_title: Updated Group Title
               GroupChangePosExample:
                 summary: Changing group position
@@ -451,16 +464,11 @@ components:
     GroupCreatewithSidebarTabatBlank:
       description: Create Group by Dragging a Tab From Sidebar to Blank Space.
       type: object
-      properties:
-        browserTab_favIconURL:
-          $ref: '#/components/schemas/Item/properties/browserTab_favIconURL'
-        browserTab_title:
-          $ref: '#/components/schemas/Item/properties/browserTab_title'
-        browserTab_url:
-          $ref: '#/components/schemas/Item/properties/browserTab_url'
-        group_icon:
+      allOf:
+        - $ref: '#/components/schemas/ChromeTabInfo'
+        - group_icon:
           $ref: '#/components/schemas/Group/properties/group_icon'
-        group_title:
+        - group_title:
           $ref: '#/components/schemas/Group/properties/group_title'
     GroupCreateatBlank:
       description: Create Group at Blank Space.
@@ -479,9 +487,9 @@ components:
         item_id:
           $ref: '#/components/schemas/Item/properties/item_id'
     GroupUpdate:
-      description: Change group info.
+      description: Modify group info.
       type: object
-      properties:
+      oneOf:
         group_icon:
           $ref: '#/components/schemas/Group/properties/group_icon'
         group_title:
@@ -512,23 +520,16 @@ components:
     addTab:
       description: Add a new tab to an existing Group by dragging from Sidebar
       type: object
-      properties:
-        browserTab_favIconURL:
-          $ref: '#/components/schemas/Item/properties/browserTab_favIconURL'
-        browserTab_title:
-          $ref: '#/components/schemas/Item/properties/browserTab_title'
-        browserTab_url:
-          $ref: '#/components/schemas/Item/properties/browserTab_url'
-        targetItem_position:
+      allOf:
+        - $ref: '#/components/schemas/ChromeTabInfo'
+        - targetItem_position:
           type: integer
           minimum: 0
     updateTab:
       type: object
       properties:
         note_content:
-          $ref: '#/components/schemas/Item/properties/note_content'
-        note_bgColor:
-          $ref: '#/components/schemas/Item/properties/note_bgColor'
+          $ref: '#/components/schemas/Tab/properties/note_content'
     addNote:
       description: Create a note in group.
       type: object
@@ -576,6 +577,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Item'
+      required:
+        - group_id
+        - group_icon
+        - group_title
+        - items
     Item:
       type: object
       properties:
@@ -583,27 +589,83 @@ components:
           type: string
         item_type:
           type: integer
-          enum:
-            - 0
-            - 1
-            - 2
+          enum: [0, 1, 2]
           description: '0: Tab, 1: Note, 2: Todo'
-        browserTab_favIconURL:
-          type: string
-          pattern: ^(http|https)://.*$
-        browserTab_title:
-          type: string
-        browserTab_url:
-          type: string
-          pattern: ^(http|https)://.*$
+      oneOf:
+        - $ref: '#/components/schemas/Tab'
+        - $ref: '#/components/schemas/Note'
+        - $ref: '#/components/schemas/Todo'
+      required:
+        - item_id
+        - item_type
+    Tab:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ChromeTabInfo'
+        - properties:
+            note_content:
+              type: string
+            note_bgColor:
+              type: string
+      required:
+        - note_bgColor
+    Note:
+      type: object
+      properties:
         note_content:
           type: string
         note_bgColor:
           type: string
-          pattern: ^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$
+      required:
+        - note_content
+        - note_bgColor
+    Todo:
+      type: object
+      properties:
+        note_content:
+          type: string
+        note_bgColor:
+          type: string
         doneStatus:
           type: boolean
           description: Indicates whether the todo is done or not
+      required:
+        - note_content
+        - note_bgColor
+        - doneStatus
+    ChromeTabInfo:
+      type: object
+      properties:
+        browserTab_favIconURL:
+          type: string
+        browserTab_title:
+          type: string
+        browserTab_url:
+          type: string
+        browserTab_id:
+          type: integer
+        browserTab_index:
+          type: integer
+        browserTab_active:
+          type: boolean
+        browserTab_status:
+          type: string
+          enum:
+            - "complete"
+            - "loading"
+            - "unloaded"
+        windowId:
+          type: integer
+          example: 1348438505
+      required:
+        - browserTab_favIconURL
+        - browserTab_title
+        - browserTab_url
+        - browserTab_id
+        - browserTab_index
+        - browserTab_active
+        - browserTab_status
+        - windowId
     User:
       type: object
       properties:
@@ -626,6 +688,7 @@ components:
           type: string
           format: date-time
       required:
-        - username
+        - id
+        - name
         - account
         - password
