@@ -42,6 +42,14 @@ class Group {
     }
     return group;
   }
+
+  static async updateGroup(group) {
+    const result = await db.updateGroup(group);
+    if (result.success) {
+      return { success: true, message: 'Group updated successfully' };
+    }
+    return { success: false, error: 'Group not updated', details: result.details };
+  }
 }
 
 module.exports = Group;

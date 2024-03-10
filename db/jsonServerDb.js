@@ -33,4 +33,20 @@ module.exports = {
     }
     return groups.find({ group_id }).value();
   },
+
+  updateGroup: async (group) => {
+    try {
+      const groups = db.get('groups');
+      const groupToUpdate = groups.find({ group_id: group.group_id });
+
+      if (!groupToUpdate.value()) {
+        return { success: false, details: 'Group not found' };
+      }
+
+      await groupToUpdate.assign(group).write();
+      return { success: true, message: 'Group updated successfully' };
+    } catch (error) {
+      return { success: false, error: 'Group not updated', details: error.message };
+    }
+  },
 };

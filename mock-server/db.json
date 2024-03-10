@@ -60,6 +60,12 @@
       "group_id": "b30f95ac-3116-4474-b3a3-53fbb05eeff1",
       "group_icon": "icon10",
       "group_title": "group10",
+      "items": []
+    },
+    {
+      "group_id": "9cd741d9-cc69-40c5-89e8-d5d8d51a886e",
+      "group_icon": "icon103",
+      "group_title": "group103",
       "items": [
         {
           "item_id": "911359f0-6d20-4d9c-8049-3e3eeab966ee",
@@ -71,54 +77,82 @@
       ]
     },
     {
-      "group_id": "dc6e11c4-233f-4022-8deb-e3fadf17466d",
-      "group_icon": "icon10",
-      "group_title": "group10",
-      "items": [
-        {
-          "item_id": "9b73c7a6-d240-4d6a-8433-1602286b2fb3",
-          "item_type": 0,
-          "browserTab_favIconURL": "123",
-          "browserTab_title": "456",
-          "browserTab_url": "789"
-        }
-      ]
-    },
-    {
-      "group_id": "3580b1fd-ac17-4fd8-a9eb-78ff1f991c13",
-      "group_icon": "icon10",
-      "group_title": "group10",
-      "items": [
-        {
-          "item_id": "e6dd3922-a0bd-476a-9140-829d0ce73959",
-          "item_type": 0,
-          "browserTab_favIconURL": "123",
-          "browserTab_title": "456",
-          "browserTab_url": "789"
-        }
-      ]
-    },
-    {
-      "group_id": "270afddb-30d8-425b-93b6-52cbf1eae1b8",
-      "group_icon": "icon10",
-      "group_title": "group10",
-      "items": [
-        {
-          "item_id": "e6dd3922-a0bd-476a-9140-829d0ce73959",
-          "item_type": 0,
-          "browserTab_favIconURL": "123",
-          "browserTab_title": "456",
-          "browserTab_url": "789"
-        }
-      ]
-    },
-    {
-      "group_id": "5bb74b10-988d-42a8-979e-f70f1145cf91",
+      "group_id": "cd5dec41-a5b8-49fa-9faf-8a3a0a17aa73",
       "group_icon": "icon103",
       "group_title": "group103",
       "items": [
         {
-          "item_id": "e6dd3922-a0bd-476a-9140-829d0ce73959",
+          "item_id": "911359f0-6d20-4d9c-8049-3e3eeab966ee",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
+    },
+    {
+      "group_id": "67603c1d-1df1-4cb0-8722-3c26e2d2e539",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": [
+        {
+          "item_id": "911359f0-6d20-4d9c-8049-3e3eeab966ee",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
+    },
+    {
+      "group_id": "8e16af71-0677-4cea-b5ab-f4a1203e02b5",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": [
+        {
+          "item_id": "911359f0-6d20-4d9c-8049-3e3eeab966ee",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
+    },
+    {
+      "group_id": "e0a8aee4-d449-43d2-8753-f1ba50aff57c",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": [
+        {
+          "item_id": "911359f0-6d20-4d9c-8049-3e3eeab966ee",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
+    },
+    {
+      "group_id": "e6c4091a-136f-4219-ac90-a6952dc0faa8",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": [
+        {
+          "item_id": "911359f0-6d20-4d9c-8049-3e3eeab966ee",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
+    },
+    {
+      "group_id": "dc89ab32-d50a-48bf-8fb1-30fb18b5e1ad",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": [
+        {
+          "item_id": "911359f0-6d20-4d9c-8049-3e3eeab966ee",
           "item_type": 0,
           "browserTab_favIconURL": "123",
           "browserTab_title": "456",

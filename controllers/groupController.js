@@ -60,15 +60,21 @@ const createGroupWithGroupTab = async (req, res) => {
       return res.status(500).json({ error: 'Source group does not contain items' });
     }
 
-    const item = sourceGroup.items.find((item) => item.item_id === item_id);
-    if (!item) {
+    const itemIndex = sourceGroup.items.findIndex((item) => item.item_id === item_id);
+    if (itemIndex === -1) {
       return res.status(404).json({ error: 'Item not found in source group' });
     }
+
+    const item = sourceGroup.items[itemIndex];
 
     const newGroup = new Group(group_icon, group_title, [item]);
 
     const result = await newGroup.createGroup();
     if (result.success) {
+      // Remove the item from the source group and update the source group
+      sourceGroup.items.splice(itemIndex, 1);
+      await Group.updateGroup(sourceGroup);
+
       return res.status(201).json({ message: 'Group created with tab from other group successfully', group: newGroup });
     }
     return res.status(500).json({ error: result.error, details: result.details });
