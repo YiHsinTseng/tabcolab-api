@@ -123,4 +123,56 @@ const createGroup = (req, res) => {
   }
 };
 
-module.exports = { getGroups, createGroup };
+const updateGroup = async (req, res) => {
+  const { group_id } = req.params;
+
+  const group = await Group.findById(group_id);
+  if (!group) {
+    return res.status(404).json({ error: 'Group not found' });
+  }
+  const { group_icon, group_title, group_pos } = req.body;
+
+  // Check that only one of group_icon, group_title, or group_pos is present
+  const numProps = [group_icon, group_title, group_pos].filter((prop) => prop !== undefined).length;
+  if (numProps !== 1) {
+    return res.status(400).json({ error: 'Invalid request body, only one of group_icon, group_title, or group_pos should be present' });
+  }
+
+  if (group_id && group_icon) {
+    group.group_icon = group_icon;
+    await Group.updateGroup(group);
+    return res.status(200).json({ message: 'Group icon updated successfully' });
+  }
+
+  if (group_id && group_title) {
+    group.group_title = group_title;
+    await Group.updateGroup(group);
+    return res.status(200).json({ message: 'Group title updated successfully' });
+  }
+
+  if (group_id && group_pos !== undefined) {
+    const result = await Group.changePosition(group_id, group_pos);
+    if (result.success) {
+      return res.status(200).json({ message: result.message });
+    }
+  }
+  return res.status(400).json({ error: 'Invalid request body' });
+};
+
+const deleteGroup = async (req, res) => {
+  const { group_id } = req.params;
+  const group = await Group.findById(group_id);
+  if (!group) {
+    return res.status(404).json({ error: 'Group not found' });
+  }
+
+  const result = await Group.deleteGroup(group_id);
+  if (result.success) {
+    return res.status(200).json({ message: result.message });
+  }
+  return res.status(400).json({ error: result.error });
+};
+
+module.exports = {
+  getGroups, createGroup, updateGroup, deleteGroup,
+};

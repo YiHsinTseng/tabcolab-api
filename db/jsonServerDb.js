@@ -49,4 +49,33 @@ module.exports = {
       return { success: false, error: 'Group not updated', details: error.message };
     }
   },
+
+  changeGroupPosition: async (group_id, group_pos) => {
+    try {
+      const groups = db.get('groups').value();
+      const groupIndex = groups.findIndex((group) => group.group_id === group_id);
+      if (groupIndex !== -1 && group_pos >= 0 && group_pos < groups.length) {
+      // Remove the group from its current position
+        const [movedGroup] = groups.splice(groupIndex, 1);
+        // Insert the group at the new position
+        groups.splice(group_pos, 0, movedGroup);
+        db.write();
+        return { success: true, message: 'Group position updated successfully' };
+      }
+    } catch (error) {
+      return { success: false, error: 'Invalid request body', details: error.message };
+    }
+  },
+
+  deleteGroup: async (group_id) => {
+    try {
+      await db.get('groups')
+        .remove((group) => group.group_id === group_id)
+        .write();
+      return { success: true, message: 'Group deleted successfully' };
+    } catch (error) {
+      return { success: false, error: 'Group not deleted', details: error.message };
+    }
+  },
+
 };

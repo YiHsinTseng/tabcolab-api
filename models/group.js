@@ -50,6 +50,22 @@ class Group {
     }
     return { success: false, error: 'Group not updated', details: result.details };
   }
+
+  static async changePosition(group_id, group_pos) {
+    const result = await db.changeGroupPosition(group_id, group_pos);
+    if (result.success) {
+      return { success: true, message: 'Group position updated successfully' };
+    }
+    return { success: false, error: 'Invalid request body', details: result.details };
+  }
+
+  static async deleteGroup(group_id) {
+    const result = await db.deleteGroup(group_id);
+    if (result.success) {
+      return { success: true, message: result.message };
+    }
+    return { success: false, error: result.error, details: result.details };
+  }
 }
 
 module.exports = Group;
