@@ -4,6 +4,6 @@ const router = createRouter();
 const controller = require('../../controllers/groupController');
 
 router.get('/groups', controller.getGroups);
-router.post('/groups', controller.createGroupWithGroupTab);
+router.post('/groups', controller.createGroup);
 
 module.exports = router;

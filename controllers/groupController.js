@@ -51,6 +51,9 @@ const createGroupWithGroupTab = async (req, res) => {
       sourceGroup_id, group_icon, group_title, item_id,
     } = req.body;
 
+    if (!sourceGroup_id || !group_icon || !group_title || !item_id) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
     const sourceGroup = await Group.findById(sourceGroup_id);
     if (!sourceGroup) {
       return res.status(404).json({ error: 'Source group not found' });
@@ -83,4 +86,41 @@ const createGroupWithGroupTab = async (req, res) => {
   }
 };
 
-module.exports = { getGroups, createGroupWithSidebarTab, createGroupWithGroupTab };
+const createGroup = (req, res) => {
+  const {
+    group_icon,
+    group_title,
+    browserTab_favIconURL,
+    browserTab_title,
+    browserTab_url,
+    sourceGroup_id,
+    item_id,
+  } = req.body;
+
+  const keys = Object.keys(req.body);
+  const validKeysForSidebarTab = ['group_icon', 'group_title', 'browserTab_favIconURL', 'browserTab_title', 'browserTab_url'];
+  const validKeysForGroupTab = ['sourceGroup_id', 'group_icon', 'group_title', 'item_id'];
+
+  if (
+    group_icon
+    && group_title
+    && browserTab_favIconURL
+    && browserTab_title
+    && browserTab_url
+    && keys.every((key) => validKeysForSidebarTab.includes(key))
+  ) {
+    createGroupWithSidebarTab(req, res);
+  } else if (
+    sourceGroup_id
+    && group_icon
+    && group_title
+    && item_id
+    && keys.every((key) => validKeysForGroupTab.includes(key))
+  ) {
+    createGroupWithGroupTab(req, res);
+  } else {
+    return res.status(400).json({ error: 'Invalid request body' });
+  }
+};
+
+module.exports = { getGroups, createGroup };

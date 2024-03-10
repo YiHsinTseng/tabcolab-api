@@ -159,6 +159,94 @@
           "browserTab_url": "789"
         }
       ]
+    },
+    {
+      "group_id": "f76d96f1-5a38-425e-b68c-f0d747f9a294",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": []
+    },
+    {
+      "group_id": "30062619-c1a9-44db-84c9-9a9748c13e7e",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": [
+        {
+          "item_id": "ac877ff3-3cdc-49de-b441-1089558ebc4b",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
+    },
+    {
+      "group_id": "2c55b38e-9ccb-4201-bc20-bafd8237eda0",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": [
+        {
+          "item_id": "52ad5884-e440-4865-ac39-1650b1649c81",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
+    },
+    {
+      "group_id": "c8e60da4-03b6-437c-ab5a-e80a0c3df0cb",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": [
+        {
+          "item_id": "3d8dd915-5e00-4b2e-b8b4-8b0c5d9b8d12",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
+    },
+    {
+      "group_id": "5eafa8aa-c30d-437b-95d5-a6c662fb788b",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": []
+    },
+    {
+      "group_id": "6e4d7d50-13bd-445e-92a4-565d3a25ae21",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": [
+        {
+          "item_id": "d3ebe8f9-eb7f-4f7b-b388-94d3f53a5bb3",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
+    },
+    {
+      "group_id": "55f3eece-49d5-4c43-a5a7-cadae5fbcd7b",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": []
+    },
+    {
+      "group_id": "58fce165-c54a-418f-b73a-e726b3c95789",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": [
+        {
+          "item_id": "2ae573f2-a73b-49ad-87b6-5dcc1c61e3da",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
     }
   ],
   "users": [
