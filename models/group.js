@@ -27,16 +27,20 @@ class Group {
     return { success: false, error: 'group not found' };
   }
 
-  async createWithSidebarTab() {
-    const result = await db.createGroupWithSidebarTab(this);
+  async createGroup() {
+    const result = await db.createGroup(this);
     if (result.success) {
       return { success: true, message: 'Sidebar group created successfully' };
     }
     return { success: false, error: 'group not created', details: result.details };
   }
 
-  findById(group_id) {
-    return db.findGroupById(group_id);
+  static async findById(group_id) {
+    const group = await db.findGroupById(group_id);
+    if (group && !group.items) {
+      group.items = []; // 確保 items 屬性存在
+    }
+    return group;
   }
 }
 

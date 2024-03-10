@@ -97,6 +97,34 @@
           "browserTab_url": "789"
         }
       ]
+    },
+    {
+      "group_id": "270afddb-30d8-425b-93b6-52cbf1eae1b8",
+      "group_icon": "icon10",
+      "group_title": "group10",
+      "items": [
+        {
+          "item_id": "e6dd3922-a0bd-476a-9140-829d0ce73959",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
+    },
+    {
+      "group_id": "5bb74b10-988d-42a8-979e-f70f1145cf91",
+      "group_icon": "icon103",
+      "group_title": "group103",
+      "items": [
+        {
+          "item_id": "e6dd3922-a0bd-476a-9140-829d0ce73959",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789"
+        }
+      ]
     }
   ],
   "users": [

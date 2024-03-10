@@ -12,7 +12,7 @@ module.exports = {
     }
   },
 
-  createGroupWithSidebarTab: async (group) => {
+  createGroup: async (group) => {
     try {
       let groups = db.get('groups');
       if (!groups.value()) {
@@ -26,5 +26,11 @@ module.exports = {
     }
   },
 
-  // findGroupById: async (group_id) => db.get('groups').find({ group_id }).value(),
+  findGroupById: async (group_id) => {
+    const groups = db.get('groups');
+    if (!groups.value()) {
+      return null;
+    }
+    return groups.find({ group_id }).value();
+  },
 };

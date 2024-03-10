@@ -35,7 +35,7 @@ const createGroupWithSidebarTab = async (req, res) => {
     const newTab = new Tab(browserTab_favIconURL, browserTab_title, browserTab_url);
     const newGroup = new Group(group_icon, group_title, [newTab]);
 
-    const result = await newGroup.createWithSidebarTab();
+    const result = await newGroup.createGroup();
     if (result.success) {
       return res.status(201).json({ message: result.message, group: newGroup });
     }
@@ -45,31 +45,36 @@ const createGroupWithSidebarTab = async (req, res) => {
   }
 };
 
-// const createGroupWithGroupTab = (req, res) => {
-//   const {
-//     sourceGroup_id, group_icon, group_title, item_id,
-//   } = req.body;
+const createGroupWithGroupTab = async (req, res) => {
+  try {
+    const {
+      sourceGroup_id, group_icon, group_title, item_id,
+    } = req.body;
 
-//   const group = Group.findById(sourceGroup_id);
-//   if (!group) {
-//     return res.status(404).json({ error: 'Source group not found' });
-//   }
+    const sourceGroup = await Group.findById(sourceGroup_id);
+    if (!sourceGroup) {
+      return res.status(404).json({ error: 'Source group not found' });
+    }
 
-//   const group_id = generateGroupId();
+    if (!sourceGroup.items) {
+      return res.status(500).json({ error: 'Source group does not contain items' });
+    }
 
-//   const newGroup = {
-//     id: group_id, // FIXME
-//     group_icon,
-//     group_title,
-//     items: group.items.filter((item) => item.id === item_id),
-//   };
+    const item = sourceGroup.items.find((item) => item.item_id === item_id);
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found in source group' });
+    }
 
-//   Group.createOne_mock(newGroup);
+    const newGroup = new Group(group_icon, group_title, [item]);
 
-//   res.status(201).json({
-//     message: 'Group created with tab from other group successfully',
-//     group_id,
-//   });
-// };
+    const result = await newGroup.createGroup();
+    if (result.success) {
+      return res.status(201).json({ message: 'Group created with tab from other group successfully', group: newGroup });
+    }
+    return res.status(500).json({ error: result.error, details: result.details });
+  } catch (error) {
+    return res.status(500).json({ error: 'An error occurred while creating the group', details: error.message });
+  }
+};
 
-module.exports = { getGroups, createGroupWithSidebarTab };
+module.exports = { getGroups, createGroupWithSidebarTab, createGroupWithGroupTab };
