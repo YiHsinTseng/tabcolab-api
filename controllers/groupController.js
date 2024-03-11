@@ -1,3 +1,152 @@
+const env = process.env.NODE_ENV || 'development';
+
+const config = require('../configs/config.json');
+const AppError = require('../utils/appError');
+
+const Group = require(`${config[env].db.modelpath}/group`);
+// const Group = require('../models/mock-server/group');
+
+const ErrorResponse = (statusCode, message, res) => {
+  const status = statusCode === 500 ? 'error' : 'fail';
+  res.status(statusCode).json({ status, message });
+};
+
+const controller = {
+  getGroups: async (req, res, next) => {
+    // TODO - result 或 getGroups 來命名 yang 決定
+    try {
+      const getGroups = await Group.getGroups();
+      if (getGroups.success) {
+        return res.status(200).json(getGroups.message);
+        // next（） callback 沒有回傳值 就會中止
+      }
+      // res.status(404).json(getGroups.error);
+      return ErrorResponse(404, getGroups.error, res);
+    } catch (error) {
+      next(error); // 400(vaildate or 個別路由) 500
+    }
+  },
+
+  createGroup: async (req, res, next) => {
+    const {
+      group_icon, group_title,
+      sourceGroup_id, item_id,
+      ...browserTabReq
+    } = req.body;
+
+    const browserTabData = {
+      browserTab_favIconURL: browserTabReq.browserTab_favIconURL,
+      browserTab_title: browserTabReq.browserTab_title,
+      browserTab_url: browserTabReq.browserTab_url,
+      browserTab_id: browserTabReq.browserTab_id,
+      browserTab_index: browserTabReq.browserTab_index,
+      browserTab_active: browserTabReq.browserTab_active,
+      browserTab_status: browserTabReq.browserTab_status,
+      windowId: browserTabReq.windowId,
+    };
+
+    let createdGroup;
+    // NOTE - 需要 Group.createGroup封裝三個不同的方法嗎？
+    // Group.createGroup({
+    //   group_icon, group_title,
+    //   sourceGroup_id, item_id,
+    //   ...browserTabReq
+    // })
+
+    try {
+      if (group_icon, group_title) {
+        const isValid = Object.values(browserTabData).every((value) => value !== undefined);
+        const isNone = Object.values(browserTabData).every((value) => value === undefined);
+        if (isValid) {
+          createdGroup = await Group.GroupCreatewithSidebarTabatBlank({
+            ...browserTabData,
+            group_icon,
+            group_title,
+          });
+        } else if (isNone) {
+          createdGroup = await Group.createGroupatBlank(group_icon, group_title);
+        } else {
+          // return res.status(400).json({ status: 'fail', message: 'invalid request body' });
+          // throw new AppError(400, 'invalid request body');
+          return ErrorResponse(400, 'invalid request body', res);
+        }
+      } else if (item_id, sourceGroup_id) {
+        createdGroup = await Group.GroupCreatewithGroupTabtoBlank(item_id, sourceGroup_id);
+      } else {
+        // return res.status(400).json({ status: 'fail', message: 'invalid request body' });
+        // throw new AppError(400, 'invalid request body');
+        return ErrorResponse(400, 'invalid request body', res);
+      }
+
+      if (createdGroup.success) {
+        return res.status(201).json(createdGroup.message);
+      }
+      // res.status(404).json(createdGroup.error);
+      return ErrorResponse(404, createdGroup.error, res);
+    } catch (error) {
+      next(error); // 400 500
+    }
+  },
+
+  updateGroup: async (req, res, next) => {
+    const { group_id } = req.params;
+    const { group_icon, group_title, group_pos } = req.body; // NOTE -三擇一
+
+    const PatchGroupData = {
+      group_icon: group_icon || undefined,
+      group_title: group_title || undefined,
+      group_pos: group_pos || undefined,
+    };
+
+    const isValid = Object.values(PatchGroupData)
+      .filter((value) => value !== undefined).length === 1;
+
+    try {
+      if (!isValid) { throw new AppError(400, 'invalid request body'); }
+      const updatedGroup = await Group.updateGroup(group_id, group_icon, group_title, group_pos);
+
+      if (updatedGroup.success) {
+        return res.status(200).json(updatedGroup.message);
+      // NOTE - 比較簡潔但是要用swagger的耦合性來換，yang 傾向有else
+      }
+      // res.status(updatedGroup.statusCode).json(updatedGroup.error);
+      // NOTE - vaild的邏輯寫在Group.function外面，就可以只有404的情況
+      // res.status(404).json({ status: updatedGroup.status, message: updatedGroup.error });
+      return ErrorResponse(404, updatedGroup.error, res);
+    } catch (error) {
+      next(error); // 400  500
+    }
+  },
+
+  deleteGroup: async (req, res, next) => {
+    const { group_id } = req.params;
+    try {
+      const deletedGroup = await Group.deleteGroup(group_id);
+      if (deletedGroup.success) {
+        return res.status(204).json(deletedGroup.message);
+      }
+      // NOTE - vaild的邏輯寫在Group.function外面，就可以只有404的情況
+      return ErrorResponse(404, deletedGroup.error, res);
+      // res.status(404).json({ status: deletedGroup.statusCode, message: deletedGroup.error });
+      // methed1
+      // res.status(deletedGroup.statusCode).json(deletedGroup.error);
+      // method2
+      // if (deletedGroup.statusCode === 404) {
+      //   res.status(404).json(deletedGroup.error);
+      // // }
+      // if (deletedGroup.statusCode === 400) {
+      //   res.status(400).json(deletedGroup.error);
+      // }
+      // method3
+      // throw new AppError(deletedGroup.statusCode, deletedGroup.error);
+    } catch (error) {
+      next(error);// 400 500
+    }
+  },
+};
+
+module.exports = controller;
+
 // Swagger - getGroups
 /**
  * @openapi

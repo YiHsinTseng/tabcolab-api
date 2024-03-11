@@ -9,7 +9,8 @@
     "db": {
       "host": "localhost",
       "name": "db",
-      "path": "./mock-server/db.json"
+      "path": "./mock-server/db.json",
+      "modelpath": "../models/mock-server"
     }
   },
   "production": {
@@ -22,7 +23,8 @@
     "db": {
       "host": "localhost",
       "name": "mongoDB",
-      "path": ""
+      "path": "./mongoDB/testDB",
+      "modelpath": "./models/mongoDB"
     }
   }
 }
