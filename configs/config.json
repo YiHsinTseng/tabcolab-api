@@ -7,10 +7,10 @@
       "port": 3000
     },
     "db": {
-      "db_path": "./db/jsonServerDb",
       "host": "localhost",
       "name": "db",
-      "path": "./mock-server/db.json"
+      "path": "./mock-server/db.json",
+      "modelpath": "../models/mock-server"
     }
   },
   "production": {
@@ -21,10 +21,10 @@
       "port": 80
     },
     "db": {
-      "db_path": "db/mongoDb",
       "host": "localhost",
       "name": "mongoDB",
-      "path": ""
+      "path": "./mongoDB/testDB",
+      "modelpath": "./models/mongoDB"
     }
   }
 }
