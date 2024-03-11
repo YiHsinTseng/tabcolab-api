@@ -11,6 +11,11 @@
           "browserTab_favIconURL": "http://favicon_url.ico",
           "browserTab_title": "Tab Title",
           "browserTab_url": "http://tab_url.com",
+          "browserTab_id": 123,
+          "browserTab_index": 12,
+          "browserTab_active": false,
+          "browserTab_status": "complete",
+          "windowId": 1348438505,
           "note_content": "",
           "note_bgColor": "#ffffff"
         },
@@ -39,7 +44,12 @@
           "item_type": 0,
           "browserTab_favIconURL": "http://favicon_url.ico",
           "browserTab_title": "Tab Title",
-          "browserTab_url": "http://tab_url.com"
+          "browserTab_url": "http://tab_url.com",
+          "browserTab_id": 456,
+          "browserTab_index": 7,
+          "browserTab_active": false,
+          "browserTab_status": "complete",
+          "windowId": 8438513405
         },
         {
           "item_id": "5",

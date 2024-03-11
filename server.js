@@ -11,30 +11,27 @@ const log = require('debug')('app:server');
 
 const express = require('express');
 
-// switch swagger mode
-const swagger = require('./swaggers/config/swaggerSetup');
-
-swagger.setupSwagger(app);
-
 app.use(logger('dev'));
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// switch swagger mode
+const swagger = require('./swaggers/config/swaggerSetup');
+
+swagger.setupSwagger(app);
+
 const indexRouter = require('./routes/index');
-
-app.use('/', indexRouter);
+// api with api version
 app.use(`/api/${API_VERSION}`, indexRouter);
-
-// catch 404 and forward to error handler
-app.use((req, res, next) => {
-  res.status(404).send('Page not found');
+// Redirect the root directory to the API documentation and hide api version
+app.get('/', (req, res) => {
+  res.redirect('/api-doc');
 });
+app.use('/', indexRouter);
 
-// error handler
-app.use((err, req, res, next) => {
-  log(err.stack);
-  res.status(500).send('Internal Server Error');
-});
+const apiErrorHandler = require('./middlewares/errorHandler');
+
+apiErrorHandler(app);
 
 module.exports = app;
