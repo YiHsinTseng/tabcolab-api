@@ -21,9 +21,10 @@ function setupSwagger(server) {
         version: `${version}`,
         description: `${description}`,
       },
+      // FIXME - 不同版本api在此設定切換
       servers: [
         {
-          url: `http:/${host}:${port}`,
+          url: `http://${host}:${port}/api/${API_VERSION}`,
         },
       ],
       tags: [
@@ -45,23 +46,20 @@ function setupSwagger(server) {
       './routes/*.js',
       './routes/modules/*.js',
       './controllers/*.js',
-      './models/*.js',
+      './models/*/*.js',
     ], // files containing annotations as above
   };
-  // const swaggerSpec = swaggerFile(options);
+  const swaggerSpec = swaggerFile(options);
 
   // Read Swagger YAML
-  const fs = require('fs');
-  const yaml = require('js-yaml');
-  const path = require('path');
-  const spec = fs.readFileSync(path.resolve(__dirname, '../swagger.yml'));
-  const swaggerSpec = yaml.load(spec);
+  // const fs = require('fs');
+  // const yaml = require('js-yaml');
+  // const path = require('path');
+  // const spec = fs.readFileSync(path.resolve(__dirname, '../swagger.yml'));
+  // const swaggerSpec = yaml.load(spec);
 
-  server.use(`/${API_VERSION}/api-doc`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-  server.get('/', (req, res) => {
-    res.redirect(`/${API_VERSION}/api-doc`);
-  });
+  // FIXME - api-doc不用前綴。不然請求會重複路徑
+  server.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
   return server;
 }
