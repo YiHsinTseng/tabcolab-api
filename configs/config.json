@@ -9,8 +9,8 @@
     "db": {
       "host": "localhost",
       "name": "db",
-      "path": "./mock-server/db.json",
-      "modelpath": "../models/mock-server"
+      "path": "../mock-server/db.json",
+      "modelpath": "../models"
     }
   },
   "production": {

@@ -14,16 +14,11 @@ const ErrorResponse = (statusCode, message, res) => {
 
 const getGroups = async (req, res, next) => {
   try {
-    const result = await Group.getAll();
-
+    const result = await Group.getGroups(next);
     if (result.success) {
-      res.status(200).json({
-        message: result.message,
-        groups: result.groups,
-      });
-    } else {
-      res.status(404).json({ message: result.error });
+      return res.status(200).json({ message: result.message, groups: result.groups });
     }
+    return ErrorResponse(404, result.message, res);
   } catch (error) {
     next(error);
   }

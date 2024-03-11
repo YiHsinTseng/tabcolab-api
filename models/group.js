@@ -1,8 +1,9 @@
+const jsonServer = require('json-server');
 const config = require('../configs/config.json');
 
 const env = process.env.NODE_ENV || 'development';
-const db_path = `../${config[env].db.db_path}`;
-const db = require(db_path);
+const { db } = jsonServer.router(config[env].db.path);
+const AppError = require('../utils/appError');
 const { generateGroupId } = require('../utils/generateId');
 
 class Group {
@@ -18,13 +19,15 @@ class Group {
     this.items = items;
   }
 
-  static async getAll() {
-    const groups = await db.getAllGroups();
-
-    if (groups.length > 0) {
-      return { success: true, message: 'group got successfully', groups };
+  static async getGroups() {
+    const groups = await db.get('groups').value();
+    if (!groups) {
+      throw new AppError(500, 'No group model in database');
     }
-    return { success: false, error: 'group not found' };
+    if (groups.length > 0) {
+      return { success: true, message: 'Groups got successfully', groups };
+    }
+    return { success: false, message: 'Group not found' };
   }
 
   async createGroup() {
