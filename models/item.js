@@ -13,16 +13,19 @@ class Item {
 
 class Tab extends Item {
   /**
-   * @param {string} browserTab_favIconURL
-   * @param {string} browserTab_title
-   * @param {string} browserTab_url
+   * @param {Object} browserTabData
    */
-  constructor(browserTab_favIconURL, browserTab_title, browserTab_url) {
+  constructor(browserTabData) {
     super(); // 調用父類的構造函數
     this.item_type = 0;
-    this.browserTab_favIconURL = browserTab_favIconURL;
-    this.browserTab_title = browserTab_title;
-    this.browserTab_url = browserTab_url;
+    this.browserTab_favIconURL = browserTabData.browserTab_favIconURL;
+    this.browserTab_title = browserTabData.browserTab_title;
+    this.browserTab_url = browserTabData.browserTab_url;
+    this.browserTab_id = browserTabData.browserTab_id;
+    this.browserTab_index = browserTabData.browserTab_index;
+    this.browserTab_active = browserTabData.browserTab_active;
+    this.browserTab_status = browserTabData.browserTab_status;
+    this.windowId = browserTabData.windowId;
   }
 }
 

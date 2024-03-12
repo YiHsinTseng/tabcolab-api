@@ -24,108 +24,67 @@ const getGroups = async (req, res, next) => {
   }
 };
 
-const createGroupWithSidebarTab = async (req, res) => {
-  const {
-    group_icon,
-    group_title,
-    browserTab_favIconURL,
-    browserTab_title,
-    browserTab_url,
-  } = req.body;
-
-  if (!group_icon || !group_title || !browserTab_favIconURL || !browserTab_title || !browserTab_url) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
-
-  try {
-    const newTab = new Tab(browserTab_favIconURL, browserTab_title, browserTab_url);
-    const newGroup = new Group(group_icon, group_title, [newTab]);
-
-    const result = await newGroup.createGroup();
-    if (result.success) {
-      return res.status(201).json({ message: result.message, group: newGroup });
-    }
-    return res.status(500).json({ error: result.error, details: result.details });
-  } catch (error) {
-    return res.status(500).json({ error: 'An error occurred while creating the group', details: error.message });
-  }
-};
-
-const createGroupWithGroupTab = async (req, res) => {
+const createGroup = async (req, res, next) => {
   try {
     const {
-      sourceGroup_id, group_icon, group_title, item_id,
+      group_icon, group_title,
+      sourceGroup_id, item_id,
+      ...browserTabReq
     } = req.body;
 
-    if (!sourceGroup_id || !group_icon || !group_title || !item_id) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-    const sourceGroup = await Group.findById(sourceGroup_id);
-    if (!sourceGroup) {
-      return res.status(404).json({ error: 'Source group not found' });
-    }
+    const browserTabData = {
+      browserTab_favIconURL: browserTabReq.browserTab_favIconURL,
+      browserTab_title: browserTabReq.browserTab_title,
+      browserTab_url: browserTabReq.browserTab_url,
+      browserTab_id: browserTabReq.browserTab_id,
+      browserTab_index: browserTabReq.browserTab_index,
+      browserTab_active: browserTabReq.browserTab_active,
+      browserTab_status: browserTabReq.browserTab_status,
+      windowId: browserTabReq.windowId,
+    };
 
-    if (!sourceGroup.items) {
-      return res.status(500).json({ error: 'Source group does not contain items' });
-    }
-
-    const itemIndex = sourceGroup.items.findIndex((item) => item.item_id === item_id);
-    if (itemIndex === -1) {
-      return res.status(404).json({ error: 'Item not found in source group' });
-    }
-
-    const item = sourceGroup.items[itemIndex];
-
-    const newGroup = new Group(group_icon, group_title, [item]);
-
-    const result = await newGroup.createGroup();
-    if (result.success) {
-      // Remove the item from the source group and update the source group
-      sourceGroup.items.splice(itemIndex, 1);
-      await Group.updateGroup(sourceGroup);
-
-      return res.status(201).json({ message: 'Group created with tab from other group successfully', group: newGroup });
-    }
-    return res.status(500).json({ error: result.error, details: result.details });
-  } catch (error) {
-    return res.status(500).json({ error: 'An error occurred while creating the group', details: error.message });
-  }
-};
-
-const createGroup = (req, res) => {
-  const {
-    group_icon,
-    group_title,
-    browserTab_favIconURL,
-    browserTab_title,
-    browserTab_url,
-    sourceGroup_id,
-    item_id,
-  } = req.body;
-
-  const keys = Object.keys(req.body);
-  const validKeysForSidebarTab = ['group_icon', 'group_title', 'browserTab_favIconURL', 'browserTab_title', 'browserTab_url'];
-  const validKeysForGroupTab = ['sourceGroup_id', 'group_icon', 'group_title', 'item_id'];
-
-  if (
-    group_icon
+    const keys = Object.keys(req.body);
+    const validKeysForatBlank = ['group_icon', 'group_title'];
+    const validKeysForSidebarTab = ['group_icon', 'group_title', ...Object.keys(browserTabData)];
+    const validKeysForGroupTab = ['sourceGroup_id', 'group_icon', 'group_title', 'item_id'];
+    let result;
+    let newGroup;
+    if (group_icon
     && group_title
-    && browserTab_favIconURL
-    && browserTab_title
-    && browserTab_url
+    && keys.every((key) => validKeysForatBlank.includes(key))) {
+      newGroup = new Group(group_icon, group_title, []);
+      result = await newGroup.createGroupatBlank(next);
+    } else if (
+      group_icon
+    && group_title
+    && Object.values(browserTabData).every((value) => value)
     && keys.every((key) => validKeysForSidebarTab.includes(key))
-  ) {
-    createGroupWithSidebarTab(req, res);
-  } else if (
-    sourceGroup_id
+    ) {
+      const newTab = new Tab(browserTabData);
+      newGroup = new Group(group_icon, group_title, [newTab]);
+
+      result = await newGroup.createGroupwithSidebarTab(next);
+    } else if (
+      sourceGroup_id
     && group_icon
     && group_title
     && item_id
     && keys.every((key) => validKeysForGroupTab.includes(key))
-  ) {
-    createGroupWithGroupTab(req, res);
-  } else {
-    return res.status(400).json({ error: 'Invalid request body' });
+    ) {
+      const { sourceGroupItem } = await Group.findGroupItem(sourceGroup_id, item_id, next);
+      newGroup = new Group(group_icon, group_title, [sourceGroupItem]);
+
+      result = await newGroup.createGroupwithGroupTab(sourceGroup_id, item_id, next);
+    } else {
+      return ErrorResponse(400, 'Invalid request body', res);
+    }
+    if (result.success) {
+      return res.status(201).json({ message: result.message, group: newGroup });
+    }
+
+    return ErrorResponse(404, result.error, res);
+  } catch (error) {
+    next(error);
   }
 };
 

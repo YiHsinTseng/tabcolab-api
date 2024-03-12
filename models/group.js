@@ -19,31 +19,112 @@ class Group {
     this.items = items;
   }
 
-  static async getGroups() {
-    const groups = await db.get('groups').value();
-    if (!groups) {
-      throw new AppError(500, 'No group model in database');
+  static async findGroupById(group_id, next) {
+    try {
+      const group = db.get('groups').find({ group_id }).value();
+      if (!group) {
+        throw new AppError(404, 'Target Group not found');
+      }
+      return group;
+    } catch (error) {
+      next(error);
     }
-    if (groups.length > 0) {
-      return { success: true, message: 'Groups got successfully', groups };
-    }
-    return { success: false, message: 'Group not found' };
   }
 
-  async createGroup() {
-    const result = await db.createGroup(this);
-    if (result.success) {
-      return { success: true, message: 'Sidebar group created successfully' };
+  static async findGroupItem(group_id, item_id, next) {
+    try {
+      const sourceGroup = await this.findGroupById(group_id, next);
+
+      if (!sourceGroup.items) {
+        throw new AppError(404, 'Target group does not contain items');
+      }
+
+      const itemIndex = sourceGroup.items.findIndex((item) => item.item_id === item_id);
+      if (itemIndex === -1) {
+        throw new AppError(404, 'Item not found in source group');
+      }
+
+      const sourceGroupItem = sourceGroup.items[itemIndex];
+
+      return { sourceGroupItem, itemIndex };
+    } catch (error) {
+      next(error);
     }
-    return { success: false, error: 'group not created', details: result.details };
   }
 
-  static async findById(group_id) {
-    const group = await db.findGroupById(group_id);
-    if (group && !group.items) {
-      group.items = []; // 確保 items 屬性存在
+  static async deleteGroupItem(group_id, item_id, next) {
+    try {
+      const { itemIndex } = await this.findGroupItem(group_id, item_id, next);
+
+      // Update the sourceGroup in the database
+      await db.get('groups')
+        .find({ group_id })
+        .update('items', (items) => {
+          items.splice(itemIndex, 1);
+          return items;
+        })
+        .write();
+
+      return { success: true, message: 'Item deleted successfully' };
+    } catch (error) {
+      next(error);
     }
-    return group;
+  }
+
+  static async getGroups(next) {
+    try {
+      const groups = await db.get('groups').value();
+      if (!groups) {
+        throw new AppError(500, 'No group model in database');
+      }
+      if (groups.length > 0) {
+        return { success: true, message: 'Groups got successfully', groups };
+      }
+      return { success: false, message: 'Group not found' };
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async createGroup(next) {
+    try {
+      let groups = db.get('groups');
+      if (!groups.value()) {
+        await db.defaults({ groups: [] }).write();
+        groups = db.get('groups');
+      }
+      await groups.push(this).write();
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async createGroupatBlank(next) {
+    try {
+      await this.createGroup(next);
+      return { success: true, message: 'Group created at blank successfully' };
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async createGroupwithSidebarTab(next) {
+    try {
+      await this.createGroup(next);
+      return { success: true, message: 'Group created with sidebar tab successfully ' };
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async createGroupwithGroupTab(sourceGroup_id, item_id, next) {
+    try {
+      await this.createGroup(next);
+      await Group.deleteGroupItem(sourceGroup_id, item_id, next);
+      return { success: true, message: 'Group created with group tab successfully ' };
+    } catch (error) {
+      next(error);
+    }
   }
 
   static async updateGroup(group) {
