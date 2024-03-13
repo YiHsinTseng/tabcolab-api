@@ -23,7 +23,7 @@ class Group {
     try {
       const group = db.get('groups').find({ group_id }).value();
       if (!group) {
-        throw new AppError(404, 'Target Group not found');
+        throw new AppError(404, 'Group not found or invalid group ID');
       }
       return group;
     } catch (error) {
@@ -94,6 +94,7 @@ class Group {
         groups = db.get('groups');
       }
       await groups.push(this).write();
+      return { success: true, message: 'Group created successfully' };
     } catch (error) {
       next(error);
     }
@@ -127,20 +128,42 @@ class Group {
     }
   }
 
-  static async updateGroup(group) {
-    const result = await db.updateGroup(group);
-    if (result.success) {
-      return { success: true, message: 'Group updated successfully' };
+  static async updateGroupInfo(group, next) {
+    try {
+      // Update the group in the database
+      await db.get('groups')
+        .find({ group_id: group.group_id })
+        .assign(group)
+        .write();
+
+      return { success: true, message: 'Group info updated successfully' };
+    } catch (error) {
+      next(error);
     }
-    return { success: false, error: 'Group not updated', details: result.details };
   }
 
-  static async changePosition(group_id, group_pos) {
-    const result = await db.changeGroupPosition(group_id, group_pos);
-    if (result.success) {
-      return { success: true, message: 'Group position updated successfully' };
+  static async changeGroupPosition(group_id, group_pos, next) {
+    try {
+      const { groups } = await Group.getGroups();
+      const groupIndex = groups.findIndex((group) => group.group_id === group_id);
+      if (groupIndex !== -1 && group_pos >= 0 && group_pos < groups.length) {
+      // Remove the group from its current position
+        const [movedGroup] = groups.splice(groupIndex, 1);
+        // Insert the group at the new position
+        groups.splice(group_pos, 0, movedGroup);
+
+        // Update the group in the database
+        await db.get('groups')
+          .find({ group_id: movedGroup.group_id })
+          .assign(movedGroup)
+          .write();
+
+        return { success: true, message: 'Group position updated successfully' };
+      }
+      throw new AppError(400, 'Invalid group ID or position');
+    } catch (error) {
+      next(error);
     }
-    return { success: false, error: 'Invalid request body', details: result.details };
   }
 
   static async deleteGroup(group_id) {

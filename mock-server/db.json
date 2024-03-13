@@ -67,12 +67,6 @@
       ]
     },
     {
-      "group_id": "b30f95ac-3116-4474-b3a3-53fbb05eeff1",
-      "group_icon": "icon10",
-      "group_title": "group10",
-      "items": []
-    },
-    {
       "group_id": "cd5dec41-a5b8-49fa-9faf-8a3a0a17aa73",
       "group_icon": "icon103",
       "group_title": "group103",
@@ -85,6 +79,12 @@
           "browserTab_url": "789"
         }
       ]
+    },
+    {
+      "group_id": "b30f95ac-3116-4474-b3a3-53fbb05eeff1",
+      "group_icon": "icon105asc",
+      "group_title": "group1000dsv",
+      "items": []
     },
     {
       "group_id": "e0a8aee4-d449-43d2-8753-f1ba50aff57c",

@@ -47,8 +47,10 @@ const createGroup = async (req, res, next) => {
     const validKeysForatBlank = ['group_icon', 'group_title'];
     const validKeysForSidebarTab = ['group_icon', 'group_title', ...Object.keys(browserTabData)];
     const validKeysForGroupTab = ['sourceGroup_id', 'group_icon', 'group_title', 'item_id'];
+
     let result;
     let newGroup;
+
     if (group_icon
     && group_title
     && keys.every((key) => validKeysForatBlank.includes(key))) {
@@ -82,46 +84,47 @@ const createGroup = async (req, res, next) => {
       return res.status(201).json({ message: result.message, group: newGroup });
     }
 
-    return ErrorResponse(404, result.error, res);
+    return ErrorResponse(400, 'Group failed to create', res);
   } catch (error) {
     next(error);
   }
 };
 
-const updateGroup = async (req, res) => {
-  const { group_id } = req.params;
+const updateGroup = async (req, res, next) => {
+  try {
+    const { group_id } = req.params;
 
-  const group = await Group.findById(group_id);
-  if (!group) {
-    return res.status(404).json({ error: 'Group not found' });
-  }
-  const { group_icon, group_title, group_pos } = req.body;
+    const groupToUpdate = await Group.findGroupById(group_id, next);
 
-  // Check that only one of group_icon, group_title, or group_pos is present
-  const numProps = [group_icon, group_title, group_pos].filter((prop) => prop !== undefined).length;
-  if (numProps !== 1) {
-    return res.status(400).json({ error: 'Invalid request body, only one of group_icon, group_title, or group_pos should be present' });
-  }
+    const { group_icon, group_title, group_pos } = req.body;
 
-  if (group_id && group_icon) {
-    group.group_icon = group_icon;
-    await Group.updateGroup(group);
-    return res.status(200).json({ message: 'Group icon updated successfully' });
-  }
+    // Check that only one of group_icon, group_title, or group_pos is present
+    const numProps = [group_icon, group_title, group_pos].filter((prop) => prop !== undefined).length;
+    if (numProps !== 1) {
+      return ErrorResponse(400, 'Invalid request body, only one of group_icon, group_title, or group_pos should be present', res);
+    }
 
-  if (group_id && group_title) {
-    group.group_title = group_title;
-    await Group.updateGroup(group);
-    return res.status(200).json({ message: 'Group title updated successfully' });
-  }
+    let result;
 
-  if (group_id && group_pos !== undefined) {
-    const result = await Group.changePosition(group_id, group_pos);
+    if (group_id && group_icon) {
+      groupToUpdate.group_icon = group_icon;
+      result = await Group.updateGroupInfo(groupToUpdate, next);
+    } else if (group_id && group_title) {
+      groupToUpdate.group_title = group_title;
+      result = await Group.updateGroupInfo(groupToUpdate, next);
+    } else if (group_id && group_pos !== undefined) {
+      result = await Group.changeGroupPosition(group_id, group_pos, next);
+    } else {
+      return ErrorResponse(400, 'Invalid request body', res);
+    }
+
     if (result.success) {
       return res.status(200).json({ message: result.message });
     }
+    return ErrorResponse(400, 'Group failed to update', res);
+  } catch (error) {
+    next(error);
   }
-  return res.status(400).json({ error: 'Invalid request body' });
 };
 
 const deleteGroup = async (req, res) => {
