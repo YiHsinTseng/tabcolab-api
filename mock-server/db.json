@@ -121,36 +121,6 @@
       "items": []
     },
     {
-      "group_id": "30062619-c1a9-44db-84c9-9a9748c13e7e",
-      "group_icon": "icon103",
-      "group_title": "group103",
-      "items": []
-    },
-    {
-      "group_id": "2c55b38e-9ccb-4201-bc20-bafd8237eda0",
-      "group_icon": "icon103",
-      "group_title": "group103",
-      "items": []
-    },
-    {
-      "group_id": "5eafa8aa-c30d-437b-95d5-a6c662fb788b",
-      "group_icon": "icon103",
-      "group_title": "group103",
-      "items": []
-    },
-    {
-      "group_id": "6e4d7d50-13bd-445e-92a4-565d3a25ae21",
-      "group_icon": "icon103",
-      "group_title": "group103",
-      "items": []
-    },
-    {
-      "group_id": "55f3eece-49d5-4c43-a5a7-cadae5fbcd7b",
-      "group_icon": "icon103",
-      "group_title": "group103",
-      "items": []
-    },
-    {
       "group_id": "58fce165-c54a-418f-b73a-e726b3c95789",
       "group_icon": "icon103",
       "group_title": "group103",
@@ -285,23 +255,7 @@
       ]
     },
     {
-      "group_id": "af2a1c90-88b5-4f51-be55-b9f358c59512",
-      "group_icon": "icon105",
-      "group_title": "group1000",
-      "items": [
-        null
-      ]
-    },
-    {
       "group_id": "ffd079b0-5555-464c-b130-04cb6407cac8",
-      "group_icon": "icon105",
-      "group_title": "group1000",
-      "items": [
-        null
-      ]
-    },
-    {
-      "group_id": "216a9f1d-fe91-4d7c-bfdc-7045eb1f2d5a",
       "group_icon": "icon105",
       "group_title": "group1000",
       "items": [
@@ -526,6 +480,25 @@
       "items": [
         {
           "item_id": "c50df666-fc76-4a26-b2fe-81931f39ee7d",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789",
+          "browserTab_id": "123",
+          "browserTab_index": "1",
+          "browserTab_active": "0",
+          "browserTab_status": "0",
+          "windowId": "456"
+        }
+      ]
+    },
+    {
+      "group_id": "4f9462f6-dd97-4721-870f-363069c86bff",
+      "group_icon": "icon105asc",
+      "group_title": "group1000dsv",
+      "items": [
+        {
+          "item_id": "ecd0612f-bf60-41d9-bc06-6705bb03ed38",
           "item_type": 0,
           "browserTab_favIconURL": "123",
           "browserTab_title": "456",

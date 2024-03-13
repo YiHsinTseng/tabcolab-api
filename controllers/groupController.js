@@ -127,18 +127,18 @@ const updateGroup = async (req, res, next) => {
   }
 };
 
-const deleteGroup = async (req, res) => {
-  const { group_id } = req.params;
-  const group = await Group.findById(group_id);
-  if (!group) {
-    return res.status(404).json({ error: 'Group not found' });
-  }
+const deleteGroup = async (req, res, next) => {
+  try {
+    const { group_id } = req.params;
 
-  const result = await Group.deleteGroup(group_id);
-  if (result.success) {
-    return res.status(200).json({ message: result.message });
+    const result = await Group.deleteGroup(group_id, next);
+    if (result.success) {
+      return res.status(200).json({ message: result.message });
+    }
+    return ErrorResponse(400, 'Group failed to delete', res);
+  } catch (error) {
+    next(error);
   }
-  return res.status(400).json({ error: result.error });
 };
 
 module.exports = {

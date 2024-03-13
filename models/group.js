@@ -21,7 +21,7 @@ class Group {
 
   static async findGroupById(group_id, next) {
     try {
-      const group = db.get('groups').find({ group_id }).value();
+      const group = await db.get('groups').find({ group_id }).value();
       if (!group) {
         throw new AppError(404, 'Group not found or invalid group ID');
       }
@@ -166,12 +166,20 @@ class Group {
     }
   }
 
-  static async deleteGroup(group_id) {
-    const result = await db.deleteGroup(group_id);
-    if (result.success) {
-      return { success: true, message: result.message };
+  static async deleteGroup(group_id, next) {
+    try {
+      await this.findGroupById(group_id, next);
+
+      const deletedGroup = await db.get('groups')
+        .remove((group) => group.group_id === group_id)
+        .write();
+
+      if (deletedGroup.length > 0) {
+        return { success: true, message: 'Group deleted successfully' };
+      }
+    } catch (error) {
+      next(error);
     }
-    return { success: false, error: result.error, details: result.details };
   }
 }
 
