@@ -1,3 +1,150 @@
+const env = process.env.NODE_ENV || 'development';
+
+const config = require('../configs/config.json');
+const AppError = require('../utils/appError');
+
+const Group = require(`${config[env].db.modelpath}/group`);
+
+const { Tab } = require(`${config[env].db.modelpath}/item`);
+
+const ErrorResponse = (statusCode, message, res) => {
+  const status = statusCode === 500 ? 'error' : 'fail';
+  res.status(statusCode).json({ status, message });
+};
+
+const getGroups = async (req, res, next) => {
+  try {
+    const result = await Group.getGroups(next);
+    if (result.success) {
+      return res.status(200).json({ message: result.message, groups: result.groups });
+    }
+    return ErrorResponse(404, result.message, res);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const createGroup = async (req, res, next) => {
+  try {
+    const {
+      group_icon, group_title,
+      sourceGroup_id, item_id,
+      ...browserTabReq
+    } = req.body;
+
+    const browserTabData = {
+      browserTab_favIconURL: browserTabReq.browserTab_favIconURL,
+      browserTab_title: browserTabReq.browserTab_title,
+      browserTab_url: browserTabReq.browserTab_url,
+      browserTab_id: browserTabReq.browserTab_id,
+      browserTab_index: browserTabReq.browserTab_index,
+      browserTab_active: browserTabReq.browserTab_active,
+      browserTab_status: browserTabReq.browserTab_status,
+      windowId: browserTabReq.windowId,
+    };
+
+    const keys = Object.keys(req.body);
+    const validKeysForatBlank = ['group_icon', 'group_title'];
+    const validKeysForSidebarTab = ['group_icon', 'group_title', ...Object.keys(browserTabData)];
+    const validKeysForGroupTab = ['sourceGroup_id', 'group_icon', 'group_title', 'item_id'];
+
+    let result;
+    let newGroup;
+
+    if (group_icon
+    && group_title
+    && keys.every((key) => validKeysForatBlank.includes(key))) {
+      newGroup = new Group(group_icon, group_title, []);
+      result = await newGroup.createGroupatBlank(next);
+    } else if (
+      group_icon
+    && group_title
+    && Object.values(browserTabData).every((value) => value)
+    && keys.every((key) => validKeysForSidebarTab.includes(key))
+    ) {
+      const newTab = new Tab(browserTabData);
+      newGroup = new Group(group_icon, group_title, [newTab]);
+
+      result = await newGroup.createGroupwithSidebarTab(next);
+    } else if (
+      sourceGroup_id
+    && group_icon
+    && group_title
+    && item_id
+    && keys.every((key) => validKeysForGroupTab.includes(key))
+    ) {
+      const { sourceGroupItem } = await Group.findGroupItem(sourceGroup_id, item_id, next);
+      newGroup = new Group(group_icon, group_title, [sourceGroupItem]);
+
+      result = await newGroup.createGroupwithGroupTab(sourceGroup_id, item_id, next);
+    } else {
+      return ErrorResponse(400, 'Invalid request body', res);
+    }
+    if (result.success) {
+      return res.status(201).json({ message: result.message, group: newGroup });
+    }
+
+    return ErrorResponse(400, 'Group failed to create', res);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateGroup = async (req, res, next) => {
+  try {
+    const { group_id } = req.params;
+
+    const groupToUpdate = await Group.findGroupById(group_id, next);
+
+    const { group_icon, group_title, group_pos } = req.body;
+
+    // Check that only one of group_icon, group_title, or group_pos is present
+    const numProps = [group_icon, group_title, group_pos].filter((prop) => prop !== undefined).length;
+    if (numProps !== 1) {
+      return ErrorResponse(400, 'Invalid request body, only one of group_icon, group_title, or group_pos should be present', res);
+    }
+
+    let result;
+
+    if (group_id && group_icon) {
+      groupToUpdate.group_icon = group_icon;
+      result = await Group.updateGroupInfo(groupToUpdate, next);
+    } else if (group_id && group_title) {
+      groupToUpdate.group_title = group_title;
+      result = await Group.updateGroupInfo(groupToUpdate, next);
+    } else if (group_id && group_pos !== undefined) {
+      result = await Group.changeGroupPosition(group_id, group_pos, next);
+    } else {
+      return ErrorResponse(400, 'Invalid request body', res);
+    }
+
+    if (result.success) {
+      return res.status(200).json({ message: result.message });
+    }
+    return ErrorResponse(400, 'Group failed to update', res);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteGroup = async (req, res, next) => {
+  try {
+    const { group_id } = req.params;
+
+    const result = await Group.deleteGroup(group_id, next);
+    if (result.success) {
+      return res.status(200).json({ message: result.message });
+    }
+    return ErrorResponse(400, 'Group failed to delete', res);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  getGroups, createGroup, updateGroup, deleteGroup,
+};
+
 // Swagger - getGroups
 /**
  * @openapi
