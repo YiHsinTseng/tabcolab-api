@@ -4,6 +4,7 @@ const { API_VERSION } = process.env;
 
 const jsonServer = require('json-server');
 const express = require('express');
+const bodyParser = require('body-parser');
 const apiErrorHandler = require('../middlewares/errorHandler');
 
 const server = express();
@@ -18,8 +19,14 @@ server.get('/', (req, res) => {
 });
 
 server.use(middlewares);
-server.use(jsonServer.bodyParser);
-
+// server.use(jsonServer.bodyParser);
+// 解析 JSON 請求主體
+server.use(bodyParser.json());
+// 解析 URL 編碼的請求主體
+server.use(bodyParser.urlencoded({ extended: true }));
+server.use(express.static('public'));
+server.use(express.json());
+server.use(express.urlencoded({ extended: false }));
 // switch swagger mode
 const swagger = require('../swaggers/config/swaggerSetup');
 

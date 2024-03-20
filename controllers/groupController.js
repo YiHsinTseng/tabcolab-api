@@ -181,13 +181,15 @@ module.exports = {
  *             GroupCreatewithGroupTabtoBlank:
  *               summary: Group Create with Group Tab to Blank
  *               value:
+ *                 group_icon: 'icon1'
+ *                 group_title: 'title1'
  *                 sourceGroup_id: '1'
  *                 item_id: '1'
  *     GroupCreatewithSidebarTabatBlank:
  *       description: Create Group by Dragging a Tab From Sidebar to Blank Space.
  *       type: object
  *       allOf:
- *         - $ref: '#/components/schemas/ChromeTabInfo'
+ *         - $ref: '#/components/schemas/Tab'
  *         - group_icon:
  *             $ref: '#/components/schemas/Group/properties/group_icon'
  *         - group_title:

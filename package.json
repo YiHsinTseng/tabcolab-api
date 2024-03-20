@@ -11,6 +11,7 @@
     "docker-compose": "cd Docker && docker-compose up --build -d"
   },
   "dependencies": {
+    "body-parser": "^1.20.2",
     "debug": "~2.6.9",
     "dotenv": "^16.4.5",
     "eslint-config-prettier": "^9.1.0",

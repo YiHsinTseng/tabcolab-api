@@ -65,14 +65,52 @@
           "note_bgColor": "#ffffff"
         }
       ]
+    },
+    {
+      "group_id": "1c422d97-53d4-47c8-ac72-b572deb3b204",
+      "group_icon": "icon105asc",
+      "group_title": "ascsasaf",
+      "items": [
+        {
+          "item_id": "61713fe8-aad7-4ccb-9ca4-4232fc4b5a76",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789",
+          "browserTab_id": "123",
+          "browserTab_index": "1",
+          "browserTab_active": "false\n",
+          "browserTab_status": "0",
+          "windowId": "456"
+        }
+      ]
+    },
+    {
+      "group_id": "46d17e7e-4719-4f10-b35e-3d7d6c50e7e9",
+      "group_icon": "icon105asc",
+      "group_title": "ascsasaf",
+      "items": [
+        {
+          "item_id": "26779b05-9d29-496a-ad57-0528b1a55650",
+          "item_type": 0,
+          "browserTab_favIconURL": "123",
+          "browserTab_title": "456",
+          "browserTab_url": "789",
+          "browserTab_id": "123",
+          "browserTab_index": "1",
+          "browserTab_active": "false\n",
+          "browserTab_status": "0",
+          "windowId": "456"
+        }
+      ]
     }
   ],
   "users": [
     {
       "id": "1",
-      "name":"User1",
-      "account":"user1@email.com",
-      "password":"bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9",
+      "name": "User1",
+      "account": "user1@email.com",
+      "password": "bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9",
       "paid": true,
       "paidDate": "2022-03-04T10:30:15.000Z"
     }
