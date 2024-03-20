@@ -16,6 +16,7 @@ COPY utils ./utils
 COPY configs ./configs
 COPY middlewares ./middlewares
 COPY swaggers ./swaggers
+COPY validations ./validations
 
 # Install dependencies
 RUN npm install

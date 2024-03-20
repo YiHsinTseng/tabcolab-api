@@ -1,26 +1,6 @@
 {
   "groups": [
     {
-      "group_id": "1",
-      "group_icon": "group_icon_url",
-      "group_title": "Group 1",
-      "items": [
-        {
-          "item_id": "2",
-          "item_type": 1,
-          "note_content": "",
-          "note_bgColor": "#ffffff"
-        },
-        {
-          "item_id": "3",
-          "item_type": 2,
-          "doneStatus": true,
-          "note_content": "Note content3",
-          "note_bgColor": "#ffffff"
-        }
-      ]
-    },
-    {
       "group_id": "2",
       "group_icon": "group_icon_url",
       "group_title": "Group 2",
@@ -53,40 +33,9 @@
       ]
     },
     {
-      "group_id": "47a412aa-a0bc-4531-a028-74d3157b7a87",
-      "group_icon": "https://example.com/group_icon1.png",
-      "group_title": 1,
-      "items": []
-    },
-    {
-      "group_id": "d3ceca25-0ee8-442e-9230-77b71e8498a1",
-      "group_icon": "https://example.com/group_icon1.png",
-      "group_title": "Group 1",
-      "items": []
-    },
-    {
-      "group_id": "24074ea3-028d-450c-b67e-a31830b29e86",
-      "group_icon": "https://example.com/group_icon2.png",
-      "group_title": "Group 2",
-      "items": [
-        {
-          "item_id": "361bfc9e-bb9f-4508-8dfb-55557eb31a6f",
-          "item_type": 0,
-          "browserTab_favIconURL": "https://example.com/favicon.png",
-          "browserTab_title": "Example Tab Title",
-          "browserTab_url": "https://example.com",
-          "browserTab_id": 133,
-          "browserTab_index": 15,
-          "browserTab_active": false,
-          "browserTab_status": "complete",
-          "windowId": 3850513484
-        }
-      ]
-    },
-    {
-      "group_id": "de8a234d-54d9-46a6-964d-5fbfa1054c1a",
-      "group_icon": "icon1",
-      "group_title": "title1",
+      "group_id": "1",
+      "group_icon": "https://example.com/updated_icon.png",
+      "group_title": "Updated Group Title",
       "items": [
         {
           "item_id": "1",
@@ -101,6 +50,164 @@
           "windowId": 1348438505,
           "note_content": "",
           "note_bgColor": "#ffffff"
+        },
+        {
+          "item_id": "2",
+          "item_type": 1,
+          "note_content": "",
+          "note_bgColor": "#ffffff"
+        },
+        {
+          "item_id": "3",
+          "item_type": 2,
+          "doneStatus": true,
+          "note_content": "Note content3",
+          "note_bgColor": "#ffffff"
+        }
+      ]
+    },
+    {
+      "group_id": "72088658-0cf3-41a2-baad-91715d3a8032",
+      "group_icon": "https://example.com/group_icon1.png",
+      "group_title": "Group 1",
+      "items": []
+    },
+    {
+      "group_id": "59d66c3e-71e8-4fc5-b309-9828bb25e3c3",
+      "group_icon": "https://example.com/group_icon1.png",
+      "group_title": "Group 1",
+      "items": []
+    },
+    {
+      "group_id": "1a5c50c0-6cc2-4225-88df-7f708f4fe953",
+      "group_icon": "https://example.com/group_icon2.png",
+      "group_title": "Group 2",
+      "items": [
+        {
+          "item_id": "cda94d2c-186f-4702-8092-aca6b65b30e0",
+          "item_type": 0,
+          "browserTab_favIconURL": "https://example.com/favicon.png",
+          "browserTab_title": "Example Tab Title",
+          "browserTab_url": "https://example.com",
+          "browserTab_id": 133,
+          "browserTab_index": 15,
+          "browserTab_active": false,
+          "browserTab_status": "complete",
+          "windowId": 3850513484
+        }
+      ]
+    },
+    {
+      "group_id": "63568f47-5441-4d8b-8285-81b57345c931",
+      "group_icon": "https://example.com/group_icon2.png",
+      "group_title": "Group 2",
+      "items": [
+        {
+          "item_id": "eb7d91c0-cdcd-4626-8bc6-f7d74b974e82",
+          "item_type": 0,
+          "browserTab_favIconURL": "https://example.com/favicon.png",
+          "browserTab_title": "Example Tab Title",
+          "browserTab_url": "https://example.com",
+          "browserTab_id": 133,
+          "browserTab_index": 15,
+          "browserTab_active": false,
+          "browserTab_status": "complete",
+          "windowId": "123"
+        }
+      ]
+    },
+    {
+      "group_id": "4e70382f-d382-4259-9c57-8b96d1cbd3f0",
+      "group_icon": "https://example.com/group_icon2.png",
+      "group_title": "Group 2",
+      "items": [
+        {
+          "item_id": "d43f649a-2eca-41d7-931c-4b0bf1798016",
+          "item_type": 0,
+          "browserTab_favIconURL": "https://example.com/favicon.png",
+          "browserTab_title": "Example Tab Title",
+          "browserTab_url": "https://example.com",
+          "browserTab_id": 133,
+          "browserTab_index": 15,
+          "browserTab_active": false,
+          "browserTab_status": "complete",
+          "windowId": "123"
+        }
+      ]
+    },
+    {
+      "group_id": "a30b1300-3003-4516-ae5c-cdd860129eac",
+      "group_icon": "https://example.com/group_icon2.png",
+      "group_title": "Group 2",
+      "items": [
+        {
+          "item_id": "aecce225-4019-4828-b3c0-6ed641cd5609",
+          "item_type": 0,
+          "browserTab_favIconURL": "https://example.com/favicon.png",
+          "browserTab_title": "Example Tab Title",
+          "browserTab_url": "https://example.com",
+          "browserTab_id": 133,
+          "browserTab_index": 15,
+          "browserTab_active": false,
+          "browserTab_status": "complete",
+          "windowId": 123
+        }
+      ]
+    },
+    {
+      "group_id": "dceb1f97-4840-4a66-9b83-7cb741b64a33",
+      "group_icon": "https://example.com/group_icon2.png",
+      "group_title": "Group 2",
+      "items": [
+        {
+          "item_id": "9aabf7b2-0188-4658-b26d-b3a54707ba7f",
+          "item_type": 0,
+          "browserTab_favIconURL": "https://example.com/favicon.png",
+          "browserTab_title": "Example Tab Title",
+          "browserTab_url": "https://example.com",
+          "browserTab_id": 133,
+          "browserTab_index": 15,
+          "browserTab_active": false,
+          "browserTab_status": "complete",
+          "windowId": "123"
+        }
+      ]
+    },
+    {
+      "group_id": "a69b869e-c967-4077-9f50-04ec59438fbe",
+      "group_icon": "123",
+      "group_title": "Group 2",
+      "items": [
+        {
+          "item_id": "ffec6826-6f15-4d36-a264-08c13e570d6e",
+          "item_type": 0,
+          "browserTab_favIconURL": "https://example.com/favicon.png",
+          "browserTab_title": "Example Tab Title",
+          "browserTab_url": "https://example.com",
+          "browserTab_id": 133,
+          "browserTab_index": 15,
+          "browserTab_active": false,
+          "browserTab_status": "complete",
+          "windowId": "123"
+        }
+      ]
+    },
+    {
+      "group_id": "1da78463-75d9-4e73-93be-deae8b6a2ac7",
+      "group_icon": "https://example.com/group_icon2.png",
+      "group_title": "Group 2",
+      "items": [
+        {
+          "item_id": "153019ee-7272-4db8-960f-1e8166c69288",
+          "item_type": 0,
+          "browserTab_favIconURL": "https://example.com/favicon.png",
+          "browserTab_title": "Example Tab Title",
+          "browserTab_url": "https://example.com",
+          "browserTab_id": 133,
+          "browserTab_index": 15,
+          "browserTab_active": false,
+          "browserTab_status": "complete",
+          "windowId": 3850513484
         }
       ]
     }
