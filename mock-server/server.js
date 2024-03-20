@@ -4,6 +4,7 @@ const { API_VERSION } = process.env;
 
 const jsonServer = require('json-server');
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const apiErrorHandler = require('../middlewares/errorHandler');
 
@@ -27,6 +28,7 @@ server.use(bodyParser.urlencoded({ extended: true }));
 server.use(express.static('public'));
 server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
+server.use(cors());
 // switch swagger mode
 const swagger = require('../swaggers/config/swaggerSetup');
 

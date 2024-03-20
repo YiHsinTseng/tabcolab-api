@@ -59,7 +59,45 @@ module.exports = {
  *         - $ref: '#/components/schemas/Tab'
  *         - $ref: '#/components/schemas/Note'
  *         - $ref: '#/components/schemas/Todo'
+ *       required:
+ *         - item_id
+ *         - item_type
  *     Tab:
+ *       type: object
+ *       allOf:
+ *         - $ref: '#/components/schemas/ChromeTabInfo'
+ *         - properties:
+ *             note_content:
+ *               type: string
+ *             note_bgColor:
+ *               type: string
+ *       required:
+ *         - note_bgColor
+ *     Note:
+ *       type: object
+ *       properties:
+ *         note_content:
+ *           type: string
+ *         note_bgColor:
+ *           type: string
+ *       required:
+ *         - note_content
+ *         - note_bgColor
+ *     Todo:
+ *       type: object
+ *       properties:
+ *         note_content:
+ *           type: string
+ *         note_bgColor:
+ *           type: string
+ *         doneStatus:
+ *           type: boolean
+ *           description: Indicates whether the todo is done or not
+ *       required:
+ *         - note_content
+ *         - note_bgColor
+ *         - doneStatus
+ *     ChromeTabInfo:
  *       type: object
  *       properties:
  *         browserTab_favIconURL:
@@ -83,27 +121,13 @@ module.exports = {
  *         windowId:
  *           type: integer
  *           example: 1348438505
- *         note_content:
- *           type: string
- *         note_bgColor:
- *           type: string
- *
- *     Note:
- *       type: object
- *       properties:
- *         note_content:
- *           type: string
- *         note_bgColor:
- *           type: string
- *
- *     Todo:
- *       type: object
- *       properties:
- *         note_content:
- *           type: string
- *         note_bgColor:
- *           type: string
- *         doneStatus:
- *           type: boolean
- *           description: Indicates whether the todo is done or not
+ *       required:
+ *         - browserTab_favIconURL
+ *         - browserTab_title
+ *         - browserTab_url
+ *         - browserTab_id
+ *         - browserTab_index
+ *         - browserTab_active
+ *         - browserTab_status
+ *         - windowId
  */

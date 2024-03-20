@@ -6,20 +6,6 @@
       "group_title": "Group 1",
       "items": [
         {
-          "item_id": "1",
-          "item_type": 0,
-          "browserTab_favIconURL": "http://favicon_url.ico",
-          "browserTab_title": "Tab Title",
-          "browserTab_url": "http://tab_url.com",
-          "browserTab_id": 123,
-          "browserTab_index": 12,
-          "browserTab_active": false,
-          "browserTab_status": "complete",
-          "windowId": 1348438505,
-          "note_content": "",
-          "note_bgColor": "#ffffff"
-        },
-        {
           "item_id": "2",
           "item_type": 1,
           "note_content": "",
@@ -67,40 +53,54 @@
       ]
     },
     {
-      "group_id": "1c422d97-53d4-47c8-ac72-b572deb3b204",
-      "group_icon": "icon105asc",
-      "group_title": "ascsasaf",
+      "group_id": "47a412aa-a0bc-4531-a028-74d3157b7a87",
+      "group_icon": "https://example.com/group_icon1.png",
+      "group_title": 1,
+      "items": []
+    },
+    {
+      "group_id": "d3ceca25-0ee8-442e-9230-77b71e8498a1",
+      "group_icon": "https://example.com/group_icon1.png",
+      "group_title": "Group 1",
+      "items": []
+    },
+    {
+      "group_id": "24074ea3-028d-450c-b67e-a31830b29e86",
+      "group_icon": "https://example.com/group_icon2.png",
+      "group_title": "Group 2",
       "items": [
         {
-          "item_id": "61713fe8-aad7-4ccb-9ca4-4232fc4b5a76",
+          "item_id": "361bfc9e-bb9f-4508-8dfb-55557eb31a6f",
           "item_type": 0,
-          "browserTab_favIconURL": "123",
-          "browserTab_title": "456",
-          "browserTab_url": "789",
-          "browserTab_id": "123",
-          "browserTab_index": "1",
-          "browserTab_active": "false\n",
-          "browserTab_status": "0",
-          "windowId": "456"
+          "browserTab_favIconURL": "https://example.com/favicon.png",
+          "browserTab_title": "Example Tab Title",
+          "browserTab_url": "https://example.com",
+          "browserTab_id": 133,
+          "browserTab_index": 15,
+          "browserTab_active": false,
+          "browserTab_status": "complete",
+          "windowId": 3850513484
         }
       ]
     },
     {
-      "group_id": "46d17e7e-4719-4f10-b35e-3d7d6c50e7e9",
-      "group_icon": "icon105asc",
-      "group_title": "ascsasaf",
+      "group_id": "de8a234d-54d9-46a6-964d-5fbfa1054c1a",
+      "group_icon": "icon1",
+      "group_title": "title1",
       "items": [
         {
-          "item_id": "26779b05-9d29-496a-ad57-0528b1a55650",
+          "item_id": "1",
           "item_type": 0,
-          "browserTab_favIconURL": "123",
-          "browserTab_title": "456",
-          "browserTab_url": "789",
-          "browserTab_id": "123",
-          "browserTab_index": "1",
-          "browserTab_active": "false\n",
-          "browserTab_status": "0",
-          "windowId": "456"
+          "browserTab_favIconURL": "http://favicon_url.ico",
+          "browserTab_title": "Tab Title",
+          "browserTab_url": "http://tab_url.com",
+          "browserTab_id": 123,
+          "browserTab_index": 12,
+          "browserTab_active": false,
+          "browserTab_status": "complete",
+          "windowId": 1348438505,
+          "note_content": "",
+          "note_bgColor": "#ffffff"
         }
       ]
     }

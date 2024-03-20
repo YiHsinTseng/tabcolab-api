@@ -59,7 +59,7 @@ const createGroup = async (req, res, next) => {
     } else if (
       group_icon
     && group_title
-    && Object.values(browserTabData).every((value) => value)
+    && Object.values(browserTabData).every((value) => value !== undefined)
     && keys.every((key) => validKeysForSidebarTab.includes(key))
     ) {
       const newTab = new Tab(browserTabData);
@@ -189,7 +189,7 @@ module.exports = {
  *       description: Create Group by Dragging a Tab From Sidebar to Blank Space.
  *       type: object
  *       allOf:
- *         - $ref: '#/components/schemas/Tab'
+ *         - $ref: '#/components/schemas/ChromeTabInfo'
  *         - group_icon:
  *             $ref: '#/components/schemas/Group/properties/group_icon'
  *         - group_title:
