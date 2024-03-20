@@ -6,8 +6,9 @@
   "scripts": {
     "start": "NODE_ENV=production nodemon ./listener.js",
     "debug": "DEBUG=app:server nodemon listener.js",
-    "dev": "NODE_ENV=development node ./mock-server/initData/initDB.js && nodemon ./mock-server/server.js",
-    "mock-server": "node ./mock-server/initData/initDB.js && nodemon ./mock-server/server.js"
+    "dev": "NODE_ENV=development node ./mock-server/initData/initDB.js && NODE_ENV=development nodemon ./mock-server/server.js",
+    "mock-server": "node ./mock-server/initData/initDB.js && nodemon ./mock-server/server.js",
+    "docker-compose": "cd Docker && docker-compose up --build -d"
   },
   "dependencies": {
     "debug": "~2.6.9",

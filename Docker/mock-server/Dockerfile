@@ -15,6 +15,7 @@ COPY models/mock-server ./models/mock-server
 COPY utils ./utils
 COPY configs ./configs
 COPY middlewares ./middlewares
+COPY swaggers ./swaggers
 
 # Install dependencies
 RUN npm install
