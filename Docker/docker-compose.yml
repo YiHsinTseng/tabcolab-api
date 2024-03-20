@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  mock-server:
+    build:
+      context: ../
+      dockerfile: Docker/mock-server/Dockerfile
+    volumes:
+      - ../mock-server/db.json:/app/mock-server/db.json
+    ports:
+      - "4000:4000"

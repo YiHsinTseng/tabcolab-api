@@ -3,9 +3,9 @@ const env = process.env.NODE_ENV || 'development';
 const config = require('../configs/config.json');
 const AppError = require('../utils/appError');
 
-const Group = require(`${config[env].db.modelpath}/group`);
+const Group = require(`../${config[env].db.modelpath}/group`);
 
-const { Tab } = require(`${config[env].db.modelpath}/item`);
+const { Tab } = require(`../${config[env].db.modelpath}/item`);
 
 const ErrorResponse = (statusCode, message, res) => {
   const status = statusCode === 500 ? 'error' : 'fail';
