@@ -1,6 +1,6 @@
-const createRouter = require('../router');
+// const createRouter = require('../router');
 
-const router = createRouter();
+const router = require('express').Router();
 const controller = require('../../controllers/groupController');
 const { validateGroupDataTypes } = require('../../validations/validation-group');
 const { validateItemDataTypes } = require('../../validations/validation-item');
@@ -11,7 +11,6 @@ router.post('/groups', validateGroupDataTypes, validateItemDataTypes, controller
 router.patch('/groups/:group_id', validateGroupDataTypes, validatePositionDataTypes, controller.updateGroup);
 router.delete('/groups/:group_id', controller.deleteGroup);
 module.exports = router;
-
 /**
  * @openapi
  * paths:

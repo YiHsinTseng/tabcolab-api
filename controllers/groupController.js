@@ -36,11 +36,11 @@ const createGroup = async (req, res, next) => {
       browserTab_favIconURL: browserTabReq.browserTab_favIconURL,
       browserTab_title: browserTabReq.browserTab_title,
       browserTab_url: browserTabReq.browserTab_url,
-      browserTab_id: browserTabReq.browserTab_id,
-      browserTab_index: browserTabReq.browserTab_index,
+      browserTab_id: Number(browserTabReq.browserTab_id),
+      browserTab_index: Number(browserTabReq.browserTab_index),
       browserTab_active: browserTabReq.browserTab_active,
       browserTab_status: browserTabReq.browserTab_status,
-      windowId: browserTabReq.windowId,
+      windowId: Number(browserTabReq.windowId),
     };
 
     const keys = Object.keys(req.body);

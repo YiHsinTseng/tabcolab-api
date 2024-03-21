@@ -2,7 +2,6 @@ const jsonServer = require('json-server');
 const config = require('../../configs/config.json');
 
 const env = process.env.NODE_ENV || 'development';
-console.log(config[env].db.path);
 const { db } = jsonServer.router(config[env].db.path);
 const AppError = require('../../utils/appError');
 const { generateGroupId } = require('../../utils/generateId');
