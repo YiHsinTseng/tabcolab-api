@@ -6,14 +6,18 @@
   "scripts": {
     "start": "NODE_ENV=production nodemon ./listener.js",
     "debug": "DEBUG=app:server nodemon listener.js",
-    "dev": "NODE_ENV=development concurrently \"nodemon listener.js\" \"node ./mock-server/initData/initDB.js\""
+    "dev": "NODE_ENV=development node ./mock-server/initData/initDB.js && NODE_ENV=development nodemon ./mock-server/server.js",
+    "mock-server": "node ./mock-server/initData/initDB.js && nodemon ./mock-server/server.js",
+    "docker-compose": "cd Docker && docker-compose up --build -d"
   },
   "dependencies": {
+    "body-parser": "^1.20.2",
     "debug": "~2.6.9",
     "dotenv": "^16.4.5",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "express": "^4.18.3",
+    "joi": "^17.12.2",
     "morgan": "~1.9.1",
     "nodemon": "^3.1.0",
     "prettier": "^3.2.5",

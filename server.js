@@ -24,11 +24,11 @@ swagger.setupSwagger(app);
 const indexRouter = require('./routes/index');
 // api with api version
 app.use(`/api/${API_VERSION}`, indexRouter);
+
 // Redirect the root directory to the API documentation and hide api version
 app.get('/', (req, res) => {
   res.redirect('/api-doc');
 });
-app.use('/', indexRouter);
 
 const apiErrorHandler = require('./middlewares/errorHandler');
 

@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  mock-server:
+    environment:
+      - API_VERSION=1.0
+    build:
+      context: ../
+      dockerfile: Docker/mock-server/Dockerfile
+    volumes:
+      - ../mock-server/db.json:/app/mock-server/db.json
+      - ../.env:/app/.env
+    ports:
+      - "4000:4000"

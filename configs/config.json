@@ -2,15 +2,15 @@
   "development": {
     "app": {
       "name": "server",
-      "path": "./server.js",
+      "path": "./mock-server/server.js",
       "host": "localhost",
-      "port": 3000
+      "port": 4000
     },
     "db": {
       "host": "localhost",
       "name": "db",
-      "path": "../mock-server/db.json",
-      "modelpath": "../models"
+      "path": "./mock-server/db.json",
+      "modelpath": "./models/mock-server"
     }
   },
   "production": {

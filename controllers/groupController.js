@@ -3,9 +3,9 @@ const env = process.env.NODE_ENV || 'development';
 const config = require('../configs/config.json');
 const AppError = require('../utils/appError');
 
-const Group = require(`${config[env].db.modelpath}/group`);
+const Group = require(`../${config[env].db.modelpath}/group`);
 
-const { Tab } = require(`${config[env].db.modelpath}/item`);
+const { Tab } = require(`../${config[env].db.modelpath}/item`);
 
 const ErrorResponse = (statusCode, message, res) => {
   const status = statusCode === 500 ? 'error' : 'fail';
@@ -36,11 +36,11 @@ const createGroup = async (req, res, next) => {
       browserTab_favIconURL: browserTabReq.browserTab_favIconURL,
       browserTab_title: browserTabReq.browserTab_title,
       browserTab_url: browserTabReq.browserTab_url,
-      browserTab_id: browserTabReq.browserTab_id,
-      browserTab_index: browserTabReq.browserTab_index,
+      browserTab_id: Number(browserTabReq.browserTab_id),
+      browserTab_index: Number(browserTabReq.browserTab_index),
       browserTab_active: browserTabReq.browserTab_active,
       browserTab_status: browserTabReq.browserTab_status,
-      windowId: browserTabReq.windowId,
+      windowId: Number(browserTabReq.windowId),
     };
 
     const keys = Object.keys(req.body);
@@ -59,7 +59,7 @@ const createGroup = async (req, res, next) => {
     } else if (
       group_icon
     && group_title
-    && Object.values(browserTabData).every((value) => value)
+    && Object.values(browserTabData).every((value) => value !== undefined)
     && keys.every((key) => validKeysForSidebarTab.includes(key))
     ) {
       const newTab = new Tab(browserTabData);
@@ -181,6 +181,8 @@ module.exports = {
  *             GroupCreatewithGroupTabtoBlank:
  *               summary: Group Create with Group Tab to Blank
  *               value:
+ *                 group_icon: 'icon1'
+ *                 group_title: 'title1'
  *                 sourceGroup_id: '1'
  *                 item_id: '1'
  *     GroupCreatewithSidebarTabatBlank:
