@@ -1,7 +1,6 @@
 const env = process.env.NODE_ENV || 'development';
 
 const config = require('../configs/config.json');
-const AppError = require('../utils/appError');
 
 const Group = require(`../${config[env].db.modelpath}/group`);
 
@@ -52,15 +51,15 @@ const createGroup = async (req, res, next) => {
     let newGroup;
 
     if (group_icon
-    && group_title
-    && keys.every((key) => validKeysForatBlank.includes(key))) {
+      && group_title
+      && keys.every((key) => validKeysForatBlank.includes(key))) {
       newGroup = new Group(group_icon, group_title, []);
       result = await newGroup.createGroupatBlank(next);
     } else if (
       group_icon
-    && group_title
-    && Object.values(browserTabData).every((value) => value !== undefined)
-    && keys.every((key) => validKeysForSidebarTab.includes(key))
+      && group_title
+      && Object.values(browserTabData).every((value) => value !== undefined)
+      && keys.every((key) => validKeysForSidebarTab.includes(key))
     ) {
       const newTab = new Tab(browserTabData);
       newGroup = new Group(group_icon, group_title, [newTab]);
@@ -68,10 +67,10 @@ const createGroup = async (req, res, next) => {
       result = await newGroup.createGroupwithSidebarTab(next);
     } else if (
       sourceGroup_id
-    && group_icon
-    && group_title
-    && item_id
-    && keys.every((key) => validKeysForGroupTab.includes(key))
+      && group_icon
+      && group_title
+      && item_id
+      && keys.every((key) => validKeysForGroupTab.includes(key))
     ) {
       const { sourceGroupItem } = await Group.findGroupItem(sourceGroup_id, item_id, next);
       newGroup = new Group(group_icon, group_title, [sourceGroupItem]);

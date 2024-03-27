@@ -7,6 +7,8 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const apiErrorHandler = require('../middlewares/errorHandler');
+// switch swagger mode
+const swagger = require('../swaggers/config/swaggerSetup');
 
 const server = express();
 
@@ -19,6 +21,7 @@ server.get('/', (req, res) => {
   res.redirect('/api-doc');
 });
 
+swagger.setupSwagger(server);
 server.use(middlewares);
 // server.use(jsonServer.bodyParser);
 // 解析 JSON 請求主體
@@ -29,10 +32,6 @@ server.use(express.static('public'));
 server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 server.use(cors());
-// switch swagger mode
-const swagger = require('../swaggers/config/swaggerSetup');
-
-swagger.setupSwagger(server);
 
 // api with api version
 server.use(`/api/${API_VERSION}`, indexRoutes);

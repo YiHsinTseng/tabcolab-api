@@ -70,11 +70,16 @@
   "users": [
     {
       "id": "1",
-      "name":"User1",
-      "account":"user1@email.com",
-      "password":"bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9",
+      "name": "User1",
+      "account": "user1@email.com",
+      "password": "bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9",
       "paid": true,
       "paidDate": "2022-03-04T10:30:15.000Z"
+    },
+    {
+      "user_id": "1146f053-4589-4da2-b9d9-11c2c99483d1",
+      "email": "mike123@gmail.com",
+      "password": "$2b$10$BcjvBNyCydGJ/8BRfopqyOFpc8A.BMJHyPLRx8PyWtbKt1UH5xLVq"
     }
   ]
 }
