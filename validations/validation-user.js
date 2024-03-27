@@ -1,21 +1,19 @@
-const Joi = require("joi");
+const Joi = require('joi');
 
-const localRegisterValidation = (data) => {
-  const schema = Joi.object({
-    username: Joi.string().min(3).max(50).required(),
-    email: Joi.string().min(6).max(50).required().email(),
-    password: Joi.string().min(6).max(255).required(),
-  });
-  return schema.validate(data);
+const userSchema = Joi.object({
+  email: Joi.string().min(6).max(50).required()
+    .email(),
+  password: Joi.string().min(6).max(255).required(),
+});
+
+const validateUserDataTypes = (req, res, next) => {
+  const { error } = userSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ errors: error.message });
+  }
+
+  next();
 };
 
-const localLoginValidation = (data) => {
-  const schema = Joi.object({
-    email: Joi.string().min(6).max(50).required().email(),
-    password: Joi.string().min(6).max(255).required(),
-  });
-  return schema.validate(data);
-};
-
-module.exports.localRegisterValidation = localRegisterValidation;
-module.exports.localLoginValidation = localLoginValidation;
+module.exports = validateUserDataTypes;

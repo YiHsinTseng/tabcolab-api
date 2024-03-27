@@ -9,7 +9,7 @@ const validatePositionDataTypes = (req, res, next) => {
   const { error } = positionSchema.validate(req.body);
 
   if (error) {
-    return res.status(400).json({ errors: error.details });
+    return res.status(400).json({ errors: error.message });
   }
 
   next();
