@@ -1,85 +1,138 @@
 {
-  "groups": [
+  "user_groups": [
     {
-      "group_id": "1",
-      "group_icon": "group_icon_url",
-      "group_title": "Group 1",
-      "items": [
+      "user_id": "1",
+      "groups": [
         {
-          "item_id": "1",
-          "item_type": 0,
-          "browserTab_favIconURL": "http://favicon_url.ico",
-          "browserTab_title": "Tab Title",
-          "browserTab_url": "http://tab_url.com",
-          "browserTab_id": 123,
-          "browserTab_index": 12,
-          "browserTab_active": false,
-          "browserTab_status": "complete",
-          "windowId": 1348438505,
-          "note_content": "",
-          "note_bgColor": "#ffffff"
+          "group_id": "1",
+          "group_icon": "group_icon_url",
+          "group_title": "Group 1",
+          "items": [
+            {
+              "item_id": "1",
+              "item_type": 0,
+              "browserTab_favIconURL": "http://favicon_url.ico",
+              "browserTab_title": "Tab Title",
+              "browserTab_url": "http://tab_url.com",
+              "browserTab_id": 123,
+              "browserTab_index": 12,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 1348438505,
+              "note_content": "",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "item_id": "2",
+              "item_type": 1,
+              "note_content": "",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "item_id": "3",
+              "item_type": 2,
+              "doneStatus": true,
+              "note_content": "Note content3",
+              "note_bgColor": "#ffffff"
+            }
+          ]
         },
         {
-          "item_id": "2",
-          "item_type": 1,
-          "note_content": "",
-          "note_bgColor": "#ffffff"
-        },
-        {
-          "item_id": "3",
-          "item_type": 2,
-          "doneStatus": true,
-          "note_content": "Note content3",
-          "note_bgColor": "#ffffff"
+          "group_id": "2",
+          "group_icon": "group_icon_url",
+          "group_title": "Group 2",
+          "items": [
+            {
+              "item_id": "4",
+              "item_type": 0,
+              "browserTab_favIconURL": "http://favicon_url.ico",
+              "browserTab_title": "Tab Title",
+              "browserTab_url": "http://tab_url.com",
+              "browserTab_id": 456,
+              "browserTab_index": 7,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513405
+            },
+            {
+              "item_id": "5",
+              "item_type": 1,
+              "note_content": "Note content5",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "item_id": "6",
+              "item_type": 2,
+              "doneStatus": false,
+              "note_content": "",
+              "note_bgColor": "#ffffff"
+            }
+          ]
         }
       ]
     },
     {
-      "group_id": "2",
-      "group_icon": "group_icon_url",
-      "group_title": "Group 2",
-      "items": [
+      "user_id": "6ee976ed-bf5f-4001-af8b-f877eb741e4b",
+      "groups": [
         {
-          "item_id": "4",
-          "item_type": 0,
-          "browserTab_favIconURL": "http://favicon_url.ico",
-          "browserTab_title": "Tab Title",
-          "browserTab_url": "http://tab_url.com",
-          "browserTab_id": 456,
-          "browserTab_index": 7,
-          "browserTab_active": false,
-          "browserTab_status": "complete",
-          "windowId": 8438513405
+          "group_id": "2ce493ab-91d2-44ef-9bdd-c6880e65c296",
+          "group_icon": "1",
+          "group_title": "2",
+          "items": []
         },
         {
-          "item_id": "5",
-          "item_type": 1,
-          "note_content": "Note content5",
-          "note_bgColor": "#ffffff"
+          "group_id": "cd31a81a-df88-46ff-a3f0-4358980dcd43",
+          "group_icon": "1",
+          "group_title": "2",
+          "items": []
         },
         {
-          "item_id": "6",
-          "item_type": 2,
-          "doneStatus": false,
-          "note_content": "",
-          "note_bgColor": "#ffffff"
+          "group_id": "317bd06f-73fa-4117-9cc6-56835cc3238e",
+          "group_icon": "1",
+          "group_title": "2",
+          "items": []
+        }
+      ]
+    },
+    {
+      "user_id": "2eb9dbd6-a8f4-4a62-929d-724b9d33c5af",
+      "groups": [
+        {
+          "group_id": "6e45086a-e5ac-4a85-8317-3809c9caa182",
+          "group_icon": "1",
+          "group_title": "2",
+          "items": []
+        },
+        {
+          "group_id": "f7af08e2-6b7c-4603-a034-e9f080b16b96",
+          "group_icon": "1",
+          "group_title": "2",
+          "items": []
+        },
+        {
+          "group_id": "b21da21e-11c5-41ae-bf38-2185fb2e8e4b",
+          "group_icon": "1",
+          "group_title": "2",
+          "items": []
         }
       ]
     }
   ],
   "users": [
     {
-      "id": "1",
-      "name": "User1",
-      "account": "user1@email.com",
-      "password": "bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9",
-      "paid": true,
-      "paidDate": "2022-03-04T10:30:15.000Z"
+      "user_id": "1",
+      "email": "test123@gmail.com",
+      "password": "bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9"
     },
     {
-      "user_id": "523f4ff1-680a-4bbd-b333-500b7d8a1770",
-      "email": "mike12@gmail.com",
-      "password": "$2b$10$0rM0hyTD2tnqY/NWsJ5YsuxjgTyPXA6AC5P.aZWoy6IHCAuXZdF.a"
+      "user_id": "6ee976ed-bf5f-4001-af8b-f877eb741e4b",
+      "email": "mike123456@gmail.com",
+      "password": "$2b$10$JErW4nk81uC99ot/vyqyLeZIJVSZhpY1jocpRFRK/3rKFzqODKdTS"
+    },
+    {
+      "user_id": "2eb9dbd6-a8f4-4a62-929d-724b9d33c5af",
+      "email": "mike123@gmail.com",
+      "password": "$2b$10$0gLMx4TZtIfAFtI5KHAN5uX238Hdp6oL/9U1JinRa1kDOpxYKmnp."
     }
   ]
 }

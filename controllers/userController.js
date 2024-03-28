@@ -20,9 +20,10 @@ const register = async (req, res, next) => {
       email, password,
     } = req.body;
     const newUser = new User(email, password);
+    const token = await newUser.generateAuthToken();
     const result = await newUser.createUser(next);
     if (result.success) {
-      return res.status(201).json({ message: result.message, user: newUser });
+      return res.status(201).json({ message: result.message, token }); // FIXME: 改成token
     }
 
     return ErrorResponse(400, 'Failed to register', res);

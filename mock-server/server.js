@@ -6,6 +6,7 @@ const jsonServer = require('json-server');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const passport = require('../configs/passport');
 const apiErrorHandler = require('../middlewares/errorHandler');
 // switch swagger mode
 const swagger = require('../swaggers/config/swaggerSetup');
@@ -14,8 +15,8 @@ const server = express();
 
 const middlewares = jsonServer.defaults();
 
-const indexRoutes = require('../routes/index');
-
+const userRoutes = require('../routes').user;
+const groupRoutes = require('../routes').group;
 // Redirect the root directory to the API documentation and hide api version
 server.get('/', (req, res) => {
   res.redirect('/api-doc');
@@ -34,7 +35,17 @@ server.use(express.urlencoded({ extended: false }));
 server.use(cors());
 
 // api with api version
-server.use(`/api/${API_VERSION}`, indexRoutes);
+server.use(`/api/${API_VERSION}`, userRoutes);
+
+server.use((req, res, next) => {
+  console.log(req.headers);
+  next();
+});
+// JWT 驗證中間件
+const authenticate = passport.authenticate('jwt', { session: false });
+// 在所有其他路由之前添加 JWT 驗證中間件
+server.use(authenticate);
+server.use(`/api/${API_VERSION}`, groupRoutes);
 
 apiErrorHandler(server);
 

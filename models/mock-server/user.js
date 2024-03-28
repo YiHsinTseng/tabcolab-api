@@ -41,7 +41,9 @@ class User {
       if (!user) {
         throw new AppError(404, 'User not found or invalid user ID');
       }
-      return new User(user.email, user.password);
+      const foundUser = new User(user.email, user.password);
+      foundUser.user_id = user.user_id;
+      return foundUser;
     } catch (error) {
       next(error);
     }
@@ -53,7 +55,9 @@ class User {
       if (!user) {
         throw new AppError(404, 'User not found or invalid email');
       }
-      return new User(user.email, user.password);
+      const foundUser = new User(user.email, user.password);
+      foundUser.user_id = user.user_id;
+      return foundUser;
     } catch (error) {
       next(error);
     }
@@ -62,12 +66,15 @@ class User {
   async createUser(next) {
     try {
       let users = db.get('users');
+      let userGroups = db.get('user_groups');
       if (!users.value()) {
         await db.defaults({ users: [] }).write();
         users = db.get('users');
+        userGroups = db.get('user_groups');
       }
       await this.hashPassword();
       await users.push(this).write();
+      await userGroups.push({ user_id: this.user_id, groups: [] }).write();
       return { success: true, message: 'User created successfully' };
     } catch (error) {
       next(error);

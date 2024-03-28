@@ -19,9 +19,13 @@ class Group {
     this.items = items;
   }
 
-  static async findGroupById(group_id, next) {
+  static async findGroupById(user_id, group_id, next) {
     try {
-      const group = await db.get('groups').find({ group_id }).value();
+      const userGroup = await db.get('user_groups').find({ user_id }).value();
+      if (!userGroup) {
+        throw new AppError(404, 'User not found or invalid user ID');
+      }
+      const group = userGroup.groups.find((group) => group.group_id === group_id);
       if (!group) {
         throw new AppError(404, 'Group not found or invalid group ID');
       }
@@ -31,9 +35,9 @@ class Group {
     }
   }
 
-  static async findGroupItem(group_id, item_id, next) {
+  static async findGroupItem(user_id, group_id, item_id, next) {
     try {
-      const sourceGroup = await this.findGroupById(group_id, next);
+      const sourceGroup = await this.findGroupById(user_id, group_id, next);
 
       if (!sourceGroup.items) {
         throw new AppError(404, 'Target group does not contain items');
@@ -52,12 +56,14 @@ class Group {
     }
   }
 
-  static async deleteGroupItem(group_id, item_id, next) {
+  static async deleteGroupItem(user_id, group_id, item_id, next) {
     try {
-      const { itemIndex } = await this.findGroupItem(group_id, item_id, next);
+      const { itemIndex } = await this.findGroupItem(user_id, group_id, item_id, next);
 
       // Update the sourceGroup in the database
-      await db.get('groups')
+      await db.get('user_groups')
+        .find({ user_id })
+        .get('groups')
         .find({ group_id })
         .update('items', (items) => {
           items.splice(itemIndex, 1);
@@ -71,12 +77,13 @@ class Group {
     }
   }
 
-  static async getGroups(next) {
+  static async getGroups(user_id, next) {
     try {
-      const groups = await db.get('groups').value();
-      if (!groups) {
-        throw new AppError(500, 'No group model in database');
+      const userGroup = await db.get('user_groups').find({ user_id }).value();
+      if (!userGroup) {
+        throw new AppError(500, 'No user group model in database');
       }
+      const { groups } = userGroup;
       if (groups.length > 0) {
         return { success: true, message: 'Groups got successfully', groups };
       }
@@ -86,14 +93,14 @@ class Group {
     }
   }
 
-  async createGroup(next) {
+  async createGroup(user_id, next) {
     try {
-      let groups = db.get('groups');
-      if (!groups.value()) {
-        await db.defaults({ groups: [] }).write();
-        groups = db.get('groups');
+      let userGroups = db.get('user_groups').find({ user_id }).get('groups');
+      if (!userGroups.value()) {
+        await db.get('user_groups').find({ user_id }).assign({ groups: [] }).write();
+        userGroups = db.get('user_groups').find({ user_id }).get('groups');
       }
-      await groups.push(this).write();
+      await userGroups.push(this).write();
       return { success: true, message: 'Group created successfully' };
     } catch (error) {
       next(error);
@@ -118,20 +125,22 @@ class Group {
     }
   }
 
-  async createGroupwithGroupTab(sourceGroup_id, item_id, next) {
+  async createGroupwithGroupTab(user_id, sourceGroup_id, item_id, next) {
     try {
       await this.createGroup(next);
-      await Group.deleteGroupItem(sourceGroup_id, item_id, next);
+      await Group.deleteGroupItem(user_id, sourceGroup_id, item_id, next);
       return { success: true, message: 'Group created with group tab successfully ' };
     } catch (error) {
       next(error);
     }
   }
 
-  static async updateGroupInfo(group, next) {
+  static async updateGroupInfo(user_id, group, next) {
     try {
       // Update the group in the database
-      await db.get('groups')
+      await db.get('user_groups')
+        .find({ user_id })
+        .get('groups')
         .find({ group_id: group.group_id })
         .assign(group)
         .write();
@@ -142,18 +151,20 @@ class Group {
     }
   }
 
-  static async changeGroupPosition(group_id, group_pos, next) {
+  static async changeGroupPosition(user_id, group_id, group_pos, next) {
     try {
-      const { groups } = await Group.getGroups();
+      const { groups } = await Group.getGroups(user_id, next);
       const groupIndex = groups.findIndex((group) => group.group_id === group_id);
       if (groupIndex !== -1 && group_pos >= 0 && group_pos < groups.length) {
-      // Remove the group from its current position
+        // Remove the group from its current position
         const [movedGroup] = groups.splice(groupIndex, 1);
         // Insert the group at the new position
         groups.splice(group_pos, 0, movedGroup);
 
         // Update the group in the database
-        await db.get('groups')
+        await db.get('user_groups')
+          .find({ user_id })
+          .get('groups')
           .find({ group_id: movedGroup.group_id })
           .assign(movedGroup)
           .write();
@@ -166,11 +177,13 @@ class Group {
     }
   }
 
-  static async deleteGroup(group_id, next) {
+  static async deleteGroup(user_id, group_id, next) {
     try {
-      await this.findGroupById(group_id, next);
+      await this.findGroupById(user_id, group_id, next);
 
-      const deletedGroup = await db.get('groups')
+      const deletedGroup = await db.get('user_groups')
+        .find({ user_id })
+        .get('groups')
         .remove((group) => group.group_id === group_id)
         .write();
 
