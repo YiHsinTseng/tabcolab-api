@@ -114,6 +114,20 @@ const updateUserInfo = async (req, res, next) => {
   }
 };
 
+const deleteUser = async (req, res, next) => {
+  try {
+    const { user_id } = req.params;
+
+    const result = await User.deleteUser(user_id, next);
+    if (result.success) {
+      return res.status(200).json({ message: result.message });
+    }
+    return ErrorResponse(400, 'User failed to delete', res);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
-  register, login, getAllUsers, getUserInfo, updateUserInfo,
+  register, login, getAllUsers, getUserInfo, updateUserInfo, deleteUser,
 };

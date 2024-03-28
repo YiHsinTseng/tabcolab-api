@@ -72,33 +72,8 @@
       ]
     },
     {
-      "user_id": "154f0a34-548c-4d29-8a4d-b123e0131445",
-      "groups": [
-        {
-          "group_id": "3a20e98c-b82b-46b4-b883-426d9a071516",
-          "group_icon": "11231321ascasc",
-          "group_title": "ascasacf",
-          "items": []
-        },
-        {
-          "group_id": "255b4d49-7838-4932-9e17-a8ef249b61cc",
-          "group_icon": "11231321ascasc",
-          "group_title": "ascasacf",
-          "items": []
-        },
-        {
-          "group_id": "336a2e4e-2ef0-4bfe-bfae-b20c5b00c16f",
-          "group_icon": "11231321ascasc",
-          "group_title": "ascasacf",
-          "items": []
-        },
-        {
-          "group_id": "fd2d3c05-caac-47f8-bc0c-e4800d8b4475",
-          "group_icon": "11231321ascasc",
-          "group_title": "ascasacf",
-          "items": []
-        }
-      ]
+      "user_id": "883a63ad-290d-41fd-9ae9-702e87b70ef4",
+      "groups": []
     }
   ],
   "users": [
@@ -106,11 +81,6 @@
       "user_id": "1",
       "email": "test123@gmail.com",
       "password": "bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9"
-    },
-    {
-      "user_id": "154f0a34-548c-4d29-8a4d-b123e0131445",
-      "email": "mike123456sdvsdv@gmail.com",
-      "password": "$2b$10$0rpP1DFdmaSicaz3Z5/HcepRi021aSSb8Q3x2/6MfhTTA3OGRGlGO"
     }
   ]
 }

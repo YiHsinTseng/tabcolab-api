@@ -132,6 +132,22 @@ class User {
       next(error);
     }
   }
+
+  static async deleteUser(user_id, next) {
+    try {
+      await this.findUserById(user_id, next);
+
+      const deletedUser = await db.get('users')
+        .remove((user) => user.user_id === user_id)
+        .write();
+
+      if (deletedUser.length > 0) {
+        return { success: true, message: 'User deleted successfully' };
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = User;
