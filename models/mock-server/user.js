@@ -25,8 +25,8 @@ class User {
   }
 
   async generateAuthToken() {
-    const tokenObject = { user_id: this.user_id, email: this.email };
-    const token = jwt.sign(tokenObject, process.env.PASSPORT_SECRET);
+    const tokenObject = { user_id: this.user_id, email: this.email, version: 'v1.0' };
+    const token = jwt.sign(tokenObject, process.env.PASSPORT_SECRET, { expiresIn: '7d' });
     return token;
   }
 
@@ -84,6 +84,15 @@ class User {
   static async emailExists(email) {
     const user = await db.get('users').find({ email }).value();
     return !!user;
+  }
+
+  static async getAllUsers(next) {
+    try {
+      const users = await db.get('users').value();
+      return { success: true, users };
+    } catch (error) {
+      next(error);
+    }
   }
 }
 

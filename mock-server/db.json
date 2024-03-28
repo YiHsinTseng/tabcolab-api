@@ -72,45 +72,103 @@
       ]
     },
     {
-      "user_id": "6ee976ed-bf5f-4001-af8b-f877eb741e4b",
+      "user_id": "3079e17a-8679-40de-a209-893c3e2f91e6",
       "groups": [
         {
-          "group_id": "2ce493ab-91d2-44ef-9bdd-c6880e65c296",
+          "group_id": "890d782b-f211-4f9b-88f8-cb433e8fe9e6",
           "group_icon": "1",
           "group_title": "2",
           "items": []
         },
         {
-          "group_id": "cd31a81a-df88-46ff-a3f0-4358980dcd43",
+          "group_id": "fbf56e83-05d7-4957-9d2e-e5e32530e8c7",
+          "group_icon": "1",
+          "group_title": "2",
+          "items": [
+            {
+              "item_id": "e47e7aae-1560-419c-9ad9-a245d78e6f01",
+              "item_type": 0,
+              "browserTab_favIconURL": "123",
+              "browserTab_title": "456",
+              "browserTab_url": "789",
+              "browserTab_id": 123,
+              "browserTab_index": 1,
+              "browserTab_active": "False",
+              "browserTab_status": "0",
+              "windowId": 456
+            }
+          ]
+        },
+        {
+          "group_id": "7f8ceddb-4aca-4485-ab20-da942e184097",
+          "group_icon": "1",
+          "group_title": "2",
+          "items": [
+            {
+              "item_id": "6c998401-1e48-4907-83c3-65edf14d1362",
+              "item_type": 0,
+              "browserTab_favIconURL": "123",
+              "browserTab_title": "456",
+              "browserTab_url": "789",
+              "browserTab_id": 123,
+              "browserTab_index": 1,
+              "browserTab_active": "False",
+              "browserTab_status": "0",
+              "windowId": 456
+            }
+          ]
+        },
+        {
+          "group_id": "b3dd4f6b-044f-40f0-b175-d0238e029cde",
+          "group_icon": "1",
+          "group_title": "2",
+          "items": [
+            {
+              "item_id": "cd42f6e2-eb9b-47a9-a94d-a3bc7c6bf2ce",
+              "item_type": 0,
+              "browserTab_favIconURL": "123",
+              "browserTab_title": "456",
+              "browserTab_url": "789",
+              "browserTab_id": 123,
+              "browserTab_index": 1,
+              "browserTab_active": "False",
+              "browserTab_status": "0",
+              "windowId": 456
+            }
+          ]
+        },
+        {
+          "group_id": "b7836b15-e3b7-4986-9909-2b7529cf5542",
           "group_icon": "1",
           "group_title": "2",
           "items": []
         },
         {
-          "group_id": "317bd06f-73fa-4117-9cc6-56835cc3238e",
+          "group_id": "f0e48e3d-0cec-4031-8d32-6df5986c3296",
           "group_icon": "1",
           "group_title": "2",
-          "items": []
+          "items": [
+            {
+              "item_id": "4055a5f2-0b8f-42d1-ab4d-9da8c5dd3a10",
+              "item_type": 0,
+              "browserTab_favIconURL": "123",
+              "browserTab_title": "456",
+              "browserTab_url": "789",
+              "browserTab_id": 123,
+              "browserTab_index": 1,
+              "browserTab_active": "False",
+              "browserTab_status": "0",
+              "windowId": 456
+            }
+          ]
         }
       ]
     },
     {
-      "user_id": "2eb9dbd6-a8f4-4a62-929d-724b9d33c5af",
+      "user_id": "297590c5-0f65-43df-b978-36c934049ac3",
       "groups": [
         {
-          "group_id": "6e45086a-e5ac-4a85-8317-3809c9caa182",
-          "group_icon": "1",
-          "group_title": "2",
-          "items": []
-        },
-        {
-          "group_id": "f7af08e2-6b7c-4603-a034-e9f080b16b96",
-          "group_icon": "1",
-          "group_title": "2",
-          "items": []
-        },
-        {
-          "group_id": "b21da21e-11c5-41ae-bf38-2185fb2e8e4b",
+          "group_id": "c8dce439-620d-46b6-98a2-c17f48531b9f",
           "group_icon": "1",
           "group_title": "2",
           "items": []
@@ -125,14 +183,14 @@
       "password": "bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9"
     },
     {
-      "user_id": "6ee976ed-bf5f-4001-af8b-f877eb741e4b",
-      "email": "mike123456@gmail.com",
-      "password": "$2b$10$JErW4nk81uC99ot/vyqyLeZIJVSZhpY1jocpRFRK/3rKFzqODKdTS"
+      "user_id": "3079e17a-8679-40de-a209-893c3e2f91e6",
+      "email": "mike123@gmail.com",
+      "password": "$2b$10$5/CzpIIYh8PYGog6ZfIQbudtnl5H4xf0zhGps7cauKEYpMbyyHgMy"
     },
     {
-      "user_id": "2eb9dbd6-a8f4-4a62-929d-724b9d33c5af",
-      "email": "mike123@gmail.com",
-      "password": "$2b$10$0gLMx4TZtIfAFtI5KHAN5uX238Hdp6oL/9U1JinRa1kDOpxYKmnp."
+      "user_id": "297590c5-0f65-43df-b978-36c934049ac3",
+      "email": "mike123456@gmail.com",
+      "password": "$2b$10$/pCjfXTPI66MUjAAE2Bd8uWFEkiYFClw1spUjec7U3uCGQ7mck78."
     }
   ]
 }

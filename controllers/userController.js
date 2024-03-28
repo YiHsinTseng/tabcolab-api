@@ -23,7 +23,7 @@ const register = async (req, res, next) => {
     const token = await newUser.generateAuthToken();
     const result = await newUser.createUser(next);
     if (result.success) {
-      return res.status(201).json({ message: result.message, token }); // FIXME: 改成token
+      return res.status(201).json({ message: result.message, token });
     }
 
     return ErrorResponse(400, 'Failed to register', res);
@@ -54,6 +54,18 @@ const login = async (req, res, next) => {
   }
 };
 
+const getAllUsers = async (req, res, next) => {
+  try {
+    const result = await User.getAllUsers();
+    if (result.success) {
+      return res.status(200).json({ users: result.users });
+    }
+    return ErrorResponse(400, 'Cannot get users', res);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
-  register, login,
+  register, login, getAllUsers,
 };

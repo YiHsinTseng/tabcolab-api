@@ -107,18 +107,18 @@ class Group {
     }
   }
 
-  async createGroupatBlank(next) {
+  async createGroupatBlank(user_id, next) {
     try {
-      await this.createGroup(next);
+      await this.createGroup(user_id, next);
       return { success: true, message: 'Group created at blank successfully' };
     } catch (error) {
       next(error);
     }
   }
 
-  async createGroupwithSidebarTab(next) {
+  async createGroupwithSidebarTab(user_id, next) {
     try {
-      await this.createGroup(next);
+      await this.createGroup(user_id, next);
       return { success: true, message: 'Group created with sidebar tab successfully ' };
     } catch (error) {
       next(error);
@@ -127,7 +127,7 @@ class Group {
 
   async createGroupwithGroupTab(user_id, sourceGroup_id, item_id, next) {
     try {
-      await this.createGroup(next);
+      await this.createGroup(user_id, next);
       await Group.deleteGroupItem(user_id, sourceGroup_id, item_id, next);
       return { success: true, message: 'Group created with group tab successfully ' };
     } catch (error) {
