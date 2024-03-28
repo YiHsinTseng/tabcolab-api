@@ -94,6 +94,44 @@ class User {
       next(error);
     }
   }
+
+  static async getUserInfo(user_id, next) {
+    try {
+      const user = await db.get('users').find({ user_id }).value();
+      return { success: true, user: { user_id: user.user_id, email: user.email } };
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateUserInfo(user_id, next) {
+    try {
+      // Update the user in the database
+      await db.get('users')
+        .find({ user_id })
+        .assign(this)
+        .write();
+
+      return { success: true, message: 'User info updated successfully' };
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateUserPassword(user_id, next) {
+    try {
+      // Update the user in the database
+      await this.hashPassword();
+      await db.get('users')
+        .find({ user_id })
+        .assign(this)
+        .write();
+
+      return { success: true, message: 'User password updated successfully' };
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = User;

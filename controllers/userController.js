@@ -66,6 +66,54 @@ const getAllUsers = async (req, res, next) => {
   }
 };
 
+const getUserInfo = async (req, res, next) => {
+  try {
+    const { user_id } = req.params;
+    const result = await User.getUserInfo(user_id, next);
+    if (result.success) {
+      return res.status(200).json({ user: result.user });
+    }
+    return ErrorResponse(400, 'Cannot get users', res);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateUserInfo = async (req, res, next) => {
+  try {
+    const { user_id } = req.params;
+
+    const userToUpdate = await User.findUserById(user_id, next);
+
+    const { email, password } = req.body;
+
+    // Check that only one of email, password is present
+    const numProps = [email, password].filter((prop) => prop !== undefined).length;
+    if (numProps !== 1) {
+      return ErrorResponse(400, 'Invalid request body, only one of email or password should be present', res);
+    }
+
+    let result;
+
+    if (user_id && email) {
+      userToUpdate.email = email;
+      result = await userToUpdate.updateUserInfo(user_id, next);
+    } else if (user_id && password) {
+      userToUpdate.password = password;
+      result = await userToUpdate.updateUserPassword(user_id, next);
+    } else {
+      return ErrorResponse(400, 'Invalid request body', res);
+    }
+
+    if (result.success) {
+      return res.status(200).json({ message: result.message });
+    }
+    return ErrorResponse(400, 'User failed to update', res);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
-  register, login, getAllUsers,
+  register, login, getAllUsers, getUserInfo, updateUserInfo,
 };
