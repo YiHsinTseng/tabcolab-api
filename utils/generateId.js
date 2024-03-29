@@ -8,4 +8,8 @@ function generateItemId() {
   return uuidv4();
 }
 
-module.exports = { generateGroupId, generateItemId };
+function generateUserId() {
+  return uuidv4();
+}
+
+module.exports = { generateGroupId, generateItemId, generateUserId };

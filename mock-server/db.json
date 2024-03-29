@@ -1,80 +1,91 @@
 {
-  "groups": [
+  "user_groups": [
     {
-      "group_id": "1",
-      "group_icon": "group_icon_url",
-      "group_title": "Group 1",
-      "items": [
+      "user_id": "1",
+      "groups": [
         {
-          "item_id": "1",
-          "item_type": 0,
-          "browserTab_favIconURL": "http://favicon_url.ico",
-          "browserTab_title": "Tab Title",
-          "browserTab_url": "http://tab_url.com",
-          "browserTab_id": 123,
-          "browserTab_index": 12,
-          "browserTab_active": false,
-          "browserTab_status": "complete",
-          "windowId": 1348438505,
-          "note_content": "",
-          "note_bgColor": "#ffffff"
+          "group_id": "1",
+          "group_icon": "group_icon_url",
+          "group_title": "Group 1",
+          "items": [
+            {
+              "item_id": "1",
+              "item_type": 0,
+              "browserTab_favIconURL": "http://favicon_url.ico",
+              "browserTab_title": "Tab Title",
+              "browserTab_url": "http://tab_url.com",
+              "browserTab_id": 123,
+              "browserTab_index": 12,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 1348438505,
+              "note_content": "",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "item_id": "2",
+              "item_type": 1,
+              "note_content": "",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "item_id": "3",
+              "item_type": 2,
+              "doneStatus": true,
+              "note_content": "Note content3",
+              "note_bgColor": "#ffffff"
+            }
+          ]
         },
         {
-          "item_id": "2",
-          "item_type": 1,
-          "note_content": "",
-          "note_bgColor": "#ffffff"
-        },
-        {
-          "item_id": "3",
-          "item_type": 2,
-          "doneStatus": true,
-          "note_content": "Note content3",
-          "note_bgColor": "#ffffff"
+          "group_id": "2",
+          "group_icon": "group_icon_url",
+          "group_title": "Group 2",
+          "items": [
+            {
+              "item_id": "4",
+              "item_type": 0,
+              "browserTab_favIconURL": "http://favicon_url.ico",
+              "browserTab_title": "Tab Title",
+              "browserTab_url": "http://tab_url.com",
+              "browserTab_id": 456,
+              "browserTab_index": 7,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513405
+            },
+            {
+              "item_id": "5",
+              "item_type": 1,
+              "note_content": "Note content5",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "item_id": "6",
+              "item_type": 2,
+              "doneStatus": false,
+              "note_content": "",
+              "note_bgColor": "#ffffff"
+            }
+          ]
         }
       ]
     },
     {
-      "group_id": "2",
-      "group_icon": "group_icon_url",
-      "group_title": "Group 2",
-      "items": [
-        {
-          "item_id": "4",
-          "item_type": 0,
-          "browserTab_favIconURL": "http://favicon_url.ico",
-          "browserTab_title": "Tab Title",
-          "browserTab_url": "http://tab_url.com",
-          "browserTab_id": 456,
-          "browserTab_index": 7,
-          "browserTab_active": false,
-          "browserTab_status": "complete",
-          "windowId": 8438513405
-        },
-        {
-          "item_id": "5",
-          "item_type": 1,
-          "note_content": "Note content5",
-          "note_bgColor": "#ffffff"
-        },
-        {
-          "item_id": "6",
-          "item_type": 2,
-          "doneStatus": false,
-          "note_content": "",
-          "note_bgColor": "#ffffff"
-        }
-      ]
+      "user_id": "c2de14d9-dfb4-4c61-8b85-904c202f6f3b",
+      "groups": []
     }
   ],
   "users": [
     {
-      "id": "1",
-      "name":"User1",
-      "account":"user1@email.com",
-      "password":"bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9",
-      "paid": true,
-      "paidDate": "2022-03-04T10:30:15.000Z"
+      "user_id": "1",
+      "email": "test123@gmail.com",
+      "password": "bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9"
+    },
+    {
+      "user_id": "c2de14d9-dfb4-4c61-8b85-904c202f6f3b",
+      "email": "mike123@gmail.com",
+      "password": "$2b$10$HDBuVQxyrVSjikPyOsl3X.qNztBmunXceforDfycu63KqTH72gLpm"
     }
   ]
 }

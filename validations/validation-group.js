@@ -12,7 +12,7 @@ const validateGroupDataTypes = (req, res, next) => {
   const { error } = groupSchema.validate(req.body);
 
   if (error) {
-    return res.status(400).json({ errors: error.details });
+    return res.status(400).json({ errors: error.message });
   }
 
   next();

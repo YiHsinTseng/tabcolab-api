@@ -1,21 +1,33 @@
-const Joi = require("joi");
+const Joi = require('joi');
 
-const localRegisterValidation = (data) => {
-  const schema = Joi.object({
-    username: Joi.string().min(3).max(50).required(),
-    email: Joi.string().min(6).max(50).required().email(),
-    password: Joi.string().min(6).max(255).required(),
-  });
-  return schema.validate(data);
+const registerSchema = Joi.object({
+  email: Joi.string().min(6).max(50).required()
+    .email(),
+  password: Joi.string().min(6).max(255).required(),
+});
+
+const updateSchema = Joi.object({
+  email: Joi.string().min(6).max(50).email(),
+  password: Joi.string().min(6).max(255),
+}).or('email', 'password');
+
+const validateRegisterandLoginDataTypes = (req, res, next) => {
+  const { error } = registerSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ errors: error.message });
+  }
+
+  next();
 };
 
-const localLoginValidation = (data) => {
-  const schema = Joi.object({
-    email: Joi.string().min(6).max(50).required().email(),
-    password: Joi.string().min(6).max(255).required(),
-  });
-  return schema.validate(data);
-};
+const validateUserInfoUpdateDataTypes = (req, res, next) => {
+  const { error } = updateSchema.validate(req.body);
 
-module.exports.localRegisterValidation = localRegisterValidation;
-module.exports.localLoginValidation = localLoginValidation;
+  if (error) {
+    return res.status(400).json({ errors: error.message });
+  }
+
+  next();
+};
+module.exports = { validateRegisterandLoginDataTypes, validateUserInfoUpdateDataTypes };
