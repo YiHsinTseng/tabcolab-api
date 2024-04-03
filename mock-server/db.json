@@ -72,8 +72,110 @@
       ]
     },
     {
-      "user_id": "c2de14d9-dfb4-4c61-8b85-904c202f6f3b",
-      "groups": []
+      "user_id": "7a06bc3f-385f-431e-81f6-a656548d4b9e",
+      "groups": [
+        {
+          "group_id": "a799d250-7c07-48d3-a816-71be3fb19684",
+          "group_icon": "11231321ascascsd",
+          "group_title": "ascasacf",
+          "items": [
+            {
+              "item_id": "6a011aa8-b624-4b2d-803f-75dc1171fb30",
+              "item_type": 0,
+              "browserTab_favIconURL": "123",
+              "browserTab_title": "456",
+              "browserTab_url": "789",
+              "browserTab_id": 123,
+              "browserTab_index": 1,
+              "browserTab_active": "False",
+              "browserTab_status": "0",
+              "windowId": 456
+            }
+          ]
+        },
+        {
+          "group_id": "a8e75969-9bb3-482d-97ae-b3eae25e7a3d",
+          "group_icon": "11231321a",
+          "group_title": "ascasacf\\\\\\",
+          "items": [
+            {
+              "item_id": "66a6e08c-4339-47c1-9cdf-a95bdf8a38ce",
+              "item_type": 0,
+              "browserTab_favIconURL": "123",
+              "browserTab_title": "456",
+              "browserTab_url": "789",
+              "browserTab_id": 123,
+              "browserTab_index": 1,
+              "browserTab_active": "False",
+              "browserTab_status": "0",
+              "windowId": 456
+            }
+          ]
+        },
+        {
+          "group_id": "97969c64-947e-40fd-9238-8359a5ef8497",
+          "group_icon": "11231321ascascsd",
+          "group_title": "ascasacf",
+          "items": [
+            {
+              "item_id": "a019e887-bf20-4050-8da0-e935a8e6cd77",
+              "item_type": 0,
+              "browserTab_favIconURL": "123",
+              "browserTab_title": "456",
+              "browserTab_url": "789",
+              "browserTab_id": 123,
+              "browserTab_index": 1,
+              "browserTab_active": "False",
+              "browserTab_status": "0",
+              "windowId": 456
+            }
+          ]
+        },
+        {
+          "group_id": "a3cf1e91-31a5-472c-8246-75770b689532",
+          "group_icon": "11231321ascascsd",
+          "group_title": "ascasacf",
+          "items": []
+        },
+        {
+          "group_id": "58df7b98-4bce-4996-8241-b75f605ca78c",
+          "group_icon": "11231321ascascsd",
+          "group_title": "ascasacf",
+          "items": [
+            {
+              "item_id": "66a6e08c-4339-47c1-9cdf-a95bdf8a38ce",
+              "item_type": 0,
+              "browserTab_favIconURL": "123",
+              "browserTab_title": "456",
+              "browserTab_url": "789",
+              "browserTab_id": 123,
+              "browserTab_index": 1,
+              "browserTab_active": "False",
+              "browserTab_status": "0",
+              "windowId": 456
+            }
+          ]
+        },
+        {
+          "group_id": "f74bd5f6-d0b5-4a65-bcbb-fb22515b4eac",
+          "group_icon": "11231321ascascsd",
+          "group_title": "ascasacf",
+          "items": [
+            {
+              "item_id": "66a6e08c-4339-47c1-9cdf-a95bdf8a38ce",
+              "item_type": 0,
+              "browserTab_favIconURL": "123",
+              "browserTab_title": "456",
+              "browserTab_url": "789",
+              "browserTab_id": 123,
+              "browserTab_index": 1,
+              "browserTab_active": "False",
+              "browserTab_status": "0",
+              "windowId": 456
+            }
+          ]
+        }
+      ]
     }
   ],
   "users": [
@@ -83,9 +185,9 @@
       "password": "bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9"
     },
     {
-      "user_id": "c2de14d9-dfb4-4c61-8b85-904c202f6f3b",
-      "email": "mike123@gmail.com",
-      "password": "$2b$10$HDBuVQxyrVSjikPyOsl3X.qNztBmunXceforDfycu63KqTH72gLpm"
+      "user_id": "7a06bc3f-385f-431e-81f6-a656548d4b9e",
+      "email": "mike123456sdvsdv@gmail.com",
+      "password": "$2b$10$O6llrEMfzySzjBRBlodiOeLsWNQqEv.3k7tDozfZwvI8pitFQTLC6"
     }
   ]
 }

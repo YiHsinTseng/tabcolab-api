@@ -2,7 +2,7 @@ const env = process.env.NODE_ENV || 'development';
 
 const config = require('../configs/config.json');
 
-const Group = require(`../${config[env].db.modelpath}/group`);
+const { UserGroup, Group } = require(`../${config[env].db.modelpath}/group`);
 
 const { Tab } = require(`../${config[env].db.modelpath}/item`);
 
@@ -14,7 +14,7 @@ const ErrorResponse = (statusCode, message, res) => {
 const getGroups = async (req, res, next) => {
   try {
     const { user_id } = req.user;
-    const result = await Group.getGroups(user_id, next);
+    const result = await UserGroup.getGroups(user_id, next);
     if (result.success) {
       return res.status(200).json({ message: result.message, groups: result.groups });
     }
@@ -51,12 +51,14 @@ const createGroup = async (req, res, next) => {
 
     let result;
     let newGroup;
+    let newUserGroup;
 
     if (group_icon
       && group_title
       && keys.every((key) => validKeysForatBlank.includes(key))) {
       newGroup = new Group(group_icon, group_title, []);
-      result = await newGroup.createGroupatBlank(user_id, next);
+      newUserGroup = new UserGroup(user_id, [newGroup]);
+      result = await newUserGroup.createGroupatBlank(user_id, next);
     } else if (
       group_icon
       && group_title
@@ -65,8 +67,8 @@ const createGroup = async (req, res, next) => {
     ) {
       const newTab = new Tab(browserTabData);
       newGroup = new Group(group_icon, group_title, [newTab]);
-
-      result = await newGroup.createGroupwithSidebarTab(user_id, next);
+      newUserGroup = new UserGroup(user_id, [newGroup]);
+      result = await newUserGroup.createGroupwithSidebarTab(user_id, next);
     } else if (
       sourceGroup_id
       && group_icon
@@ -74,10 +76,10 @@ const createGroup = async (req, res, next) => {
       && item_id
       && keys.every((key) => validKeysForGroupTab.includes(key))
     ) {
-      const { sourceGroupItem } = await Group.findGroupItem(user_id, sourceGroup_id, item_id, next);
+      const { sourceGroupItem } = await UserGroup.findGroupItem(user_id, sourceGroup_id, item_id, next);
       newGroup = new Group(group_icon, group_title, [sourceGroupItem]);
-
-      result = await newGroup.createGroupwithGroupTab(user_id, sourceGroup_id, item_id, next);
+      newUserGroup = new UserGroup(user_id, [newGroup]);
+      result = await newUserGroup.createGroupwithGroupTab(user_id, sourceGroup_id, item_id, next);
     } else {
       return ErrorResponse(400, 'Invalid request body', res);
     }
@@ -96,7 +98,7 @@ const updateGroup = async (req, res, next) => {
     const { user_id } = req.user;
     const { group_id } = req.params;
 
-    const groupToUpdate = await Group.findGroupById(user_id, group_id, next);
+    const groupToUpdate = await UserGroup.findGroupById(user_id, group_id, next);
 
     const { group_icon, group_title, group_pos } = req.body;
 
@@ -110,12 +112,12 @@ const updateGroup = async (req, res, next) => {
 
     if (group_id && group_icon) {
       groupToUpdate.group_icon = group_icon;
-      result = await Group.updateGroupInfo(user_id, groupToUpdate, next);
+      result = await UserGroup.updateGroupInfo(user_id, groupToUpdate, next);
     } else if (group_id && group_title) {
       groupToUpdate.group_title = group_title;
-      result = await Group.updateGroupInfo(user_id, groupToUpdate, next);
+      result = await UserGroup.updateGroupInfo(user_id, groupToUpdate, next);
     } else if (group_id && group_pos !== undefined) {
-      result = await Group.changeGroupPosition(user_id, group_id, group_pos, next);
+      result = await UserGroup.changeGroupPosition(user_id, group_id, group_pos, next);
     } else {
       return ErrorResponse(400, 'Invalid request body', res);
     }
@@ -134,7 +136,7 @@ const deleteGroup = async (req, res, next) => {
     const { user_id } = req.user;
     const { group_id } = req.params;
 
-    const result = await Group.deleteGroup(user_id, group_id, next);
+    const result = await UserGroup.deleteGroup(user_id, group_id, next);
     if (result.success) {
       return res.status(200).json({ message: result.message });
     }

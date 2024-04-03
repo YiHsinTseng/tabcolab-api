@@ -6,17 +6,14 @@ const { db } = jsonServer.router(config[env].db.path);
 const AppError = require('../../utils/appError');
 const { generateGroupId } = require('../../utils/generateId');
 
-class Group {
+class UserGroup {
   /**
-   * @param {string} groupIcon
-   * @param {string} groupTitle
-   * @param {Array} items Array of Item objects
+   * @param {string} userId
+   * @param {Array} groups Array of Group objects
    */
-  constructor(groupIcon = 'default_icon', groupTitle = 'Untitled', items = []) {
-    this.group_id = generateGroupId();
-    this.group_icon = groupIcon;
-    this.group_title = groupTitle;
-    this.items = items;
+  constructor(userId, groups = []) {
+    this.user_id = userId;
+    this.groups = groups;
   }
 
   static async findGroupById(user_id, group_id, next) {
@@ -95,12 +92,16 @@ class Group {
 
   async createGroup(user_id, next) {
     try {
-      let userGroups = db.get('user_groups').find({ user_id }).get('groups');
-      if (!userGroups.value()) {
-        await db.get('user_groups').find({ user_id }).assign({ groups: [] }).write();
-        userGroups = db.get('user_groups').find({ user_id }).get('groups');
+      let userGroups = db.get('user_groups').find({ user_id }).value();
+      if (!userGroups) {
+        await db.get('user_groups').push({ user_id, groups: [] }).write();
+        userGroups = db.get('user_groups').find({ user_id }).value();
       }
-      await userGroups.push(this).write();
+      if (!userGroups.groups) {
+        userGroups.groups = [];
+      }
+      userGroups.groups = userGroups.groups.concat(this.groups);
+      await db.get('user_groups').find({ user_id }).assign(userGroups).write();
       return { success: true, message: 'Group created successfully' };
     } catch (error) {
       next(error);
@@ -128,7 +129,7 @@ class Group {
   async createGroupwithGroupTab(user_id, sourceGroup_id, item_id, next) {
     try {
       await this.createGroup(user_id, next);
-      await Group.deleteGroupItem(user_id, sourceGroup_id, item_id, next);
+      await UserGroup.deleteGroupItem(user_id, sourceGroup_id, item_id, next);
       return { success: true, message: 'Group created with group tab successfully ' };
     } catch (error) {
       next(error);
@@ -153,7 +154,7 @@ class Group {
 
   static async changeGroupPosition(user_id, group_id, group_pos, next) {
     try {
-      const { groups } = await Group.getGroups(user_id, next);
+      const { groups } = await UserGroup.getGroups(user_id, next);
       const groupIndex = groups.findIndex((group) => group.group_id === group_id);
       if (groupIndex !== -1 && group_pos >= 0 && group_pos < groups.length) {
         // Remove the group from its current position
@@ -196,7 +197,21 @@ class Group {
   }
 }
 
-module.exports = Group;
+class Group {
+  /**
+   * @param {string} groupIcon
+   * @param {string} groupTitle
+   * @param {Array} items Array of Item objects
+   */
+  constructor(groupIcon = 'default_icon', groupTitle = 'Untitled', items = []) {
+    this.group_id = generateGroupId();
+    this.group_icon = groupIcon;
+    this.group_title = groupTitle;
+    this.items = items;
+  }
+}
+
+module.exports = { Group, UserGroup };
 
 /**
  * @openapi
