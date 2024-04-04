@@ -1,0 +1,1605 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Tabcolab",
+    "version": "1.0.0",
+    "description": "Your API Description"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5050/api/1.0"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Groups",
+      "description": "Operations related to groups management"
+    },
+    {
+      "name": "Items(Spec)",
+      "description": "Specific operations related to items management"
+    },
+    {
+      "name": "Items",
+      "description": "General operations related to items management"
+    }
+  ],
+  "paths": {
+    "/groups": {
+      "get": {
+        "tags": [
+          "Groups"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Display all groups and their items in user's workspace",
+        "description": "Display all groups and their items in  user's workspace.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/getGroups200"
+                },
+                "example": [
+                  {
+                    "group_id": "1",
+                    "group_icon": "group_icon_url",
+                    "group_title": "Group 1",
+                    "items": [
+                      {
+                        "item_id": "1",
+                        "item_type": 0,
+                        "browserTab_favIconURL": "favicon_url",
+                        "browserTab_title": "Tab Title",
+                        "browserTab_url": "tab_url",
+                        "browserTab_id": 123,
+                        "browserTab_index": 12,
+                        "browserTab_active": false,
+                        "browserTab_status": "complete",
+                        "windowId": 1348438505,
+                        "note_content": "",
+                        "note_bgColor": "#ffffff"
+                      },
+                      {
+                        "item_id": "2",
+                        "item_type": 1,
+                        "note_content": "Note content",
+                        "note_bgColor": "#ffffff"
+                      },
+                      {
+                        "item_id": "3",
+                        "item_type": 2,
+                        "doneStatus": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Groups"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Create a new group in workspace",
+        "description": "Create a new group in the workspace. <br> It includes three scenarios: <br> 1. Create Group at Blank Space; <br> 2. Create Group by Dragging a Tab From Sidebar to Blank Space;<br> 3. Create Group by Dragging a Tab From a Group to Blank Space. ",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/requestBodies/GroupCreateatBlank"
+                  },
+                  {
+                    "$ref": "#/components/requestBodies/GroupCreatewithSidebarTabatBlank"
+                  },
+                  {
+                    "$ref": "#/components/requestBodies/GroupCreatewithGroupTabtoBlank"
+                  }
+                ]
+              },
+              "examples": {
+                "GroupCreateatBlank": {
+                  "summary": "Group Create at Blank",
+                  "value": {
+                    "group_icon": "https://example.com/group_icon1.png",
+                    "group_title": "Group 1"
+                  }
+                },
+                "GroupCreatewithSidebarTabatBlank": {
+                  "summary": "Group Create with SidebarTab at Blank",
+                  "value": {
+                    "browserTab_favIconURL": "https://example.com/favicon.png",
+                    "browserTab_title": "Example Tab Title",
+                    "browserTab_url": "https://example.com",
+                    "browserTab_id": 133,
+                    "browserTab_index": 15,
+                    "browserTab_active": false,
+                    "browserTab_status": "complete",
+                    "windowId": 3850513484,
+                    "group_icon": "https://example.com/group_icon2.png",
+                    "group_title": "Group 2"
+                  }
+                },
+                "GroupCreatewithGroupTabtoBlank": {
+                  "summary": "Group Create with Group Tab to Blank",
+                  "value": {
+                    "sourceGroup_id": "1",
+                    "item_id": "1",
+                    "group_icon": "https://example.com/group_icon3.png",
+                    "group_title": "Group 3"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Group created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/responses/GroupatBlankCreatedResponse"
+                    },
+                    {
+                      "$ref": "#/components/responses/GroupwithSidebarTabCreatedResponse"
+                    },
+                    {
+                      "$ref": "#/components/responses/GroupwithGroupTabCreatedResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/groups/{group_id}": {
+      "patch": {
+        "tags": [
+          "Groups"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Modify group info or status",
+        "description": "Modify group information or status:<br> 1. Modify group icon, group title <br>2. Changing group position",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "path",
+            "description": "Group ID",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Group/properties/group_id"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/requestBodies/GroupUpdate"
+                  },
+                  {
+                    "$ref": "#/components/requestBodies/GroupChangePos"
+                  }
+                ]
+              },
+              "examples": {
+                "GroupUpdateIconExample": {
+                  "summary": "Modifying group information (Icon)",
+                  "value": {
+                    "group_icon": "https://example.com/updated_icon.png"
+                  }
+                },
+                "GroupUpdateTitleExample": {
+                  "summary": "Modifying group information (Title)",
+                  "value": {
+                    "group_title": "Updated Group Title"
+                  }
+                },
+                "GroupChangePosExample": {
+                  "summary": "Changing group position",
+                  "value": {
+                    "group_pos": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Groups"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Delete groups (including their tabs)",
+        "description": "Delete groups (including their tabs).",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "path",
+            "description": "Group ID",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Group/properties/group_id"
+            },
+            "example": 10
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/groups/items/search": {
+      "get": {
+        "tags": [
+          "Items"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Search items in all groups by keyword and filter by item_type",
+        "description": "Retrieve items in all groups that match the provided keyword.<br><br>Here's the API format :<br>`/groups/items/search?keyword={keyword}&itemTypes={item_type1},{item_type2}`<br>Where keyword is a required field. <br>If itemTypes is not specified or empty, it defaults to returning matching results for all the item_types.<br><br>Below are potential scenarios for the keyword parameter:<br> 1. A single space is utilized to separate two keywords, as seen in \"keywordA keywordB.\" This format triggers separate searches for each keyword.<br>2. If the parameter consists solely of spaces, like \" \", the search will include results containing empty strings and spaces.<br>3. Consecutive spaces within the parameter will trigger additional searches for empty strings. For instance, in \"keywordC&nbsp;&nbsp;keywordD,\" the search will include keywordC, keywordD, as well as empty strings and spaces.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "keyword",
+            "description": "The keyword to search for items.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "itemTypes",
+            "description": "Filter by selected item types.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Item/properties/item_type"
+              }
+            },
+            "style": "form",
+            "explode": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "allOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "groupId": {
+                            "type": "string",
+                            "description": "The ID of the group"
+                          }
+                        }
+                      },
+                      {
+                        "$ref": "#/components/schemas/Item"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Query Parameters"
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/groups/{group_id}/items/{item_id}": {
+      "parameters": [
+        {
+          "name": "group_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Group/properties/group_id"
+          },
+          "example": 1
+        },
+        {
+          "name": "item_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Item/properties/item_id"
+          },
+          "example": 1
+        }
+      ],
+      "patch": {
+        "tags": [
+          "Items"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Move item (tab, note, todo) within or between existing Groups",
+        "description": "Move item (tab, note, todo) :<br> 1. Within existing Groups <br> 2. Between existing Groups",
+        "operationId": "groupItemDragPatchGroup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/requestBodies/ItemMoveinGroup"
+                  },
+                  {
+                    "$ref": "#/components/requestBodies/ItemMovetoGroup"
+                  }
+                ]
+              },
+              "examples": {
+                "ItemMoveinGroup": {
+                  "summary": "Moving an item within the same group.",
+                  "value": {
+                    "targetItem_position": 2
+                  }
+                },
+                "ItemMovetoGroup": {
+                  "summary": "Moving an item to a different group.",
+                  "value": {
+                    "targetItem_position": 1,
+                    "targetGroup_id": "2"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "path",
+            "example": 2
+          },
+          {
+            "name": "item_id",
+            "in": "path",
+            "example": 6
+          }
+        ],
+        "tags": [
+          "Items"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Remove item (tab, note, todo) from existing Group",
+        "operationId": "groupPatchItem",
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/groups/{group_id}/tabs": {
+      "parameters": [
+        {
+          "name": "group_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Group/properties/group_id"
+          },
+          "example": 1
+        }
+      ],
+      "post": {
+        "tags": [
+          "Items(Spec)"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Add a new tab to an existing Group by dragging from Sidebar",
+        "operationId": "sidebarDragCreateGroupTab",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/requestBodies/addTab"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/groups/{group_id}/tabs/{item_id}": {
+      "parameters": [
+        {
+          "name": "group_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Group/properties/group_id"
+          },
+          "example": 2
+        },
+        {
+          "name": "item_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Item/properties/item_id"
+          },
+          "example": 4
+        }
+      ],
+      "patch": {
+        "tags": [
+          "Items(Spec)"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Add or Modify a note within a tab",
+        "operationId": "groupTabPatchNote",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/requestBodies/updateTab"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/groups/{group_id}/notes": {
+      "post": {
+        "tags": [
+          "Items(Spec)"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Add a note to an existing group",
+        "description": "Add a note to an existing group.",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "path",
+            "description": "Group ID",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Group/properties/group_id"
+            },
+            "example": "2"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/requestBodies/addNote"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "item_id": {
+                      "$ref": "#/components/schemas/Item/properties/item_id"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/groups/{group_id}/notes/{item_id}": {
+      "patch": {
+        "tags": [
+          "Items(Spec)"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Change a note to a todo in an existing group",
+        "description": "Change a note to a todo in an existing group.",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "path",
+            "description": "Group ID",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Group/properties/group_id"
+            },
+            "example": 2
+          },
+          {
+            "name": "item_id",
+            "in": "path",
+            "description": "Item ID",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Item/properties/item_id"
+            },
+            "example": 5
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/requestBodies/TabNoteChangetoTodo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/groups/{group_id}/todos/{item_id}": {
+      "patch": {
+        "tags": [
+          "Items(Spec)"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Change a todo status in an existing group",
+        "description": "Change a todo status in an existing group. <br> 1. Change item type of todo to note <br>2. Update the doneStatus of  todo",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "path",
+            "description": "Group ID",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Group/properties/group_id"
+            },
+            "example": 2
+          },
+          {
+            "name": "item_id",
+            "in": "path",
+            "description": "Item ID",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Item/properties/item_id"
+            },
+            "example": 6
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/requestBodies/TodoChangetoNote"
+                  },
+                  {
+                    "$ref": "#/components/requestBodies/TodoStatusUpdate"
+                  }
+                ]
+              },
+              "examples": {
+                "TodotoNoteExample": {
+                  "summary": "Change todo to note",
+                  "value": {
+                    "item_type": 1
+                  }
+                },
+                "TodoStatusUpdateExample": {
+                  "summary": "Update todo status",
+                  "value": {
+                    "doneStatus": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "Users(Testing)"
+        ],
+        "description": "Returns all users data (For Testing)",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "$ref": "#/responses/getAllUsersResponse200"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "tags": [
+          "Users(Testing)"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Returns specific user data based on JWT information (For Testing)",
+        "responses": {
+          "200": {
+            "description": "For Testing",
+            "content": {
+              "application/json": {
+                "$ref": "#/responses/getUserResponse200"
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "404": {
+            "description": "Invalid user ID"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Users(Management)"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "User can updates their information (email or password) using JWT authentication.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/requestBodies/userUpdate"
+              },
+              "examples": {
+                "UserUpdateEmailExample": {
+                  "summary": "Modifying User information (Email)",
+                  "value": {
+                    "email": "newuser@gmail.com"
+                  }
+                },
+                "UserUpdatePasswordExample": {
+                  "summary": "Modifying User information (Password)",
+                  "value": {
+                    "password": "myPassword456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User information updated successfully."
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "404": {
+            "description": "Invalid user ID"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users(Management)"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "User can deletes their account using JWT authentication.",
+        "responses": {
+          "200": {
+            "description": "User deleted successfully."
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "404": {
+            "description": "Invalid user ID"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users/register": {
+      "post": {
+        "tags": [
+          "Users(Auths)"
+        ],
+        "description": "Registers a new user and get JWT token.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterCredentials"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User signed up successfully."
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "example": "Field is required"
+                        },
+                        {
+                          "type": "string",
+                          "example": "Unexpected end of JSON input."
+                        }
+                      ]
+                    }
+                  }
+                },
+                "examples": {
+                  "RequestBodiesFormat": {
+                    "summary": "40001 Bad Request Bodies Format",
+                    "value": {
+                      "statas": "fail",
+                      "message": "Unexpected end of JSON input"
+                    }
+                  },
+                  "RequestBodiesRequired": {
+                    "summary": "40002 Missing Required Field",
+                    "value": {
+                      "statas": "fail",
+                      "message": "field  is required."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "409": {
+            "description": "This email has already been registered."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "Users(Auths)"
+        ],
+        "description": "User Login and get JWT token.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginCredentials"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User signed in successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "User logged in successfully"
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImVtYWlsIjoidXNlckBleGFtcGxlLmNvbSIsInZlcnNpb24iOiJ2MS4wIiwiaWF0IjoxNzExOTA1NTc4LCJleHAiOjE3MTI1MTAzNzh9.umagmr0uU8ItdxPGz6JSTGcRXiitFdTGCCfzHCRB4Ew"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "example": "Field is required"
+                        },
+                        {
+                          "type": "string",
+                          "example": "Unexpected end of JSON input."
+                        }
+                      ]
+                    }
+                  }
+                },
+                "examples": {
+                  "RequestBodiesFormat": {
+                    "summary": "40001 Bad Request Bodies Format",
+                    "value": {
+                      "message": "Unexpected end of JSON input"
+                    }
+                  },
+                  "RequestBodiesRequired": {
+                    "summary": "40002 Missing Required Field",
+                    "value": {
+                      "message": "field  is required."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid JWT or Missing JWT token"
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "security": {
+      "0": {
+        "bearerAuth": []
+      }
+    }
+  },
+  "responses": {
+    "getAllUsersResponse200": {
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "user_id": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "getUserResponse200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "$ref": "#/components/schemas/User/properties/user_id"
+          },
+          "email": {
+            "$ref": "#/components/schemas/User/properties/email"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "getGroups200": {
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Group"
+          }
+        }
+      },
+      "GroupwithSidebarTabCreatedResponse": {
+        "description": "Group created with tab from sidebar successfully",
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "value": "Sidebar group created successfully"
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/Group/properties/group_id"
+          },
+          "item_id": {
+            "$ref": "#/components/schemas/Item/properties/item_id"
+          }
+        }
+      },
+      "GroupwithGroupTabCreatedResponse": {
+        "description": "group created at blank space successfully",
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "$ref": "#/components/schemas/Group/properties/group_id"
+          }
+        }
+      },
+      "GroupatBlankCreatedResponse": {
+        "description": "Group created with tab from other group successfully",
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "$ref": "#/components/schemas/Group/properties/group_id"
+          }
+        }
+      },
+      "UnauthorizedError": {
+        "description": "Access token is missing or invalid"
+      }
+    },
+    "requestBodies": {
+      "GroupCreatewithSidebarTabatBlank": {
+        "description": "Create Group by Dragging a Tab From Sidebar to Blank Space.",
+        "type": "object",
+        "properties": {
+          "browserTab_favIconURL": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_favIconURL"
+          },
+          "browserTab_title": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_title"
+          },
+          "browserTab_url": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_url"
+          },
+          "browserTab_id": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_id"
+          },
+          "browserTab_index": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_index"
+          },
+          "browserTab_active": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_active"
+          },
+          "browserTab_status": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_status"
+          },
+          "windowId": {
+            "$ref": "#/components/schemas/Tab/properties/windowId"
+          },
+          "group_icon": {
+            "$ref": "#/components/schemas/Group/properties/group_icon"
+          },
+          "group_title": {
+            "$ref": "#/components/schemas/Group/properties/group_title"
+          }
+        }
+      },
+      "GroupCreatewithGroupTabtoBlank": {
+        "description": "Create Group by Dragging a Tab From a Group to Blank Space.",
+        "type": "object",
+        "properties": {
+          "sourceGroup_id": {
+            "$ref": "#/components/schemas/Group/properties/group_id"
+          },
+          "item_id": {
+            "$ref": "#/components/schemas/Item/properties/item_id"
+          },
+          "group_icon": {
+            "$ref": "#/components/schemas/Group/properties/group_icon"
+          },
+          "group_title": {
+            "$ref": "#/components/schemas/Group/properties/group_title"
+          }
+        }
+      },
+      "GroupCreateatBlank": {
+        "description": "Create Group at Blank Space.",
+        "type": "object",
+        "properties": {
+          "group_icon": {
+            "$ref": "#/components/schemas/Group/properties/group_icon"
+          },
+          "group_title": {
+            "$ref": "#/components/schemas/Group/properties/group_title"
+          }
+        }
+      },
+      "GroupUpdate": {
+        "description": "Modify group info.",
+        "type": "object",
+        "oneOf": {
+          "group_icon": {
+            "$ref": "#/components/schemas/Group/properties/group_icon"
+          },
+          "group_title": {
+            "$ref": "#/components/schemas/Group/properties/group_title"
+          }
+        }
+      },
+      "GroupChangePos": {
+        "description": "Change group position.",
+        "type": "object",
+        "properties": {
+          "group_pos": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "addTab": {
+        "description": "Add a new tab to an existing Group by dragging from Sidebar",
+        "type": "object",
+        "properties": {
+          "browserTab_favIconURL": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_favIconURL"
+          },
+          "browserTab_title": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_title"
+          },
+          "browserTab_url": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_url"
+          },
+          "browserTab_id": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_id"
+          },
+          "browserTab_index": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_index"
+          },
+          "browserTab_active": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_active"
+          },
+          "browserTab_status": {
+            "$ref": "#/components/schemas/Tab/properties/browserTab_status"
+          },
+          "windowId": {
+            "$ref": "#/components/schemas/Tab/properties/windowId"
+          },
+          "targetItem_position": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "updateTab": {
+        "type": "object",
+        "properties": {
+          "note_content": {
+            "$ref": "#/components/schemas/Tab/properties/note_content"
+          }
+        }
+      },
+      "addNote": {
+        "description": "Create a note in group.",
+        "type": "object",
+        "properties": {
+          "note_content": {
+            "type": "string"
+          },
+          "note_bgColor": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "note_content": "",
+          "note_bgColor": "#ffffff"
+        }
+      },
+      "TabNoteChangetoTodo": {
+        "description": "Convert a tab to a todo.",
+        "type": "object",
+        "properties": {
+          "item_type": {
+            "type": "integer",
+            "enum": [
+              2
+            ]
+          }
+        }
+      },
+      "TodoChangetoNote": {
+        "description": "Convert a todo to a note in an existing group.",
+        "type": "object",
+        "properties": {
+          "item_type": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          }
+        }
+      },
+      "TodoStatusUpdate": {
+        "description": "Check/uncheck a todo in an existing group.",
+        "type": "object",
+        "properties": {
+          "doneStatus": {
+            "type": "boolean"
+          }
+        }
+      },
+      "userUpdate": {
+        "description": "Updates user data.",
+        "type": "object",
+        "oneOf": {
+          "email": {
+            "$ref": "#/components/schemas/User/properties/email"
+          },
+          "password": {
+            "$ref": "#/components/schemas/User/properties/password"
+          }
+        }
+      },
+      "ItemMoveinGroup": {
+        "description": "Move item within existing Groups",
+        "type": "object",
+        "properties": {
+          "targetItem_position": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "ItemMovetoGroup": {
+        "description": "Move item between existing Groups",
+        "type": "object",
+        "properties": {
+          "targetItem_position": {
+            "type": "integer"
+          },
+          "targetGroup_id": {
+            "$ref": "#/components/schemas/Group/properties/group_id"
+          }
+        }
+      }
+    },
+    "schemas": {
+      "RegisterCredentials": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/User/properties/email"
+          },
+          "password": {
+            "$ref": "#/components/schemas/User/properties/password"
+          }
+        },
+        "example": {
+          "email": "user2@example.com",
+          "password": "mySecurePassword123"
+        }
+      },
+      "LoginCredentials": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/User/properties/email"
+          },
+          "password": {
+            "$ref": "#/components/schemas/User/properties/password"
+          }
+        },
+        "example": {
+          "email": "user@example.com",
+          "password": "mySecurePassword123"
+        }
+      },
+      "Group": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "string"
+          },
+          "group_icon": {
+            "type": "string"
+          },
+          "group_title": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Item"
+            }
+          }
+        }
+      },
+      "Item": {
+        "type": "object",
+        "properties": {
+          "item_id": {
+            "type": "string"
+          },
+          "item_type": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2
+            ],
+            "description": "0: Tab, 1: Note, 2: Todo"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Tab"
+          },
+          {
+            "$ref": "#/components/schemas/Note"
+          },
+          {
+            "$ref": "#/components/schemas/Todo"
+          }
+        ]
+      },
+      "Tab": {
+        "type": "object",
+        "properties": {
+          "browserTab_favIconURL": {
+            "type": "string"
+          },
+          "browserTab_title": {
+            "type": "string"
+          },
+          "browserTab_url": {
+            "type": "string"
+          },
+          "browserTab_id": {
+            "type": "integer"
+          },
+          "browserTab_index": {
+            "type": "integer"
+          },
+          "browserTab_active": {
+            "type": "boolean"
+          },
+          "browserTab_status": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "loading",
+              "unloaded"
+            ]
+          },
+          "windowId": {
+            "type": "integer",
+            "example": 1348438505
+          },
+          "note_content": {
+            "type": "string"
+          },
+          "note_bgColor": {
+            "type": "string"
+          }
+        }
+      },
+      "Note": {
+        "type": "object",
+        "properties": {
+          "note_content": {
+            "type": "string"
+          },
+          "note_bgColor": {
+            "type": "string"
+          }
+        }
+      },
+      "Todo": {
+        "type": "object",
+        "properties": {
+          "note_content": {
+            "type": "string"
+          },
+          "note_bgColor": {
+            "type": "string"
+          },
+          "doneStatus": {
+            "type": "boolean",
+            "description": "Indicates whether the todo is done or not"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john.doe@example.com"
+          },
+          "password": {
+            "description": "The password must contain at least 8 characters and can only contain letters and numbers.",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]{8,}$",
+            "example": "$2a$10$hceXwRBwcdo/uPO/WL6kDuWY7QtcsbP5o/QSw7zr5Zye231PeR0xG"
+          }
+        },
+        "required": [
+          "user_id",
+          "email",
+          "password"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT (JSON Web Token) authentication in the request header.\n```\nAuthorization: Bearer <token>\n```\nKeyin your JWT `<token>` below:\n`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImVtYWlsIjoidXNlckBleGFtcGxlLmNvbSIsInZlcnNpb24iOiJ2MS4wIiwiaWF0IjoxNzExOTA1NTc4LCJleHAiOjE3MTI1MTAzNzh9.umagmr0uU8ItdxPGz6JSTGcRXiitFdTGCCfzHCRB4Ew`\n"
+      }
+    }
+  }
+}

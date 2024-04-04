@@ -26,6 +26,8 @@ const TabSchema = new mongoose.Schema({
 });
 
 module.exports = {
+  ItemSchema,
   Item: mongoose.model('Item', ItemSchema),
   Tab: mongoose.model('Tab', TabSchema),
+  TabSchema,
 };

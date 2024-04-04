@@ -2,20 +2,24 @@ require('dotenv').config();
 
 const { API_VERSION } = process.env;
 
-const jsonServer = require('json-server');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const authenticateJwt = require('../middlewares/authenticate');
 const apiErrorHandler = require('../middlewares/errorHandler');
 const swagger = require('../swaggers/config/swaggerSetup');
 
 const server = express();
 
-const middlewares = jsonServer.defaults();
-
 const userRoutes = require('../routes').user;
 const groupRoutes = require('../routes').group;
+
+const MONGODB_URI = 'mongodb://localhost:27017/TabcolabDB';
+// Connect to MongoDB
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => console.log('Could not connect to MongoDB', err));
 
 // Redirect the root directory to the API documentation
 server.get('/', (req, res) => {
@@ -24,7 +28,6 @@ server.get('/', (req, res) => {
 
 swagger.setupSwagger(server);
 
-server.use(middlewares);
 // 解析 JSON 請求主體
 server.use(bodyParser.json());
 // 解析 URL 編碼的請求主體

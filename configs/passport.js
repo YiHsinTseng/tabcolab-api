@@ -88,7 +88,8 @@ const jsonServer = require('json-server');
 const config = require('./config.json');
 
 const env = process.env.NODE_ENV || 'development';
-const { db } = jsonServer.router(config[env].db.path);
+// const { db } = jsonServer.router(config[env].db.path);
+const User = require(`../${config[env].db.modelpath}/user`);
 
 const opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
@@ -99,7 +100,8 @@ passport.use(
     console.log('JwtStrategy callback is being executed');
     try {
       console.log('jwt_payload', jwt_payload);
-      const foundUser = await db.get('users').find({ user_id: jwt_payload.user_id }).value();
+      // const foundUser = await db.get('users').find({ user_id: jwt_payload.user_id }).value();
+      const foundUser = await User.findUserById(jwt_payload.user_id);
       console.log(foundUser);
       if (foundUser) {
         console.log('User found in db in passport');

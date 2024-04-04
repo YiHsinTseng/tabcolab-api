@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { generateGroupId } = require('../../utils/generateId');
 
 const AppError = require('../../utils/appError');
-const { Item } = require('./item');
+const { ItemSchema } = require('./item');
 
 const GroupSchema = new mongoose.Schema({
   _id: {
@@ -19,7 +19,7 @@ const GroupSchema = new mongoose.Schema({
     default: 'Untitled',
   },
   items: {
-    type: [Item],
+    type: [ItemSchema],
     default: [],
   },
 });
@@ -32,65 +32,54 @@ const UserGroupSchema = new mongoose.Schema({
   groups: [GroupSchema],
 });
 
-GroupSchema.statics.findGroupById = async function (user_id, group_id) {
-  try {
-    const group = await this.findOne({
-      _id: group_id,
-      user_id,
-    });
-
-    if (!group) {
-      throw new AppError(404, 'Group not found or invalid group ID');
-    }
-
-    return group;
-  } catch (error) {
-    throw error;
+UserGroupSchema.statics.findGroupById = async function (user_id, group_id) {
+  const userGroup = await this.findOne({ _id: user_id }).exec();
+  if (!userGroup) {
+    throw new Error('User not found or invalid user ID');
   }
+  const group = userGroup.groups.find((group) => group.group_id === group_id);
+  if (!group) {
+    throw new Error('Group not found or invalid group ID');
+  }
+  return group;
 };
 
-GroupSchema.statics.getGroups = async function (user_id) {
-  try {
-    const UserGroup = mongoose.model('UserGroup');
-    const userGroup = await UserGroup.findOne({ user_id });
-
-    if (!userGroup) {
-      throw new AppError(500, 'No user group model in database');
-    }
-
-    const { groups } = userGroup;
-    if (groups.length > 0) {
-      return { success: true, message: 'Groups got successfully', groups };
-    }
-
-    return { success: false, message: 'Group not found' };
-  } catch (error) {
-    throw error;
+UserGroupSchema.statics.getGroups = async function (user_id) {
+  const userGroup = await this.findOne({ _id: user_id }).exec();
+  if (!userGroup) {
+    throw new AppError(500, 'No user group model in database');
   }
+  const { groups } = userGroup;
+  if (groups.length > 0) {
+    return { success: true, message: 'Groups got successfully', groups };
+  }
+  return { success: false, message: 'Group not found' };
 };
 
-GroupSchema.statics.findGroupItem = async function (user_id, group_id, item_id) {
+UserGroupSchema.statics.findGroupItem = async function (user_id, group_id, item_id) {
   // 你需要定義如何從 user_id, group_id 和 item_id 找到 item
 };
 
-GroupSchema.statics.deleteGroupItem = async function (user_id, group_id, item_id) {
+UserGroupSchema.statics.deleteGroupItem = async function (user_id, group_id, item_id) {
   // 你需要定義如何從 user_id, group_id 和 item_id 刪除 item
 };
 
-GroupSchema.methods.createGroup = async function (user_id) {
+UserGroupSchema.methods.createGroup = async function (user_id) {
   // 你需要定義如何創建 group
 };
 
-GroupSchema.statics.updateGroupInfo = async function (user_id, group) {
+UserGroupSchema.statics.updateGroupInfo = async function (user_id, group) {
   // 你需要定義如何更新 group
 };
 
-GroupSchema.statics.changeGroupPosition = async function (user_id, group_id, group_pos) {
+UserGroupSchema.statics.changeGroupPosition = async function (user_id, group_id, group_pos) {
   // 你需要定義如何改變 group 的位置
 };
 
-GroupSchema.statics.deleteGroup = async function (user_id, group_id) {
+UserGroupSchema.statics.deleteGroup = async function (user_id, group_id) {
   // 你需要定義如何刪除 group
 };
 
-module.exports = mongoose.model('Group', GroupSchema);
+const Group = mongoose.model('Group', GroupSchema);
+const UserGroup = mongoose.model('UserGroup', UserGroupSchema);
+module.exports = { Group, UserGroup };
