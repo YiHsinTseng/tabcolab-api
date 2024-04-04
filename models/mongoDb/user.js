@@ -131,6 +131,16 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+userSchema.pre('remove', async function (next) {
+  // 'this' is the user
+  const user = this;
+
+  // Remove all UserGroup objects that reference this user
+  await mongoose.model('UserGroup').deleteMany({ user_id: user._id });
+
+  next();
+});
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

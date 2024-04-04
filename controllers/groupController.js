@@ -65,9 +65,11 @@ const createGroup = async (req, res, next) => {
       && Object.values(browserTabData).every((value) => value !== undefined)
       && keys.every((key) => validKeysForSidebarTab.includes(key))
     ) {
-      const newTab = new Tab({ browserTabData });
+      const newTab = new Tab(browserTabData);
+
       newGroup = new Group({ group_icon, group_title, items: [newTab] });
       newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
+
       result = await newUserGroup.createGroupwithSidebarTab(user_id);
     } else if (
       sourceGroup_id
