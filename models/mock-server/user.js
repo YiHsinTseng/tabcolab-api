@@ -13,7 +13,7 @@ class User {
    * @param {string} email
    * @param {string} password
    */
-  constructor(email, password) {
+  constructor({ email, password }) {
     this.user_id = generateUserId();
     this.email = email;
     this.password = password;
@@ -21,6 +21,9 @@ class User {
 
   // 模擬 mongoose 的 comparePassword 方法
   async comparePassword(password) {
+    if (!this.password) {
+      throw new Error('Hashed password is required');
+    }
     return bcrypt.compare(password, this.password);
   }
 
@@ -32,53 +35,46 @@ class User {
 
   // 模擬 mongoose 的 pre save 中間件
   async hashPassword() {
+    if (!this.password) {
+      throw new Error('Password is required');
+    }
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  static async findUserById(user_id, next) {
-    try {
-      const user = await db.get('users').find({ user_id }).value();
-      if (!user) {
-        throw new AppError(404, 'User not found or invalid user ID');
-      }
-      const foundUser = new User(user.email, user.password);
-      foundUser.user_id = user.user_id;
-      return foundUser;
-    } catch (error) {
-      next(error);
+  static async findUserById(user_id) {
+    const user = await db.get('users').find({ user_id }).value();
+    if (!user) {
+      throw new AppError(404, 'User not found or invalid user ID');
     }
+
+    const foundUser = new User(user);
+    foundUser.user_id = user.user_id;
+    return foundUser;
   }
 
-  static async findUserByEmail(email, next) {
-    try {
-      const user = await db.get('users').find({ email }).value();
-      if (!user) {
-        throw new AppError(404, 'User not found or invalid email');
-      }
-      const foundUser = new User(user.email, user.password);
-      foundUser.user_id = user.user_id;
-      return foundUser;
-    } catch (error) {
-      next(error);
+  static async findUserByEmail(email) {
+    const user = await db.get('users').find({ email }).value();
+    if (!user) {
+      throw new AppError(404, 'User not found or invalid email');
     }
+
+    const foundUser = new User(user);
+    foundUser.user_id = user.user_id;
+    return foundUser;
   }
 
-  async createUser(next) {
-    try {
-      let users = db.get('users');
-      let userGroups = db.get('user_groups');
-      if (!users.value()) {
-        await db.defaults({ users: [] }).write();
-        users = db.get('users');
-        userGroups = db.get('user_groups');
-      }
-      await this.hashPassword();
-      await users.push(this).write();
-      await userGroups.push({ user_id: this.user_id, groups: [] }).write();
-      return { success: true, message: 'User created successfully' };
-    } catch (error) {
-      next(error);
+  async createUser() {
+    let users = db.get('users');
+    let userGroups = db.get('user_groups');
+    if (!users.value()) {
+      await db.defaults({ users: [] }).write();
+      users = db.get('users');
+      userGroups = db.get('user_groups');
     }
+    await this.hashPassword();
+    await users.push(this).write();
+    await userGroups.push({ user_id: this.user_id, groups: [] }).write();
+    return { success: true, message: 'User created successfully' };
   }
 
   static async emailExists(email) {
@@ -86,66 +82,47 @@ class User {
     return !!user;
   }
 
-  static async getAllUsers(next) {
-    try {
-      const users = await db.get('users').value();
-      return { success: true, users };
-    } catch (error) {
-      next(error);
-    }
+  static async getAllUsers() {
+    const users = await db.get('users').value();
+    return { success: true, users };
   }
 
-  static async getUserInfo(user_id, next) {
-    try {
-      const user = await db.get('users').find({ user_id }).value();
-      return { success: true, user: { user_id: user.user_id, email: user.email } };
-    } catch (error) {
-      next(error);
-    }
+  static async getUserInfo(user_id) {
+    const user = await db.get('users').find({ user_id }).value();
+    return { success: true, user: { user_id: user.user_id, email: user.email } };
   }
 
-  async updateUserInfo(user_id, next) {
-    try {
-      // Update the user in the database
-      await db.get('users')
-        .find({ user_id })
-        .assign(this)
-        .write();
+  async updateUserInfo(user_id) {
+    // Update the user in the database
+    await db.get('users')
+      .find({ user_id })
+      .assign(this)
+      .write();
 
-      return { success: true, message: 'User info updated successfully' };
-    } catch (error) {
-      next(error);
-    }
+    return { success: true, message: 'User info updated successfully' };
   }
 
-  async updateUserPassword(user_id, next) {
-    try {
-      // Update the user in the database
-      await this.hashPassword();
-      await db.get('users')
-        .find({ user_id })
-        .assign(this)
-        .write();
+  async updateUserPassword(password) {
+    // Update the user in the database
+    this.password = password;
+    await this.hashPassword();
+    await db.get('users')
+      .find({ user_id: this.user_id })
+      .assign(this)
+      .write();
 
-      return { success: true, message: 'User password updated successfully' };
-    } catch (error) {
-      next(error);
-    }
+    return { success: true, message: 'User password updated successfully' };
   }
 
-  static async deleteUser(user_id, next) {
-    try {
-      await this.findUserById(user_id, next);
+  static async deleteUser(user_id) {
+    await this.findUserById(user_id);
 
-      const deletedUser = await db.get('users')
-        .remove((user) => user.user_id === user_id)
-        .write();
+    const deletedUser = await db.get('users')
+      .remove((user) => user.user_id === user_id)
+      .write();
 
-      if (deletedUser.length > 0) {
-        return { success: true, message: 'User deleted successfully' };
-      }
-    } catch (error) {
-      next(error);
+    if (deletedUser.length > 0) {
+      return { success: true, message: 'User deleted successfully' };
     }
   }
 }

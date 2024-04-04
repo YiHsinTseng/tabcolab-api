@@ -3,11 +3,11 @@ const { validateRegisterandLoginDataTypes, validateUserInfoUpdateDataTypes } = r
 const controller = require('../../controllers/userController');
 const authenticateJwt = require('../../middlewares/authenticate');
 // TODO:
-router.get('/user', authenticateJwt, controller.getAllUsers);
-router.get('/user/:user_id', authenticateJwt, controller.getUserInfo);
-router.post('/user/register', validateRegisterandLoginDataTypes, controller.register);
-router.post('/user/login', validateRegisterandLoginDataTypes, controller.login);
-router.patch('/user/:user_id', authenticateJwt, validateUserInfoUpdateDataTypes, controller.updateUserInfo);
-router.delete('/user/:user_id', authenticateJwt, controller.deleteUser);
+router.get('/users', authenticateJwt, controller.getAllUsers);
+router.get('/user', authenticateJwt, controller.getUserInfo);
+router.post('/users/register', validateRegisterandLoginDataTypes, controller.register);
+router.post('/users/login', validateRegisterandLoginDataTypes, controller.login);
+router.patch('/user', authenticateJwt, validateUserInfoUpdateDataTypes, controller.updateUserInfo);
+router.delete('/user', authenticateJwt, controller.deleteUser);
 
 module.exports = router;
