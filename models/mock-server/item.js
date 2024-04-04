@@ -15,7 +15,7 @@ class Tab extends Item {
   /**
    * @param {Object} browserTabData
    */
-  constructor(browserTabData) {
+  constructor({ browserTabData }) {
     super(); // 調用父類的構造函數
     /** @type {number} */
     this.item_type = 0;

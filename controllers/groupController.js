@@ -14,7 +14,7 @@ const ErrorResponse = (statusCode, message, res) => {
 const getGroups = async (req, res, next) => {
   try {
     const { user_id } = req.user;
-    const result = await UserGroup.getGroups(user_id, next);
+    const result = await UserGroup.getGroups(user_id);
     if (result.success) {
       return res.status(200).json({ message: result.message, groups: result.groups });
     }
@@ -56,19 +56,19 @@ const createGroup = async (req, res, next) => {
     if (group_icon
       && group_title
       && keys.every((key) => validKeysForatBlank.includes(key))) {
-      newGroup = new Group(group_icon, group_title, []);
-      newUserGroup = new UserGroup(user_id, [newGroup]);
-      result = await newUserGroup.createGroupatBlank(user_id, next);
+      newGroup = new Group({ group_icon, group_title, items: [] });
+      newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
+      result = await newUserGroup.createGroupatBlank(user_id);
     } else if (
       group_icon
       && group_title
       && Object.values(browserTabData).every((value) => value !== undefined)
       && keys.every((key) => validKeysForSidebarTab.includes(key))
     ) {
-      const newTab = new Tab(browserTabData);
-      newGroup = new Group(group_icon, group_title, [newTab]);
-      newUserGroup = new UserGroup(user_id, [newGroup]);
-      result = await newUserGroup.createGroupwithSidebarTab(user_id, next);
+      const newTab = new Tab({ browserTabData });
+      newGroup = new Group({ group_icon, group_title, items: [newTab] });
+      newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
+      result = await newUserGroup.createGroupwithSidebarTab(user_id);
     } else if (
       sourceGroup_id
       && group_icon
@@ -76,10 +76,10 @@ const createGroup = async (req, res, next) => {
       && item_id
       && keys.every((key) => validKeysForGroupTab.includes(key))
     ) {
-      const { sourceGroupItem } = await UserGroup.findGroupItem(user_id, sourceGroup_id, item_id, next);
-      newGroup = new Group(group_icon, group_title, [sourceGroupItem]);
-      newUserGroup = new UserGroup(user_id, [newGroup]);
-      result = await newUserGroup.createGroupwithGroupTab(user_id, sourceGroup_id, item_id, next);
+      const { sourceGroupItem } = await UserGroup.findGroupItem(user_id, sourceGroup_id, item_id);
+      newGroup = new Group({ group_icon, group_title, items: [sourceGroupItem] });
+      newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
+      result = await newUserGroup.createGroupwithGroupTab(user_id, sourceGroup_id, item_id);
     } else {
       return ErrorResponse(400, 'Invalid request body', res);
     }
@@ -98,7 +98,7 @@ const updateGroup = async (req, res, next) => {
     const { user_id } = req.user;
     const { group_id } = req.params;
 
-    const groupToUpdate = await UserGroup.findGroupById(user_id, group_id, next);
+    const groupToUpdate = await UserGroup.findGroupById(user_id, group_id);
 
     const { group_icon, group_title, group_pos } = req.body;
 
@@ -112,12 +112,12 @@ const updateGroup = async (req, res, next) => {
 
     if (group_id && group_icon) {
       groupToUpdate.group_icon = group_icon;
-      result = await UserGroup.updateGroupInfo(user_id, groupToUpdate, next);
+      result = await UserGroup.updateGroupInfo(user_id, groupToUpdate);
     } else if (group_id && group_title) {
       groupToUpdate.group_title = group_title;
-      result = await UserGroup.updateGroupInfo(user_id, groupToUpdate, next);
+      result = await UserGroup.updateGroupInfo(user_id, groupToUpdate);
     } else if (group_id && group_pos !== undefined) {
-      result = await UserGroup.changeGroupPosition(user_id, group_id, group_pos, next);
+      result = await UserGroup.changeGroupPosition(user_id, group_id, group_pos);
     } else {
       return ErrorResponse(400, 'Invalid request body', res);
     }
@@ -136,7 +136,7 @@ const deleteGroup = async (req, res, next) => {
     const { user_id } = req.user;
     const { group_id } = req.params;
 
-    const result = await UserGroup.deleteGroup(user_id, group_id, next);
+    const result = await UserGroup.deleteGroup(user_id, group_id);
     if (result.success) {
       return res.status(200).json({ message: result.message });
     }
