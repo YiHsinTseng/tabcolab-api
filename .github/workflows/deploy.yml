@@ -25,6 +25,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }} # Ipv4 address of EC2 instance
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }} # Add public key to EC2 instance before running the action
+          envs: API_VERSION,PASSPORT_SECRET,USE_CLOUD_DB,PROD_PORT,DEV_PORT,MONGODB_URI_LOCAL,MONGODB_URI_CLOUD
           script: |
             if [ ! -d "tabcolab" ]; then
               git clone -b Yang-0409-build-item-and-deploy git@github.com:SideProjectAC/tabcolab.git
