@@ -15,7 +15,8 @@ const server = express();
 const userRoutes = require('../routes').user;
 const groupRoutes = require('../routes').group;
 
-const MONGODB_URI = 'mongodb://localhost:27017/TabcolabDB';
+const { MONGODB_URI, PROD_PORT } = process.env;
+
 // Connect to MongoDB
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
@@ -43,6 +44,6 @@ server.use(`/api/${API_VERSION}`, groupRoutes);
 
 apiErrorHandler(server);
 
-server.listen(5050, () => {
+server.listen(PROD_PORT, () => {
   console.log('Server is running');
 });

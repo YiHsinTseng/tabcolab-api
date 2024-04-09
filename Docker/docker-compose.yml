@@ -1,13 +1,33 @@
 version: "3.9"
 services:
-  mock-server:
+  # mock-server:
+  #   environment:
+  #     - API_VERSION=1.0
+  #   build:
+  #     context: ../
+  #     dockerfile: Docker/mock-server/Dockerfile
+  #   volumes:
+  #     - ../mock-server/db.json:/app/mock-server/db.json
+  #     - ../.env:/app/.env
+  #   ports:
+  #     - "5050:5050"
+
+  prod-server:
     environment:
       - API_VERSION=1.0
+      - MONGODB_URI=mongodb://mongo:27017/TabcolabDB
     build:
       context: ../
-      dockerfile: Docker/mock-server/Dockerfile
+      dockerfile: Docker/prod-server/Dockerfile
     volumes:
-      - ../mock-server/db.json:/app/mock-server/db.json
       - ../.env:/app/.env
     ports:
       - "4000:4000"
+    links:
+      - mongo
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+

@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { API_VERSION } = process.env;
+const { API_VERSION, DEV_PORT } = process.env;
 
 const jsonServer = require('json-server');
 const express = require('express');
@@ -40,6 +40,6 @@ server.use(`/api/${API_VERSION}`, groupRoutes);
 
 apiErrorHandler(server);
 
-server.listen(5050, () => {
+server.listen(DEV_PORT, () => {
   console.log('Server is running');
 });

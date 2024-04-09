@@ -9,7 +9,7 @@
     "dev": "NODE_ENV=development node ./mock-server/initData/initDB.js && NODE_ENV=development nodemon ./mock-server/server.js",
     "mock-server": "node ./mock-server/initData/initDB.js && nodemon ./mock-server/server.js",
     "docker-compose": "cd Docker && docker-compose up --build -d",
-    "prod-server": "NODE_ENV=production nodemon ./server/server.js",
+    "prod-server": "NODE_ENV=production nodemon ./prod-server/server.js",
     "oauth": "nodemon ./oauth/index.js"
   },
   "dependencies": {
