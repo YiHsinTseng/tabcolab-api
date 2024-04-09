@@ -4,13 +4,11 @@
   "description": "",
   "private": true,
   "scripts": {
-    "start": "NODE_ENV=production nodemon ./listener.js",
-    "debug": "DEBUG=app:server nodemon listener.js",
-    "dev": "NODE_ENV=development node ./mock-server/initData/initDB.js && NODE_ENV=development nodemon ./mock-server/server.js",
     "mock-server": "node ./mock-server/initData/initDB.js && nodemon ./mock-server/server.js",
-    "docker-compose": "cd Docker && docker-compose up --build -d",
     "prod-server": "NODE_ENV=production nodemon ./prod-server/server.js",
-    "oauth": "nodemon ./oauth/index.js"
+    "docker-compose": "cd Docker && USE_CLOUD_DB=true docker-compose up --build -d",
+    "mongodb-dump": "mongodump --uri='mongodb://localhost:27017/TabcolabDB' --out=./",
+    "mongodb-store": "mongorestore --uri='mongodb://localhost:27017/TabcolabDB' ./TabcolabDB"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

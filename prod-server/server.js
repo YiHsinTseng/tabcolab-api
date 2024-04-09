@@ -15,10 +15,20 @@ const server = express();
 const userRoutes = require('../routes').user;
 const groupRoutes = require('../routes').group;
 
-const { MONGODB_URI, PROD_PORT, MONGODB_URI_CLOUD } = process.env;
+const {
+  PROD_PORT, MONGODB_URI_LOCAL, MONGODB_URI_CLOUD, USE_CLOUD_DB,
+} = process.env;
+
+let MONGODB_URI;
+if (USE_CLOUD_DB === 'true') {
+  MONGODB_URI = MONGODB_URI_CLOUD;
+} else {
+  MONGODB_URI = MONGODB_URI_LOCAL;
+}
+console.log(MONGODB_URI);
 
 // Connect to MongoDB
-mongoose.connect(MONGODB_URI_CLOUD)
+mongoose.connect(MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.log('Could not connect to MongoDB', err));
 
