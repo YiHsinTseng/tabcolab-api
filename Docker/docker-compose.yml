@@ -61,6 +61,5 @@ services:
       - "80:80"
     depends_on:
       - prod-server-local-db
-      - prod-server-cloud-db
       - mock-server
       - mongodb
