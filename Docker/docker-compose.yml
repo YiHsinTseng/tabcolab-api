@@ -11,6 +11,7 @@ services:
       - ../.env:/app/.env
     ports:
       - "5050:5050"
+      
 
   # prod-server-local-db:
   #   env_file:
