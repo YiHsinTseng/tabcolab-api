@@ -40,5 +40,6 @@ jobs:
             echo DEV_PORT=$DEV_PORT >> .env
             echo MONGODB_URI_LOCAL=$MONGODB_URI_LOCAL >> .env
             echo MONGODB_URI_CLOUD=$MONGODB_URI_CLOUD >> .env
+            cd Docker
             docker-compose down --rmi all && docker system prune -f
             docker-compose up --build -d
