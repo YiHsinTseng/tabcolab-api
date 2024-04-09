@@ -54,13 +54,14 @@ services:
     ports:
       - "5000:5000"
       
-  # nginx:
-  #   build:
-  #     context: ./nginx
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     - prod-server-local-db
-  #     - mock-server
-  #     - mongodb
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      # - prod-server-local-db
+      - prod-server-cloud-db
+      - mock-server
+      # - mongodb
