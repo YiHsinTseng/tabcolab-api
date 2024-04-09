@@ -1,8 +1,6 @@
 name: Deploy to EC2
 
-on:
-  push:
-    branches: [Yang-0409-build-item-and-deploy]
+on: [push]
 
 jobs:
   Deploy:
