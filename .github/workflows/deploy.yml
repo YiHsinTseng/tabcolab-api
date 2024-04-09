@@ -19,11 +19,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Add SSH key to known hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
       - name: Connect to EC2
         uses: appleboy/ssh-action@master
         with:
