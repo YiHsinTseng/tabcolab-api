@@ -1,5 +1,3 @@
-// const createRouter = require('../router');
-
 const router = require('express').Router();
 const controller = require('../../controllers/groupController');
 const { validateGroupDataTypes } = require('../../validations/validation-group');
