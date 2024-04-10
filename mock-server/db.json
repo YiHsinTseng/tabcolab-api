@@ -70,6 +70,10 @@
           ]
         }
       ]
+    },
+    {
+      "user_id": "027c45a9-2573-46b2-8280-4501e6a50a7c",
+      "groups": []
     }
   ],
   "users": [
@@ -77,6 +81,11 @@
       "user_id": "1",
       "email": "test123@gmail.com",
       "password": "bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9"
+    },
+    {
+      "user_id": "027c45a9-2573-46b2-8280-4501e6a50a7c",
+      "email": "user2@example.com",
+      "password": "$2b$10$6nupn7vVDwiW3Ms9vZ3zJe0wNPg8FFSGTJjZZjUh0cgKkR2FdQD76"
     }
   ]
 }
