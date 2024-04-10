@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const { generateGroupId } = require('../../utils/generateId');
 
 const AppError = require('../../utils/appError');
-const { ItemSchema, TabSchema } = require('./item');
 
 const { Schema } = mongoose;
 

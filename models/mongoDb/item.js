@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { UserGroup } = require('./group');
 const { generateItemId } = require('../../utils/generateId');
 
 const ItemSchema = new mongoose.Schema({
@@ -7,7 +8,112 @@ const ItemSchema = new mongoose.Schema({
     default: generateItemId,
     alias: 'item_id',
   },
+  item_type: Number,
+  note_bgColor: String,
 });
+
+ItemSchema.statics.getItemById = async function (group_id, item_id, user_id) {
+  const { sourceGroupItem } = await UserGroup.findGroupItem(user_id, group_id, item_id);
+  return sourceGroupItem;
+};
+
+ItemSchema.statics.searchItemsInGroups = async function (keyword, itemTypeOptions, user_id) {
+  const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
+  const { groups } = userGroup;
+
+  if (!Array.isArray(groups)) return [];
+
+  const keywords = [...new Set(keyword.split(/\s{1}/))]; // NOTE 接受單一空格就代表空字串
+
+  const regexes = keywords.map((currentKeyword) => new RegExp(`${currentKeyword}`, 'i'));
+
+  const matchingItems = [];
+  const seenItems = {};
+
+  groups.forEach((group) => {
+    group.items.forEach((item) => {
+      if (!itemTypeOptions.includes(item.item_type)) return;
+
+      const { browserTab_title, browserTab_url, note_content } = item;
+
+      const matchesKeyword = regexes.some((regex) => {
+        const matchTitle = regex.test(browserTab_title) && browserTab_title !== undefined;
+        const matchUrl = regex.test(browserTab_url) && browserTab_url !== undefined;
+        const matchNote = regex.test(note_content) && note_content !== undefined;
+
+        return matchTitle || matchUrl || matchNote;
+      });
+
+      if (matchesKeyword) {
+        const key = `${group.group_id}_${item.item_id}`;
+        if (!seenItems[key]) {
+          matchingItems.push({
+            group_id: group.group_id,
+            ...item,
+          });
+          seenItems[key] = true;
+        }
+      }
+    });
+  });
+
+  return matchingItems;
+};
+
+ItemSchema.statics.moveItem = async function (sourceGroupId, targetGroupId, itemId, newPosition, user_id) {
+  const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
+  const sourceGroup = userGroup.groups.find((group) => group.group_id === sourceGroupId);
+  let targetGroup = userGroup.groups.find((group) => group.group_id === targetGroupId);
+
+  if (!sourceGroup) {
+    return { success: false, error: 'Source group not found' };
+  }
+
+  const itemToMove = sourceGroup.items.find((item) => item.item_id === itemId);
+
+  if (!itemToMove) {
+    return { success: false, error: 'Item not found in source group' };
+  }
+
+  if (!targetGroup) {
+    targetGroup = sourceGroup;
+  }
+
+  const sourceIndex = sourceGroup.items.indexOf(itemToMove);
+  sourceGroup.items.splice(sourceIndex, 1);
+
+  let adjustedPosition = newPosition; // Create a new variable to hold the adjusted value
+
+  if (newPosition !== undefined) {
+    if (newPosition > targetGroup.items.length) {
+      adjustedPosition = targetGroup.items.length;
+    } else if (newPosition < 0) {
+      adjustedPosition = 0;
+    }
+    targetGroup.items.splice(adjustedPosition, 0, itemToMove);
+  } else {
+    targetGroup.items.push(itemToMove);
+  }
+
+  await userGroup.save();
+  return { success: true, message: 'Item moved successfully' };
+};
+
+ItemSchema.statics.deleteItem = async function (groupId, itemId, user_id) {
+  const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
+  const group = userGroup.groups.find((group) => group.group_id === groupId);
+
+  if (!group) {
+    return null; // 如果找不到該群組，返回null
+  }
+  const index = group.items.findIndex((item) => item.item_id === itemId);
+  if (index === -1) {
+    return null; // 如果在群組中找不到該項目，返回null
+  }
+  group.items.splice(index, 1); // 從群組中刪除該項目
+  await userGroup.save(); // 將更改寫回到資料庫
+  return group; // 返回已刪除項目的群組對象
+};
 
 const TabSchema = new mongoose.Schema({
   ...ItemSchema.obj, // 繼承 ItemSchema 的屬性
@@ -27,7 +133,7 @@ const TabSchema = new mongoose.Schema({
 
 module.exports = {
   ItemSchema,
+  TabSchema,
   Item: mongoose.model('Item', ItemSchema),
   Tab: mongoose.model('Tab', TabSchema),
-  TabSchema,
 };

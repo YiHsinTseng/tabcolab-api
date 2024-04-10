@@ -14,6 +14,7 @@ const server = express();
 
 const userRoutes = require('../routes').user;
 const groupRoutes = require('../routes').group;
+const itemRoutes = require('../routes').item;
 
 const {
   PROD_PORT, MONGODB_URI_LOCAL, MONGODB_URI_CLOUD, USE_CLOUD_DB,
@@ -51,7 +52,7 @@ server.use(`/api/${API_VERSION}`, userRoutes);
 // 在所有其他路由之前添加 JWT 驗證中間件
 server.use(authenticateJwt);
 server.use(`/api/${API_VERSION}`, groupRoutes);
-
+server.use(`/api/${API_VERSION}`, itemRoutes);
 apiErrorHandler(server);
 
 server.listen(PROD_PORT, () => {

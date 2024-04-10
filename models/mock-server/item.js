@@ -6,7 +6,7 @@ const { db } = jsonServer.router(config[env].db.path);
 const { generateItemId } = require('../../utils/generateId');
 
 class Item {
-  constructor(item_type, note_bgColor) {
+  constructor({ item_type, note_bgColor }) {
     this.item_id = generateItemId();
     this.item_type = item_type;
     this.note_bgColor = note_bgColor;
@@ -155,7 +155,7 @@ class Tab extends Item {
    * @param {Object} browserTabData
    */
   constructor(browserTabData) {
-    super(0, null); // 調用父類的構造函數，傳遞 item_type 和 note_bgColor
+    super({ item_type: 0, note_bgColor: null }); // 調用父類的構造函數，傳遞 item_type 和 note_bgColor
     /** @type {number} */
     this.item_type = 0;
     /** @type {string} */
