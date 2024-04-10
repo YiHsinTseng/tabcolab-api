@@ -6,10 +6,16 @@ info:
 servers:
   - url: http://localhost:5050/api/1.0
     description: Mock server
+  - url: http://13.115.132.26:5050/api/1.0
+    description: Mock server (EC2)
   - url: http://localhost:4000/api/1.0
     description: Production server (localDB)
+  - url: http://13.115.132.26:4000/api/1.0
+    description: Production server (localDB EC2)
   - url: http://localhost:5000/api/1.0
     description: Production server (cloudDB)
+  - url: http://13.115.132.26:5000/api/1.0
+    description: Production server (cloudDB EC2)
 tags:
   - name: Groups
     description: Operations related to groups management
