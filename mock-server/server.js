@@ -16,6 +16,7 @@ const middlewares = jsonServer.defaults();
 
 const userRoutes = require('../routes').user;
 const groupRoutes = require('../routes').group;
+const itemRoutes = require('../routes').item;
 
 // Redirect the root directory to the API documentation
 server.get('/', (req, res) => {
@@ -37,7 +38,7 @@ server.use(`/api/${API_VERSION}`, userRoutes);
 // 在所有其他路由之前添加 JWT 驗證中間件
 server.use(authenticateJwt);
 server.use(`/api/${API_VERSION}`, groupRoutes);
-
+server.use(`/api/${API_VERSION}`, itemRoutes);
 apiErrorHandler(server);
 
 server.listen(DEV_PORT, () => {
