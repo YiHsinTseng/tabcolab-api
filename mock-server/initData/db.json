@@ -74,6 +74,14 @@
     {
       "user_id": "17067fd2-4692-448b-9840-b80e7ddf05c1",
       "groups": []
+    },
+    {
+      "user_id": "b76b8152-ef82-470b-b181-25de9b06bc68",
+      "groups": []
+    },
+    {
+      "user_id": "ed1979a2-ade0-4a03-b937-07d309b99477",
+      "groups": []
     }
   ],
   "users": [
@@ -83,10 +91,9 @@
       "password": "bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9"
     },
     {
-      "user_id": "17067fd2-4692-448b-9840-b80e7ddf05c1",
+      "user_id": "ed1979a2-ade0-4a03-b937-07d309b99477",
       "email": "admin123@gmail.com",
-      "password": "$2b$10$qIDkAtVk4bAjRCu4HUaD0uyCT.KaSDTQhSAzTXZvh.vhSeNCvntFG",
-      "isAdmin": true
+      "password": "$2b$10$QNFpPLXXDXTjSWhIjDvZO.6MJGuB.RgSvLDlB79NMRJxHQgJaFWN."
     }
   ]
 }

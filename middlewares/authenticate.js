@@ -20,13 +20,13 @@ const authenticateJwt = (req, res, next) => {
   })(req, res, next);
 };
 
-const requireAdmin = (req, res, next) => {
-  // 檢查用戶是否為管理員
-  if (!req.user.isAdmin) {
+const authenticateAdmin = (req, res, next) => {
+  // 檢查用戶的電子郵件是否為 'admin123@gmail.com'
+  if (req.user.email !== 'admin123@gmail.com') {
     return res.status(403).send({ status: 'fail', message: 'Access denied. You are not an admin.' });
   }
 
   next();
 };
 
-module.exports = { authenticateJwt, requireAdmin };
+module.exports = { authenticateJwt, authenticateAdmin };
