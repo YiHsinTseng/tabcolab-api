@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  isAdmin: { type: Boolean, default: false },
 });
 
 userSchema.statics.findUserById = async function (user_id) {
@@ -46,7 +47,9 @@ userSchema.methods.comparePassword = function (password) {
 
 // 實現 generateAuthToken 方法
 userSchema.methods.generateAuthToken = function () {
-  const tokenObject = { user_id: this.user_id, email: this.email, version: 'v1.0' };
+  const tokenObject = {
+    user_id: this.user_id, email: this.email, isAdmin: this.isAdmin, version: 'v1.0',
+  };
   const token = jwt.sign(tokenObject, process.env.PASSPORT_SECRET, { expiresIn: '7d' });
   return token;
 };

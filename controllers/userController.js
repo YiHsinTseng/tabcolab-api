@@ -10,6 +10,7 @@ const ErrorResponse = (statusCode, message, res) => {
 };
 
 const register = async (req, res, next) => {
+  console.log('register function called');
   try {
     // 確認信箱是否被註冊過
     const emailExist = await User.emailExists(req.body.email);
@@ -19,7 +20,16 @@ const register = async (req, res, next) => {
     const {
       email, password,
     } = req.body;
+
     const newUser = new User({ email, password });
+
+    // 如果 email 和 password 是 admin，則設置 isAdmin 為 true
+    if (email === 'admin123@gmail.com' && password === 'admin123') {
+      newUser.isAdmin = true;
+      console.log('After setting:', newUser.isAdmin);
+    }
+    console.log('Before saving:', newUser.isAdmin);
+
     const token = await newUser.generateAuthToken();
     const result = await newUser.createUser();
     if (result.success) {

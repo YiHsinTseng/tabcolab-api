@@ -6,7 +6,7 @@ const jsonServer = require('json-server');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const authenticateJwt = require('../middlewares/authenticate');
+const { authenticateJwt } = require('../middlewares/authenticate');
 const apiErrorHandler = require('../middlewares/errorHandler');
 const swagger = require('../swaggers/config/swaggerSetup');
 

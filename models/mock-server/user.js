@@ -17,6 +17,7 @@ class User {
     this.user_id = generateUserId();
     this.email = email;
     this.password = password;
+    this.isAdmin = false;
   }
 
   // 模擬 mongoose 的 comparePassword 方法
@@ -28,7 +29,9 @@ class User {
   }
 
   async generateAuthToken() {
-    const tokenObject = { user_id: this.user_id, email: this.email, version: 'v1.0' };
+    const tokenObject = {
+      user_id: this.user_id, email: this.email, isAdmin: this.isAdmin, version: 'v1.0',
+    };
     const token = jwt.sign(tokenObject, process.env.PASSPORT_SECRET, { expiresIn: '7d' });
     return token;
   }
@@ -49,6 +52,7 @@ class User {
 
     const foundUser = new User(user);
     foundUser.user_id = user.user_id;
+    foundUser.isAdmin = user.isAdmin;
     return foundUser;
   }
 

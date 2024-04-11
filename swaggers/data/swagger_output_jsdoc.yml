@@ -531,10 +531,10 @@ paths:
   /users:
     get:
       tags:
-        - Users(Testing)
+        - Users(Information)
       security:
         - bearerAuth: []
-      description: Returns all users data (For Testing)
+      description: Returns all users data (For Information)
       responses:
         "200":
           content:
@@ -543,10 +543,10 @@ paths:
   /user:
     get:
       tags:
-        - Users(Testing)
+        - Users(Information)
       security:
         - bearerAuth: []
-      description: Returns specific user data based on JWT information (For Testing)
+      description: Returns specific user data based on JWT information
       responses:
         "200":
           description: For Testing
