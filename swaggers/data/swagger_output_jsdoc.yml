@@ -4,25 +4,33 @@ info:
   version: 1.0.0
   description: Your API Description
 servers:
-  - url: http://localhost:5050/api/1.0
-    description: Mock server
-  - url: http://13.115.132.26:5050/api/1.0
-    description: Mock server (EC2)
-  - url: http://localhost:4000/api/1.0
-    description: Production server (localDB)
-  - url: http://13.115.132.26:4000/api/1.0
-    description: Production server (localDB EC2)
-  - url: http://localhost:5000/api/1.0
-    description: Production server (cloudDB)
   - url: http://13.115.132.26:5000/api/1.0
-    description: Production server (cloudDB EC2)
+    description: Production server (EC2 MongoDB Altas)
+  - url: http://13.115.132.26:4000/api/1.0
+    description: Production server (EC2 local MongoDB)
+  - url: http://13.115.132.26:5050/api/1.0
+    description: Mock server (EC2 json-server)
+  - url: http://localhost:5000/api/1.0
+    description: Production server (localhost MongoDB Altas)
+  - url: http://localhost:4000/api/1.0
+    description: Production server (localhost local MongoDB)
+  - url: http://localhost:5050/api/1.0
+    description: Mock server (localhost json-server)
+
 tags:
+  - name: Users(Auths)
+    description: Operations related to users authorization
+  - name: Users(Information)
+    description: Operations related to users information
+  - name: Users(Management)
+    description: Operations related to users management
   - name: Groups
     description: Operations related to groups management
   - name: Items(Spec)
     description: Specific operations related to items management
   - name: Items
     description: General operations related to items management
+
 paths:
   /groups:
     get:

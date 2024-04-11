@@ -70,77 +70,6 @@
           ]
         }
       ]
-    },
-    {
-      "user_id": "6b7bec01-d289-4a19-b998-c634d93e86f8",
-      "groups": [
-        {
-          "group_id": "5ef4a3fd-6ffc-46c8-8853-3ba27842d0ae",
-          "group_icon": "default_icon",
-          "group_title": "Untitled",
-          "items": []
-        },
-        {
-          "group_id": "af683e66-656b-4472-83ab-d37108e2e132",
-          "group_icon": "default_icon",
-          "group_title": "Untitled",
-          "items": [
-            {
-              "item_id": "aef26252-d59c-4a5f-9654-c95dbfab7c1d",
-              "item_type": 0,
-              "note_bgColor": null,
-              "browserTab_favIconURL": "https://example.com/favicon.png",
-              "browserTab_title": "Example Tab Title",
-              "browserTab_url": "https://example.com",
-              "browserTab_id": 133,
-              "browserTab_index": 15,
-              "browserTab_active": false,
-              "browserTab_status": "complete",
-              "windowId": 3850513484
-            }
-          ]
-        },
-        {
-          "group_id": "ae9777b3-c2dd-4178-ba72-65b11cb45127",
-          "group_icon": "default_icon",
-          "group_title": "Untitled",
-          "items": [
-            {
-              "item_id": "5f4ca81b-4c5d-413a-8747-7e157122f3f7",
-              "item_type": 0,
-              "note_bgColor": null,
-              "browserTab_favIconURL": "https://example.com/favicon.png",
-              "browserTab_title": "Example Tab Title",
-              "browserTab_url": "https://example.com",
-              "browserTab_id": 133,
-              "browserTab_index": 15,
-              "browserTab_active": false,
-              "browserTab_status": "complete",
-              "windowId": 3850513484
-            }
-          ]
-        },
-        {
-          "group_id": "a3defc32-7b1e-4824-b487-4bfb506a86be",
-          "group_icon": "default_icon",
-          "group_title": "Untitled",
-          "items": [
-            {
-              "item_id": "0541cc7d-ef57-4bfc-ae72-8a84e36b6594",
-              "item_type": 0,
-              "note_bgColor": null,
-              "browserTab_favIconURL": "https://example.com/favicon.png",
-              "browserTab_title": "Example Tab Title",
-              "browserTab_url": "https://example.com",
-              "browserTab_id": 133,
-              "browserTab_index": 15,
-              "browserTab_active": false,
-              "browserTab_status": "complete",
-              "windowId": 3850513484
-            }
-          ]
-        }
-      ]
     }
   ],
   "users": [
@@ -148,11 +77,6 @@
       "user_id": "1",
       "email": "test123@gmail.com",
       "password": "bdc0b31f0c6ac3a45fb42b338e5d1c73ef1522f2e07589f2de30371f309de2d9"
-    },
-    {
-      "user_id": "6b7bec01-d289-4a19-b998-c634d93e86f8",
-      "email": "user2@example.com",
-      "password": "$2b$10$29aHSBlSlnLw4T7gJP.2seTH7wXs72N9Y0bF9oDCnbfBCypycLzdu"
     }
   ]
 }
