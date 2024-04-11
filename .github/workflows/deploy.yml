@@ -42,7 +42,6 @@ jobs:
             echo MONGODB_URI_LOCAL=$MONGODB_URI_LOCAL >> .env
             echo MONGODB_URI_CLOUD=$MONGODB_URI_CLOUD >> .env
             sudo chmod 600 .env
-            sudo chmod 777 /home/***/tabcolab/prod-server/mongodb_data/diagnostic.data
             sudo chown -R $USER /home/***/tabcolab/prod-server/mongodb_data
             cd Docker
             docker-compose down --rmi all && docker system prune -f
