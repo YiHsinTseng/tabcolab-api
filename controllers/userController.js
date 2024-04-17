@@ -10,7 +10,6 @@ const ErrorResponse = (statusCode, message, res) => {
 };
 
 const register = async (req, res, next) => {
-  console.log('register function called');
   try {
     // 確認信箱是否被註冊過
     const emailExist = await User.emailExists(req.body.email);
