@@ -55,7 +55,7 @@ function setupSwagger(server) {
   const fs = require('fs');
   const yaml = require('js-yaml');
   const path = require('path');
-  const spec = fs.readFileSync(path.resolve(__dirname, '../data/swagger_output_jsdoc.yml'));
+  const spec = fs.readFileSync(path.resolve(__dirname, '../data/swagger_output_jsdoc2.yml'));
   const swaggerSpec = yaml.load(spec);
 
   // FIXME - api-doc不用前綴。不然請求會重複路徑

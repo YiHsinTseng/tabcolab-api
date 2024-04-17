@@ -17,6 +17,7 @@ const middlewares = jsonServer.defaults();
 const userRoutes = require('../routes').user;
 const groupRoutes = require('../routes').group;
 const itemRoutes = require('../routes').item;
+const specItemRoutes = require('../routes').specItem;
 
 // Redirect the root directory to the API documentation
 server.get('/', (req, res) => {
@@ -39,6 +40,7 @@ server.use(`/api/${API_VERSION}`, userRoutes);
 server.use(authenticateJwt);
 server.use(`/api/${API_VERSION}`, groupRoutes);
 server.use(`/api/${API_VERSION}`, itemRoutes);
+server.use(`/api/${API_VERSION}`, specItemRoutes);
 apiErrorHandler(server);
 
 server.listen(DEV_PORT, () => {

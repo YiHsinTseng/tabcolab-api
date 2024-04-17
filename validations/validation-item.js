@@ -11,7 +11,7 @@ const itemSchema = Joi.object({
   browserTab_active: Joi.boolean().optional(),
   browserTab_status: Joi.string().optional(),
   windowId: Joi.number().optional(),
-  note_content: Joi.string().optional(),
+  note_content: Joi.string().optional().allow(''),
   note_bgColor: Joi.string().optional(),
   doneStatus: Joi.boolean().optional(),
 }).unknown();

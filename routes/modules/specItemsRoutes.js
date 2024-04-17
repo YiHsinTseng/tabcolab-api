@@ -1,13 +1,13 @@
 const router = require('express').Router();
 
-const controller = require('../../controllers/specItemController');
 const { validateItemDataTypes } = require('../../validations/validation-item');
+const controller = require('../../controllers/specItemController');
 
 router.post('/groups/:group_id/tabs', validateItemDataTypes, controller.addTab);
-router.patch('/groups/:group_id/tabs/:item_id', validateItemDataTypes, controller.updateTab);
-router.post('/groups/:group_id/notes', validateItemDataTypes, controller.addNote);
-router.patch('/groups/:group_id/notes/:item_id', validateItemDataTypes, controller.updateNote);
-router.patch('/groups/:group_id/todos/:item_id', validateItemDataTypes, controller.updateTodo);
+// router.patch('/groups/:group_id/tabs/:item_id', validateItemDataTypes, controller.updateTab);
+// router.post('/groups/:group_id/notes', validateItemDataTypes, controller.addNote);
+// router.patch('/groups/:group_id/notes/:item_id', validateItemDataTypes, controller.updateNote);
+// router.patch('/groups/:group_id/todos/:item_id', validateItemDataTypes, controller.updateTodo);
 
 module.exports = router;
 
@@ -138,8 +138,8 @@ module.exports = router;
  *       - Items(Spec)
  *     security:
  *       -  bearerAuth: []
- *     summary: Change a note to a todo in an existing group
- *     description: Change a note to a todo in an existing group.
+ *     summary: Modify a note's content or item_type in an existing group
+ *     description:  'Modify the property of note in an existing group: <br> 1. Update the note_content field of note <br> 2. change item type from note to a todo'
  *     parameters:
  *       - name: group_id
  *         in: path
@@ -160,7 +160,18 @@ module.exports = router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/requestBodies/TabNoteChangetoTodo'
+ *             oneOf:
+ *              - $ref: '#/components/requestBodies/NoteChangeContent'
+ *              - $ref: '#/components/requestBodies/NoteChangetoTodo'
+ *           examples:
+ *             NoteChangeContent:
+ *               summary: Update Note Content
+ *               value:
+ *                 note_content: "note_content"
+ *             NoteChangetoTodo:
+ *               summary: Note Change to Todo
+ *               value:
+ *                 item_type: 2
  *     responses:
  *       '200':
  *         description: Success
@@ -182,8 +193,8 @@ module.exports = router;
  *       - Items(Spec)
  *     security:
  *       -  bearerAuth: []
- *     summary: Change a todo status in an existing group
- *     description: 'Change a todo status in an existing group. <br> 1. Change item type of todo to note <br>2. Update the doneStatus of  todo'
+ *     summary: Modify a todo's content, status  or item_type in an existing group
+ *     description: 'Modify the property of todo in an existing group. <br>1. Update the note_content field of todo <br>2. Change item type from todo to note <br>3. Update the doneStatus of  todo'
  *     parameters:
  *       - name: group_id
  *         in: path
@@ -205,9 +216,14 @@ module.exports = router;
  *         application/json:
  *           schema:
  *             oneOf:
+ *               - $ref: '#/components/requestBodies/TodoContentUpdate'
  *               - $ref: '#/components/requestBodies/TodoChangetoNote'
  *               - $ref: '#/components/requestBodies/TodoStatusUpdate'
  *           examples:
+ *             TodoContentUpdateExample:
+*               summary: Update todo content
+ *               value:
+ *                 note_content: todo_content
  *             TodotoNoteExample:
  *               summary: Change todo to note
  *               value:

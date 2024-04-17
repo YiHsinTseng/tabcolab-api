@@ -81,7 +81,28 @@
     },
     {
       "user_id": "ed1979a2-ade0-4a03-b937-07d309b99477",
-      "groups": []
+      "groups": [
+        {
+          "group_id": "d61d49e3-d4c6-4b4a-b6a0-5901f4ac4334",
+          "group_icon": "default_icon",
+          "group_title": "Untitled",
+          "items": [
+            {
+              "item_id": "b1614599-1c99-467f-b7f3-f18aa5c7112b",
+              "item_type": 0,
+              "note_bgColor": null,
+              "browserTab_favIconURL": "string",
+              "browserTab_title": "string",
+              "browserTab_url": "string",
+              "browserTab_id": 0,
+              "browserTab_index": 0,
+              "browserTab_active": true,
+              "browserTab_status": "complete",
+              "windowId": 1348438505
+            }
+          ]
+        }
+      ]
     }
   ],
   "users": [

@@ -15,6 +15,7 @@ const server = express();
 const userRoutes = require('../routes').user;
 const groupRoutes = require('../routes').group;
 const itemRoutes = require('../routes').item;
+const specItemRoutes = require('../routes').specItem;
 
 const {
   PROD_PORT, MONGODB_URI_LOCAL, MONGODB_URI_CLOUD, USE_CLOUD_DB,
@@ -53,6 +54,7 @@ server.use(`/api/${API_VERSION}`, userRoutes);
 server.use(authenticateJwt);
 server.use(`/api/${API_VERSION}`, groupRoutes);
 server.use(`/api/${API_VERSION}`, itemRoutes);
+server.use(`/api/${API_VERSION}`, specItemRoutes);
 apiErrorHandler(server);
 
 server.listen(PROD_PORT, () => {

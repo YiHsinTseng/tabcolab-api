@@ -175,6 +175,26 @@ class Tab extends Item {
     /** @type {number} */
     this.windowId = browserTabData.windowId;
   }
+
+  async addTab(user_id, group_id, targetItem_position) {
+    const group = await db.get('user_groups').find({ user_id }).get('groups').find({ group_id })
+      .value();
+
+    if (!group) {
+      throw new Error('Group not found');
+    }
+
+    // 確保 targetItem_position 在有效範圍內
+    if (targetItem_position >= 0 && targetItem_position <= group.items.length) {
+      // 使用 splice 在指定位置插入 newTab
+      group.items.splice(targetItem_position, 0, this);
+    } else {
+      // 如果目標位置超出陣列範圍，則預設在陣列末尾插入 newTab
+      group.items.push(this);
+    }
+
+    await db.write();
+  }
 }
 
 module.exports = {

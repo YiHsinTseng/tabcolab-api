@@ -131,6 +131,25 @@ const TabSchema = new mongoose.Schema({
   windowId: Number,
 });
 
+TabSchema.methods.addTab = async function (user_id, group_id, targetItem_position) {
+  const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
+  const group = userGroup.groups.find((group) => group.group_id === group_id);
+
+  if (!group) {
+    throw new Error('Group not found');
+  }
+  // 確保 targetItem_position 在有效範圍內
+  if (targetItem_position >= 0 && targetItem_position <= group.items.length) {
+    // 使用 splice 在指定位置插入 newTab
+    group.items.splice(targetItem_position, 0, this);
+  } else {
+    // 如果目標位置超出陣列範圍，則預設在陣列末尾插入 newTab
+    group.items.push(this);
+  }
+
+  await userGroup.save();
+};
+
 module.exports = {
   ItemSchema,
   TabSchema,
