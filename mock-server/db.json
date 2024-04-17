@@ -83,22 +83,29 @@
       "user_id": "ed1979a2-ade0-4a03-b937-07d309b99477",
       "groups": [
         {
-          "group_id": "d61d49e3-d4c6-4b4a-b6a0-5901f4ac4334",
+          "group_id": "9e0824ec-f0f5-413e-9462-f505ceadc9f2",
+          "group_icon": "default_icon",
+          "group_title": "Untitled",
+          "items": []
+        },
+        {
+          "group_id": "0c94dd17-d14e-4986-b949-3f9713cd6b7a",
           "group_icon": "default_icon",
           "group_title": "Untitled",
           "items": [
             {
-              "item_id": "b1614599-1c99-467f-b7f3-f18aa5c7112b",
+              "item_id": "e51d87f2-f5b0-4853-ad51-c47a11acb45a",
               "item_type": 0,
               "note_bgColor": null,
-              "browserTab_favIconURL": "string",
-              "browserTab_title": "string",
-              "browserTab_url": "string",
-              "browserTab_id": 0,
-              "browserTab_index": 0,
-              "browserTab_active": true,
+              "browserTab_favIconURL": "https://example.com/favicon.png",
+              "browserTab_title": "Example Tab Title",
+              "browserTab_url": "https://example.com",
+              "browserTab_id": 133,
+              "browserTab_index": 15,
+              "browserTab_active": false,
               "browserTab_status": "complete",
-              "windowId": 1348438505
+              "windowId": 3850513484,
+              "note_content": "string"
             }
           ]
         }

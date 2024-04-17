@@ -39,6 +39,20 @@ const addTab = async (req, res) => {
   return res.status(400).json({ status: 'fail', message: 'Invalid request body' });
 };
 
+const updateTab = async (req, res) => {
+  const { group_id, item_id } = req.params;
+  const { user_id } = req.user;
+  const { note_content } = req.body;
+
+  try {
+    const updatedNoteContent = await Tab.updateTab(user_id, group_id, item_id, note_content);
+
+    return res.status(201).json({ status: 'success', message: 'Note added to tab successfully', note_content: updatedNoteContent });
+  } catch (error) {
+    return res.status(400).json({ status: 'fail', message: error.message });
+  }
+};
+
 module.exports = {
-  addTab,
+  addTab, updateTab,
 };

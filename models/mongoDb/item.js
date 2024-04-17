@@ -10,6 +10,14 @@ const ItemSchema = new mongoose.Schema({
   },
   item_type: Number,
   note_bgColor: String,
+}, {
+  toJSON: {
+    transform(doc, ret) {
+      const { _id, ...rest } = ret;
+      const newRet = { item_id: _id, ...rest };
+      return newRet;
+    },
+  },
 });
 
 ItemSchema.statics.getItemById = async function (group_id, item_id, user_id) {
@@ -129,6 +137,10 @@ const TabSchema = new mongoose.Schema({
   browserTab_active: Boolean,
   browserTab_status: String,
   windowId: Number,
+  note_content: {
+    type: String,
+    default: '',
+  },
 });
 
 TabSchema.methods.addTab = async function (user_id, group_id, targetItem_position) {
@@ -148,6 +160,28 @@ TabSchema.methods.addTab = async function (user_id, group_id, targetItem_positio
   }
 
   await userGroup.save();
+};
+
+TabSchema.statics.updateTab = async function (user_id, group_id, item_id, note_content) {
+  const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
+  const group = userGroup.groups.find((group) => group.group_id === group_id);
+
+  if (!group) {
+    throw new Error('Group not found');
+  }
+
+  const tab = group.items.find((item) => item.item_id === item_id && item.item_type === 0);
+
+  if (!tab) {
+    throw new Error('Tab not found in group');
+  }
+
+  tab.note_content = String(note_content);
+
+  await userGroup.markModified('groups'); // 告訴 Mongoose groups 欄位已被修改
+  await userGroup.save();
+
+  return tab.note_content;
 };
 
 module.exports = {

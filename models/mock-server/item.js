@@ -195,6 +195,26 @@ class Tab extends Item {
 
     await db.write();
   }
+
+  static async updateTab(user_id, group_id, item_id, note_content) {
+    const group = await db.get('user_groups').find({ user_id }).get('groups').find({ group_id })
+      .value();
+
+    if (!group) {
+      throw new Error('Group not found');
+    }
+
+    const tab = group.items.find((item) => item.item_id === item_id && item.item_type === 0);
+
+    if (!tab) {
+      throw new Error('Tab not found in group');
+    }
+
+    tab.note_content = note_content;
+
+    await db.write();
+    return tab.note_content;
+  }
 }
 
 module.exports = {

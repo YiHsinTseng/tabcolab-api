@@ -22,6 +22,14 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
 
+}, {
+  toJSON: {
+    transform(doc, ret) {
+      const { _id, ...rest } = ret;
+      const newRet = { user_id: _id, ...rest };
+      return newRet;
+    },
+  },
 });
 
 userSchema.statics.findUserById = async function (user_id) {
