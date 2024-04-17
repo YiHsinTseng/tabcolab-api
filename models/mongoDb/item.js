@@ -184,9 +184,40 @@ TabSchema.statics.updateTab = async function (user_id, group_id, item_id, note_c
   return tab.note_content;
 };
 
+const NoteSchema = new mongoose.Schema({
+  ...ItemSchema.obj,
+  item_type: {
+    type: Number,
+    default: 1,
+  },
+  note_content: {
+    type: String,
+    required: true,
+  },
+  note_bgColor: {
+    type: String,
+    default: '#ffffff',
+  },
+});
+
+NoteSchema.methods.addNoteToGroup = async function (group_id, user_id) {
+  const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
+  const group = userGroup.groups.find((group) => group.group_id === group_id);
+
+  if (!group) {
+    throw new Error('Group not found');
+  }
+
+  group.items.push(this);
+
+  await userGroup.save();
+};
+
 module.exports = {
   ItemSchema,
   TabSchema,
+  NoteSchema,
   Item: mongoose.model('Item', ItemSchema),
   Tab: mongoose.model('Tab', TabSchema),
+  Note: mongoose.model('Note', NoteSchema),
 };

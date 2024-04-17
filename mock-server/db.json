@@ -81,31 +81,21 @@
     },
     {
       "user_id": "ed1979a2-ade0-4a03-b937-07d309b99477",
+      "groups": []
+    },
+    {
+      "user_id": "e84e02f8-f231-4dd7-bee4-ba29e9487ab9",
       "groups": [
         {
-          "group_id": "9e0824ec-f0f5-413e-9462-f505ceadc9f2",
-          "group_icon": "default_icon",
-          "group_title": "Untitled",
-          "items": []
-        },
-        {
-          "group_id": "0c94dd17-d14e-4986-b949-3f9713cd6b7a",
+          "group_id": "e23e362e-6a05-49c6-a0a1-574a7be0f5f4",
           "group_icon": "default_icon",
           "group_title": "Untitled",
           "items": [
             {
-              "item_id": "e51d87f2-f5b0-4853-ad51-c47a11acb45a",
-              "item_type": 0,
-              "note_bgColor": null,
-              "browserTab_favIconURL": "https://example.com/favicon.png",
-              "browserTab_title": "Example Tab Title",
-              "browserTab_url": "https://example.com",
-              "browserTab_id": 133,
-              "browserTab_index": 15,
-              "browserTab_active": false,
-              "browserTab_status": "complete",
-              "windowId": 3850513484,
-              "note_content": "string"
+              "item_id": "ea1a150e-2bd9-46b3-a110-a3a3f92a5eb5",
+              "item_type": 1,
+              "note_bgColor": "#ffffff",
+              "note_content": "這是筆記"
             }
           ]
         }
@@ -122,6 +112,11 @@
       "user_id": "ed1979a2-ade0-4a03-b937-07d309b99477",
       "email": "admin123@gmail.com",
       "password": "$2b$10$QNFpPLXXDXTjSWhIjDvZO.6MJGuB.RgSvLDlB79NMRJxHQgJaFWN."
+    },
+    {
+      "user_id": "e84e02f8-f231-4dd7-bee4-ba29e9487ab9",
+      "email": "user2@example.com",
+      "password": "$2b$10$lkFlZ2xxn/wWabt340V0fOE/QZRSM5Ml5Oiud0AuCyj.GCq5yV4Oq"
     }
   ]
 }

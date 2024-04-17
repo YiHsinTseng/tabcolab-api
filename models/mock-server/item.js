@@ -217,8 +217,27 @@ class Tab extends Item {
   }
 }
 
+class Note extends Item {
+  constructor({ note_content, note_bgColor }) {
+    super({ item_type: 1, note_bgColor: note_bgColor || '#ffffff' });
+    this.note_content = note_content;
+  }
+
+  async addNoteToGroup(group_id, user_id) {
+    const group = await db.get('user_groups').find({ user_id }).get('groups').find({ group_id })
+      .value();
+
+    if (!group) {
+      throw new Error('Group not found');
+    }
+
+    group.items.push(this);
+
+    await db.write();
+  }
+}
 module.exports = {
-  Item, Tab,
+  Item, Tab, Note,
 };
 
 /**

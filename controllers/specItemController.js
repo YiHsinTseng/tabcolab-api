@@ -2,7 +2,7 @@ const env = process.env.NODE_ENV || 'development';
 
 const config = require('../configs/config.json');
 
-const { Tab } = require(`../${config[env].db.modelpath}/item`);
+const { Tab, Note } = require(`../${config[env].db.modelpath}/item`);
 
 const addTab = async (req, res) => {
   const { group_id } = req.params;
@@ -53,6 +53,35 @@ const updateTab = async (req, res) => {
   }
 };
 
+const addNote = async (req, res) => {
+  const { group_id } = req.params;
+  const { user_id } = req.user;
+  const { note_content, note_bgColor } = req.body;
+
+  if (Object.keys(req.body).length > 2) {
+    return res.status(404).json({ status: 'fail', message: 'Unexpected Additional Parameters' });
+  }
+
+  if (note_content === '') {
+    return res.status(404).json({ status: 'fail', message: '"note_content" is not allowed to be empty' });
+  }
+
+  if (note_content === undefined && note_bgColor === undefined && Object.keys(req.body).length === 2) {
+    return res.status(404).json({ status: 'fail', message: 'Request Bodies Required' });
+  }
+
+  if (group_id && note_content !== undefined && note_bgColor) {
+    const newNote = new Note({ note_content, note_bgColor });
+    try {
+      await newNote.addNoteToGroup(group_id, user_id);
+      return res.status(201).json({ status: 'success', message: 'Note added to group successfully', item_id: newNote.item_id });
+    } catch (err) {
+      return res.status(400).json({ status: 'fail', message: err.message });
+    }
+  }
+  return res.status(400).json({ status: 'fail', message: 'Invalid request body' });
+};
+
 module.exports = {
-  addTab, updateTab,
+  addTab, updateTab, addNote,
 };
