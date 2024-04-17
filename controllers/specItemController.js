@@ -124,11 +124,11 @@ const updateTodo = async (req, res) => {
       return res.status(404).json({ status: 'fail', message: 'Unexpected Additional Parameters' });
     }
 
-    if (item_type === undefined && !doneStatus && note_content === undefined) {
+    if (item_type === undefined && doneStatus === undefined && note_content === undefined) {
       return res.status(404).json({ status: 'fail', message: 'Request Bodies Required' });
     }
 
-    if (item_type !== 1 && !doneStatus && note_content === undefined) {
+    if (item_type !== 1 && doneStatus === undefined && note_content === undefined) {
       return res.status(404).json({ status: 'fail', message: 'Invaild Request Bodies', detail: 'Only change Todo to Note, item_type must be 1' });
     }
 

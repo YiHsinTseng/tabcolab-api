@@ -170,7 +170,7 @@ TabSchema.statics.updateTab = async function (user_id, group_id, item_id, note_c
     throw new Error('Group not found');
   }
 
-  const tab = group.items.find((item) => item.item_id === item_id && item.item_type === 0);
+  const tab = group.items.find((item) => item._id === item_id && item.item_type === 0);
 
   if (!tab) {
     throw new Error('Tab not found in group');
