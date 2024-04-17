@@ -44,5 +44,6 @@ jobs:
             sudo chmod 600 .env
             sudo chown -R $USER /home/***/tabcolab/prod-server/mongodb_data
             cd Docker
-            docker-compose down --rmi all && docker system prune -f
+            sudo docker system prune -a -f
+            docker-compose down --rmi all
             docker-compose up --build -d
