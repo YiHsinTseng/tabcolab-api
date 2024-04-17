@@ -84,19 +84,19 @@
       "groups": []
     },
     {
-      "user_id": "22905485-6d19-4d20-b0f3-86c753187af3",
+      "user_id": "65479255-abdc-42a0-aaad-bc334f8d5c84",
       "groups": [
         {
-          "group_id": "5ab9adaf-4e04-469a-b0ca-0319243eda66",
+          "group_id": "e014a6a3-3e25-497c-aed7-0028d80f6e71",
           "group_icon": "default_icon",
           "group_title": "Untitled",
           "items": [
             {
-              "item_id": "248e1797-1b9c-4127-b5db-07262eaa4be6",
+              "item_id": "541e398a-889e-45d5-a67b-d42166911eef",
               "item_type": 2,
               "note_bgColor": "#ffffff",
-              "note_content": "note_content123",
-              "doneStatus": false
+              "note_content": "todo_content",
+              "doneStatus": true
             }
           ]
         }
@@ -115,9 +115,9 @@
       "password": "$2b$10$QNFpPLXXDXTjSWhIjDvZO.6MJGuB.RgSvLDlB79NMRJxHQgJaFWN."
     },
     {
-      "user_id": "22905485-6d19-4d20-b0f3-86c753187af3",
+      "user_id": "65479255-abdc-42a0-aaad-bc334f8d5c84",
       "email": "user2@example.com",
-      "password": "$2b$10$t0ztF859kuY.hPZDHfG/pO7hnHgSGJ.4TtQ4PnNEtneFGRpotBCc."
+      "password": "$2b$10$D1ZJlLVzQik7E.VE1AZaWu7jDTlkcgkC2TNuYIsSbXIY3o.JioiCa"
     }
   ]
 }

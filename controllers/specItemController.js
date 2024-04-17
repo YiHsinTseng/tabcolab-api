@@ -2,7 +2,7 @@ const env = process.env.NODE_ENV || 'development';
 
 const config = require('../configs/config.json');
 
-const { Tab, Note } = require(`../${config[env].db.modelpath}/item`);
+const { Tab, Note, Todo } = require(`../${config[env].db.modelpath}/item`);
 
 const addTab = async (req, res) => {
   const { group_id } = req.params;
@@ -109,6 +109,40 @@ const updateNote = async (req, res) => {
   return res.status(400).json({ status: 'fail', message: 'Invalid request body' });
 };
 
+const updateTodo = async (req, res) => {
+  const { group_id, item_id } = req.params;
+  const { user_id } = req.user;
+  const { item_type, doneStatus, note_content } = req.body;
+
+  if (Object.keys(req.body).length > 1) {
+    return res.status(404).json({ status: 'fail', message: 'Unexpected Additional Parameters' });
+  }
+
+  if (item_type === undefined && !doneStatus && note_content === undefined) {
+    return res.status(404).json({ status: 'fail', message: 'Request Bodies Required' });
+  }
+
+  if (item_type !== 1 && !doneStatus && note_content === undefined) {
+    return res.status(404).json({ status: 'fail', message: 'Invaild Request Bodies', detail: 'Only change Todo to Note, item_type must be 1' });
+  }
+
+  if (note_content !== undefined) {
+    await Todo.updateTodo(user_id, group_id, item_id, item_type, doneStatus, note_content);
+    return res.status(200).json({ status: 'success', message: 'Todo content changed successfully' });
+  }
+
+  if (item_type === 1) {
+    await Todo.updateTodo(user_id, group_id, item_id, item_type, doneStatus, note_content);
+    return res.status(200).json({ status: 'success', message: 'Todo changed to Note successfully' });
+  }
+
+  if (doneStatus === true || doneStatus === false) {
+    await Todo.updateTodo(user_id, group_id, item_id, item_type, doneStatus, note_content);
+    return res.status(200).json({ status: 'success', message: 'Todo status updated successfully' });
+  }
+  return res.status(400).json({ status: 'fail', message: 'Invalid request body' });
+};
+
 module.exports = {
-  addTab, updateTab, addNote, updateNote,
+  addTab, updateTab, addNote, updateNote, updateTodo,
 };

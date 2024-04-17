@@ -252,11 +252,62 @@ NoteSchema.statics.convertToTodo = async function (user_id, group_id, item_id) {
   await user_groups.save();
 };
 
+const TodoSchema = new mongoose.Schema({
+  ...ItemSchema.obj,
+  item_type: {
+    type: Number,
+    default: 2,
+  },
+  note_content: {
+    type: String,
+    required: true,
+  },
+  note_bgColor: {
+    type: String,
+    default: '#ffffff',
+  },
+  doneStatus: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+TodoSchema.statics.updateTodo = async function (user_id, group_id, item_id, item_type, doneStatus, note_content) {
+  const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
+  const group = userGroup.groups.find((group) => group.group_id === group_id);
+
+  if (!group) {
+    throw new Error('Group not found');
+  }
+
+  const todoIndex = group.items.findIndex((item) => item._id === item_id && item.item_type === 2);
+  if (todoIndex === -1) {
+    throw new Error('Todo not found in group');
+  }
+  // 更新 todo 的 note_content
+  if (group && todoIndex !== undefined && note_content !== undefined) {
+    group.items[todoIndex].note_content = note_content;
+  }
+  // 把 todo 轉成 note
+  if (group && todoIndex !== undefined && item_type === 1) {
+    group.items[todoIndex].item_type = 1;
+    delete group.items[todoIndex].doneStatus;
+  }
+  // 更新 todo 的 doneStatus
+  if (group && todoIndex !== undefined && (doneStatus === true || doneStatus === false)) {
+    group.items[todoIndex].doneStatus = doneStatus;
+  }
+  await userGroup.markModified('groups'); // 告訴 Mongoose groups 欄位已被修改
+  await userGroup.save();
+};
+
 module.exports = {
   ItemSchema,
   TabSchema,
   NoteSchema,
+  TodoSchema,
   Item: mongoose.model('Item', ItemSchema),
   Tab: mongoose.model('Tab', TabSchema),
   Note: mongoose.model('Note', NoteSchema),
+  Todo: mongoose.model('Todo', TodoSchema),
 };

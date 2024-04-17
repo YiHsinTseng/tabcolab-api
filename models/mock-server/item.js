@@ -273,8 +273,44 @@ class Note extends Item {
     await db.write();
   }
 }
+
+class Todo extends Item {
+  constructor({ note_content, note_bgColor }) {
+    super({ item_type: 2, note_bgColor: note_bgColor || '#ffffff' });
+    this.note_content = note_content;
+    this.doneStatus = false;
+  }
+
+  static async updateTodo(user_id, group_id, item_id, item_type, doneStatus, note_content) {
+    const userGroup = await db.get('user_groups').find({ user_id }).value();
+    const group = userGroup.groups.find((group) => group.group_id === group_id);
+
+    if (!group) {
+      throw new Error('Group not found');
+    }
+
+    const todoIndex = group.items.findIndex((item) => item.item_id === item_id && item.item_type === 2);
+    if (todoIndex === -1) {
+      throw new Error('Todo not found in group');
+    }
+
+    if (group && todoIndex !== undefined && note_content !== undefined) {
+      group.items[todoIndex].note_content = note_content;
+    }
+    if (group && todoIndex !== undefined && item_type === 1) {
+      group.items[todoIndex].item_type = 1;
+      delete group.items[todoIndex].doneStatus;
+    }
+    if (group && todoIndex !== undefined && (doneStatus === true || doneStatus === false)) {
+      group.items[todoIndex].doneStatus = doneStatus;
+    }
+
+    await db.write();
+  }
+}
+
 module.exports = {
-  Item, Tab, Note,
+  Item, Tab, Note, Todo,
 };
 
 /**
