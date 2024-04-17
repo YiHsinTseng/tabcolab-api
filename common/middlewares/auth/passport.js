@@ -85,7 +85,7 @@ const JwtStrategy = require('passport-jwt').Strategy;
 const { ExtractJwt } = require('passport-jwt');
 
 const jsonServer = require('json-server');
-const config = require('./config.json');
+const config = require('../../../configs/config.json');
 
 const env = process.env.NODE_ENV || 'development';
 // const { db } = jsonServer.router(config[env].db.path);

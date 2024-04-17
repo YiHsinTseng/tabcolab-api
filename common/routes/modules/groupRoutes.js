@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const controller = require('../../controllers/groupController');
-const { validateGroupDataTypes } = require('../../validations/validation-group');
-const { validateItemDataTypes } = require('../../validations/validation-item');
-const { validatePositionDataTypes } = require('../../validations/validation-position');
+const { validateGroupDataTypes } = require('../../../validations/validation-group');
+const { validateItemDataTypes } = require('../../../validations/validation-item');
+const { validatePositionDataTypes } = require('../../../validations/validation-position');
 
 router.get('/groups', controller.getGroups);
 router.post('/groups', validateGroupDataTypes, validateItemDataTypes, controller.createGroup);

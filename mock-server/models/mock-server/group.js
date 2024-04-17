@@ -3,8 +3,8 @@ const config = require('../../configs/config.json');
 
 const env = process.env.NODE_ENV || 'development';
 const { db } = jsonServer.router(config[env].db.path);
-const AppError = require('../../utils/appError');
-const { generateGroupId } = require('../../utils/generateId');
+const AppError = require('../../../common/middlewares/error/appError');
+const { generateGroupId } = require('../../../common/utils/generateId');
 
 class UserGroup {
   /**
