@@ -1,7 +1,7 @@
 {
   "development": {
     "app": {
-      "name": "server",
+      "name": "mock-server",
       "path": "./mock-server/server.js",
       "host": "localhost",
       "port": 5050
@@ -10,21 +10,21 @@
       "host": "localhost",
       "name": "db",
       "path": "./mock-server/db.json",
-      "modelpath": "./models/mock-server"
+      "modelpath": "models/mock-server"
     }
   },
   "production": {
     "app": {
-      "name": "server",
-      "path": "./server/server.js",
+      "name": "prod-server",
+      "path": "./prod-server/server.js",
       "host": "localhost",
-      "port": 5050
+      "port": 4000
     },
     "db": {
       "host": "localhost",
       "name": "mongoDB",
-      "path": "./mock-server/db.json",
-      "modelpath": "./models/mongoDB"
+      "path": "",
+      "modelpath": "models/mongoDb"
     }
   }
 }

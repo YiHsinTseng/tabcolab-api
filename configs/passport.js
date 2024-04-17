@@ -97,17 +97,11 @@ opts.secretOrKey = process.env.PASSPORT_SECRET;
 
 passport.use(
   new JwtStrategy(opts, (async (jwt_payload, done) => {
-    console.log('JwtStrategy callback is being executed');
     try {
-      console.log('jwt_payload', jwt_payload);
-      // const foundUser = await db.get('users').find({ user_id: jwt_payload.user_id }).value();
       const foundUser = await User.findUserById(jwt_payload.user_id);
-      console.log(foundUser);
       if (foundUser) {
-        console.log('User found in db in passport');
         return done(null, foundUser); // req.user <= foundUser
       }
-      console.log('User not found in db in passport');
       return done(null, false);
     } catch (e) {
       return done(e, false);

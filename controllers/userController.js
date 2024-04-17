@@ -19,7 +19,9 @@ const register = async (req, res, next) => {
     const {
       email, password,
     } = req.body;
+
     const newUser = new User({ email, password });
+
     const token = await newUser.generateAuthToken();
     const result = await newUser.createUser();
     if (result.success) {

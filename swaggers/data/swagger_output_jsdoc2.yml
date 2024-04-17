@@ -16,7 +16,6 @@ servers:
     description: Production server (localhost local MongoDB)
   - url: http://localhost:5050/api/1.0
     description: Mock server (localhost json-server)
-
 tags:
   - name: Users(Auths)
     description: Operations related to users authorization
@@ -30,7 +29,6 @@ tags:
     description: Specific operations related to items management
   - name: Items
     description: General operations related to items management
-
 paths:
   /groups:
     get:
@@ -81,7 +79,7 @@ paths:
       security:
         - bearerAuth: []
       summary: Create a new group in workspace
-      description: "Create a new group in the workspace. <br> It includes three scenarios: <br> 1. Create Group at Blank Space; <br> 2. Create Group by Dragging a Tab From Sidebar to Blank Space;<br> 3. Create Group by Dragging a Tab From a Group to Blank Space. "
+      description: "Create a new group in the workspace. <br> It includes three scenarios: <br> 1. Create Group at Blank Space; <br> 2. Create Group by Dragging a Tab From Sidebar to Blank Space;<br> 3. Create Group by Dragging a Item(Tab, Note,Todo) From a Group to Blank Space. "
       requestBody:
         required: true
         content:
@@ -90,7 +88,7 @@ paths:
               oneOf:
                 - $ref: "#/components/requestBodies/GroupCreateatBlank"
                 - $ref: "#/components/requestBodies/GroupCreatewithSidebarTabatBlank"
-                - $ref: "#/components/requestBodies/GroupCreatewithGroupTabtoBlank"
+                - $ref: "#/components/requestBodies/GroupCreatewithGroupItemtoBlank"
             examples:
               GroupCreateatBlank:
                 summary: Group Create at Blank
@@ -110,8 +108,8 @@ paths:
                   windowId: 3850513484
                   group_icon: https://example.com/group_icon2.png
                   group_title: Group 2
-              GroupCreatewithGroupTabtoBlank:
-                summary: Group Create with Group Tab to Blank
+              GroupCreatewithGroupItemtoBlank:
+                summary: Group Create with Group Item to Blank
                 value:
                   sourceGroup_id: "1"
                   item_id: "1"
@@ -141,7 +139,7 @@ paths:
         - Groups
       security:
         - bearerAuth: []
-      summary: Modify group info or status
+      summary: Modify group info or pos
       description: Modify group information or status:<br> 1. Modify group icon, group title <br>2. Changing group position
       parameters:
         - name: group_id
@@ -443,8 +441,8 @@ paths:
         - Items(Spec)
       security:
         - bearerAuth: []
-      summary: Change a note to a todo in an existing group
-      description: Change a note to a todo in an existing group.
+      summary: Modify a note's content or item_type in an existing group
+      description: "Modify the property of note in an existing group: <br> 1. Update the note_content field of note <br> 2. change item type from note to a todo"
       parameters:
         - name: group_id
           in: path
@@ -465,7 +463,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/requestBodies/TabNoteChangetoTodo"
+              oneOf:
+                - $ref: "#/components/requestBodies/NoteChangeContent"
+                - $ref: "#/components/requestBodies/NoteChangetoTodo"
+            examples:
+              NoteChangeContent:
+                summary: Update Note Content
+                value:
+                  note_content: note_content
+              NoteChangetoTodo:
+                summary: Note Change to Todo
+                value:
+                  item_type: 2
       responses:
         "200":
           description: Success
@@ -483,8 +492,8 @@ paths:
         - Items(Spec)
       security:
         - bearerAuth: []
-      summary: Change a todo status in an existing group
-      description: Change a todo status in an existing group. <br> 1. Change item type of todo to note <br>2. Update the doneStatus of  todo
+      summary: Modify a todo's content, status  or item_type in an existing group
+      description: Modify the property of todo in an existing group. <br>1. Update the note_content field of todo <br>2. Change item type from todo to note <br>3. Update the doneStatus of  todo
       parameters:
         - name: group_id
           in: path
@@ -506,9 +515,14 @@ paths:
           application/json:
             schema:
               oneOf:
+                - $ref: "#/components/requestBodies/TodoContentUpdate"
                 - $ref: "#/components/requestBodies/TodoChangetoNote"
                 - $ref: "#/components/requestBodies/TodoStatusUpdate"
             examples:
+              TodoContentUpdateExample:
+                summary: Update todo content
+                value:
+                  note_content: todo_content
               TodotoNoteExample:
                 summary: Change todo to note
                 value:
@@ -534,7 +548,7 @@ paths:
         - Users(Information)
       security:
         - bearerAuth: []
-      description: Returns all users data (For Information)
+      description: Returns all users data (For Testing)
       responses:
         "200":
           content:
@@ -546,7 +560,7 @@ paths:
         - Users(Information)
       security:
         - bearerAuth: []
-      description: Returns specific user data based on JWT information
+      description: Returns specific user data based on JWT information (For Testing)
       responses:
         "200":
           description: For Testing
@@ -780,8 +794,8 @@ components:
           $ref: "#/components/schemas/Group/properties/group_icon"
         group_title:
           $ref: "#/components/schemas/Group/properties/group_title"
-    GroupCreatewithGroupTabtoBlank:
-      description: Create Group by Dragging a Tab From a Group to Blank Space.
+    GroupCreatewithGroupItemtoBlank:
+      description: Create Group by Dragging a Item From a Group to Blank Space.
       type: object
       properties:
         sourceGroup_id:
@@ -846,6 +860,8 @@ components:
     addNote:
       description: Create a note in group.
       type: object
+      required:
+        - note_content
       properties:
         note_content:
           type: string
@@ -854,7 +870,13 @@ components:
       example:
         note_content: ""
         note_bgColor: "#ffffff"
-    TabNoteChangetoTodo:
+    NoteChangeContent:
+      description: Change Note Content.
+      type: object
+      properties:
+        note_content:
+          type: string
+    NoteChangetoTodo:
       description: Convert a tab to a todo.
       type: object
       properties:
@@ -862,6 +884,12 @@ components:
           type: integer
           enum:
             - 2
+    TodoContentUpdate:
+      description: Update Todo Content.
+      type: object
+      properties:
+        note_content:
+          type: string
     TodoChangetoNote:
       description: Convert a todo to a note in an existing group.
       type: object

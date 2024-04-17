@@ -9,8 +9,8 @@ COPY . .
 # Install dependencies
 RUN npm install
 
-# Expose port 5050
-EXPOSE 5050
+# Expose port 4000
+EXPOSE 4000
 
 # Start the application
-CMD ["npm", "run", "mock-server"]
+CMD ["npm", "run", "prod-server"]

@@ -39,7 +39,7 @@ const createGroup = async (req, res, next) => {
       browserTab_url: browserTabReq.browserTab_url,
       browserTab_id: Number(browserTabReq.browserTab_id),
       browserTab_index: Number(browserTabReq.browserTab_index),
-      browserTab_active: browserTabReq.browserTab_active,
+      browserTab_active: Boolean(browserTabReq.browserTab_active),
       browserTab_status: browserTabReq.browserTab_status,
       windowId: Number(browserTabReq.windowId),
     };

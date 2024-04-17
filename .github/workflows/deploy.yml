@@ -1,0 +1,49 @@
+name: Deploy to EC2
+
+on: [push]
+
+jobs:
+  Deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    env:
+      API_VERSION: ${{ secrets.API_VERSION }}
+      PASSPORT_SECRET: ${{ secrets.PASSPORT_SECRET }}
+      USE_CLOUD_DB: ${{ secrets.USE_CLOUD_DB }}
+      PROD_PORT: ${{ secrets.PROD_PORT }}
+      DEV_PORT: ${{ secrets.DEV_PORT }}
+      MONGODB_URI_LOCAL: ${{ secrets.MONGODB_URI_LOCAL }}
+      MONGODB_URI_CLOUD: ${{ secrets.MONGODB_URI_CLOUD }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Connect to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }} # Ipv4 address of EC2 instance
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }} # Add public key to EC2 instance and private key to Github secrets
+          envs: API_VERSION,PASSPORT_SECRET,USE_CLOUD_DB,PROD_PORT,DEV_PORT,MONGODB_URI_LOCAL,MONGODB_URI_CLOUD
+          script: |
+            if [ ! -d "tabcolab" ]; then 
+              git clone -b Yang-0409-build-item-and-deploy git@github.com:SideProjectAC/tabcolab.git
+              cd tabcolab
+            else
+              cd tabcolab
+              git pull origin Yang-0409-build-item-and-deploy
+            fi
+            echo API_VERSION=$API_VERSION > .env
+            echo PASSPORT_SECRET=$PASSPORT_SECRET >> .env
+            echo USE_CLOUD_DB=$USE_CLOUD_DB >> .env
+            echo PROD_PORT=$PROD_PORT >> .env
+            echo DEV_PORT=$DEV_PORT >> .env
+            echo MONGODB_URI_LOCAL=$MONGODB_URI_LOCAL >> .env
+            echo MONGODB_URI_CLOUD=$MONGODB_URI_CLOUD >> .env
+            sudo chmod 600 .env
+            sudo chown -R $USER /home/***/tabcolab/prod-server/mongodb_data
+            cd Docker
+            sudo docker system prune -a -f
+            docker-compose down --rmi all
+            docker-compose up --build -d

@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const { generateGroupId } = require('../../utils/generateId');
 
 const AppError = require('../../utils/appError');
-const { ItemSchema, TabSchema } = require('./item');
 
 const { Schema } = mongoose;
 
@@ -24,6 +23,20 @@ const GroupSchema = new mongoose.Schema({
     type: [Schema.Types.Mixed],
     default: [],
   },
+}, {
+  toJSON: {
+    transform(doc, ret) {
+      const { _id, ...rest } = ret;
+      const newRet = { group_id: _id, ...rest };
+      if (newRet.items) {
+        newRet.items = newRet.items.map((item) => {
+          const { _id, id, ...itemRest } = item;
+          return { item_id: _id, ...itemRest };
+        });
+      }
+      return newRet;
+    },
+  },
 });
 
 const UserGroupSchema = new mongoose.Schema({
@@ -32,6 +45,14 @@ const UserGroupSchema = new mongoose.Schema({
     alias: 'user_id',
   },
   groups: [GroupSchema],
+}, {
+  toJSON: {
+    transform(doc, ret) {
+      const { _id, ...rest } = ret;
+      const newRet = { user_id: _id, ...rest };
+      return newRet;
+    },
+  },
 });
 
 UserGroupSchema.statics.findGroupById = async function (user_id, group_id) {

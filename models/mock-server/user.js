@@ -28,7 +28,9 @@ class User {
   }
 
   async generateAuthToken() {
-    const tokenObject = { user_id: this.user_id, email: this.email, version: 'v1.0' };
+    const tokenObject = {
+      user_id: this.user_id, email: this.email, version: 'v1.0',
+    };
     const token = jwt.sign(tokenObject, process.env.PASSPORT_SECRET, { expiresIn: '7d' });
     return token;
   }

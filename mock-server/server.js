@@ -1,12 +1,12 @@
 require('dotenv').config();
 
-const { API_VERSION } = process.env;
+const { API_VERSION, DEV_PORT } = process.env;
 
 const jsonServer = require('json-server');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const authenticateJwt = require('../middlewares/authenticate');
+const { authenticateJwt } = require('../middlewares/authenticate');
 const apiErrorHandler = require('../middlewares/errorHandler');
 const swagger = require('../swaggers/config/swaggerSetup');
 
@@ -16,6 +16,8 @@ const middlewares = jsonServer.defaults();
 
 const userRoutes = require('../routes').user;
 const groupRoutes = require('../routes').group;
+const itemRoutes = require('../routes').item;
+const specItemRoutes = require('../routes').specItem;
 
 // Redirect the root directory to the API documentation
 server.get('/', (req, res) => {
@@ -37,9 +39,10 @@ server.use(`/api/${API_VERSION}`, userRoutes);
 // 在所有其他路由之前添加 JWT 驗證中間件
 server.use(authenticateJwt);
 server.use(`/api/${API_VERSION}`, groupRoutes);
-
+server.use(`/api/${API_VERSION}`, itemRoutes);
+server.use(`/api/${API_VERSION}`, specItemRoutes);
 apiErrorHandler(server);
 
-server.listen(5050, () => {
+server.listen(DEV_PORT, () => {
   console.log('Server is running');
 });

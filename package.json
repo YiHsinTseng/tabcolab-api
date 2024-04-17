@@ -4,13 +4,11 @@
   "description": "",
   "private": true,
   "scripts": {
-    "start": "NODE_ENV=production nodemon ./listener.js",
-    "debug": "DEBUG=app:server nodemon listener.js",
-    "dev": "NODE_ENV=development node ./mock-server/initData/initDB.js && NODE_ENV=development nodemon ./mock-server/server.js",
     "mock-server": "node ./mock-server/initData/initDB.js && nodemon ./mock-server/server.js",
-    "docker-compose": "cd Docker && docker-compose up --build -d",
-    "prod-server": "NODE_ENV=production nodemon ./server/server.js",
-    "oauth": "nodemon ./oauth/index.js"
+    "prod-server": "NODE_ENV=production nodemon ./prod-server/server.js",
+    "docker-compose": "cd Docker && USE_CLOUD_DB=true docker-compose up --build -d",
+    "mongodb-dump": "mongodump --uri='mongodb://localhost:27017/TabcolabDB' --out=./",
+    "mongodb-store": "mongorestore --uri='mongodb://localhost:27017/TabcolabDBTest' ./TabcolabDB"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -35,10 +33,13 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.1",
+    "i": "^0.3.7",
     "json-server": "^0.16.3",
+    "npm": "^10.5.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "yamljs": "^0.3.0"

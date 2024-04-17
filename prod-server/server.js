@@ -6,7 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const authenticateJwt = require('../middlewares/authenticate');
+const { authenticateJwt } = require('../middlewares/authenticate');
 const apiErrorHandler = require('../middlewares/errorHandler');
 const swagger = require('../swaggers/config/swaggerSetup');
 
@@ -14,8 +14,21 @@ const server = express();
 
 const userRoutes = require('../routes').user;
 const groupRoutes = require('../routes').group;
+const itemRoutes = require('../routes').item;
+const specItemRoutes = require('../routes').specItem;
 
-const MONGODB_URI = 'mongodb://localhost:27017/TabcolabDB';
+const {
+  PROD_PORT, MONGODB_URI_LOCAL, MONGODB_URI_CLOUD, USE_CLOUD_DB,
+} = process.env;
+
+let MONGODB_URI;
+if (USE_CLOUD_DB === 'true') {
+  MONGODB_URI = MONGODB_URI_CLOUD;
+} else {
+  MONGODB_URI = MONGODB_URI_LOCAL;
+}
+console.log(MONGODB_URI);
+
 // Connect to MongoDB
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
@@ -40,9 +53,10 @@ server.use(`/api/${API_VERSION}`, userRoutes);
 // 在所有其他路由之前添加 JWT 驗證中間件
 server.use(authenticateJwt);
 server.use(`/api/${API_VERSION}`, groupRoutes);
-
+server.use(`/api/${API_VERSION}`, itemRoutes);
+server.use(`/api/${API_VERSION}`, specItemRoutes);
 apiErrorHandler(server);
 
-server.listen(5050, () => {
+server.listen(PROD_PORT, () => {
   console.log('Server is running');
 });
