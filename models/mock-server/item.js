@@ -235,6 +235,43 @@ class Note extends Item {
 
     await db.write();
   }
+
+  static async updateNoteContent(user_id, group_id, item_id, newContent) {
+    const group = await db.get('user_groups').find({ user_id }).get('groups').find({ group_id })
+      .value();
+
+    if (!group) {
+      throw new Error('Group not found');
+    }
+
+    const noteIndex = group.items.findIndex((item) => item.item_id === item_id && item.item_type === 1);
+    if (noteIndex === -1) {
+      throw new Error('Note not found in group');
+    }
+
+    group.items[noteIndex].note_content = newContent;
+
+    await db.write();
+  }
+
+  static async convertToTodo(user_id, group_id, item_id) {
+    const group = await db.get('user_groups').find({ user_id }).get('groups').find({ group_id })
+      .value();
+
+    if (!group) {
+      throw new Error('Group not found');
+    }
+
+    const noteIndex = group.items.findIndex((item) => item.item_id === item_id && item.item_type === 1);
+    if (noteIndex === -1) {
+      throw new Error('Note not found in group');
+    }
+
+    group.items[noteIndex].item_type = 2;
+    group.items[noteIndex].doneStatus = false;
+
+    await db.write();
+  }
 }
 module.exports = {
   Item, Tab, Note,

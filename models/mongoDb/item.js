@@ -213,6 +213,45 @@ NoteSchema.methods.addNoteToGroup = async function (group_id, user_id) {
   await userGroup.save();
 };
 
+NoteSchema.statics.updateNoteContent = async function (user_id, group_id, item_id, newContent) {
+  const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
+  const group = userGroup.groups.find((group) => group.group_id === group_id);
+
+  if (!group) {
+    throw new Error('Group not found');
+  }
+
+  const noteIndex = group.items.findIndex((item) => item._id === item_id && item.item_type === 1);
+  if (noteIndex === -1) {
+    throw new Error('Note not found in group');
+  }
+
+  group.items[noteIndex].note_content = newContent;
+
+  await userGroup.markModified('groups'); // 告訴 Mongoose groups 欄位已被修改
+  await userGroup.save();
+};
+
+NoteSchema.statics.convertToTodo = async function (user_id, group_id, item_id) {
+  const user_groups = await UserGroup.findOne({ _id: user_id }).exec();
+  const group = user_groups.groups.find((group) => group.group_id === group_id);
+
+  if (!group) {
+    throw new Error('Group not found');
+  }
+
+  const noteIndex = group.items.findIndex((item) => item._id === item_id && item.item_type === 1);
+  if (noteIndex === -1) {
+    throw new Error('Note not found in group');
+  }
+
+  group.items[noteIndex].item_type = 2;
+  group.items[noteIndex].doneStatus = false;
+
+  await user_groups.markModified('groups'); // 告訴 Mongoose groups 欄位已被修改
+  await user_groups.save();
+};
+
 module.exports = {
   ItemSchema,
   TabSchema,

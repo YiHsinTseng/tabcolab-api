@@ -82,6 +82,33 @@ const addNote = async (req, res) => {
   return res.status(400).json({ status: 'fail', message: 'Invalid request body' });
 };
 
+const updateNote = async (req, res) => {
+  const { group_id, item_id } = req.params;
+  const { user_id } = req.user;
+  const { item_type, note_content } = req.body;
+
+  if (Object.keys(req.body).length === 0) {
+    return res.status(404).json({ status: 'fail', message: 'Request Bodies Required' });
+  }
+  if (Object.keys(req.body).length > 1) {
+    return res.status(404).json({ status: 'fail', message: 'Unexpected Additional Parameters' });
+  }
+  if (note_content === undefined && item_type !== 2) {
+    return res.status(404).json({ status: 'fail', message: 'Invaild Request Bodies', detail: 'Only change Note to Todo, item_type must be 2' });
+  }
+
+  if (group_id && note_content !== undefined) {
+    await Note.updateNoteContent(user_id, group_id, item_id, note_content);
+    return res.status(200).json({ status: 'success', message: 'Note content changed successfully' });
+  }
+
+  if (group_id && note_content === undefined && item_type === 2) {
+    await Note.convertToTodo(user_id, group_id, item_id);
+    return res.status(200).json({ status: 'success', message: 'Note changed to todo successfully' });
+  }
+  return res.status(400).json({ status: 'fail', message: 'Invalid request body' });
+};
+
 module.exports = {
-  addTab, updateTab, addNote,
+  addTab, updateTab, addNote, updateNote,
 };
