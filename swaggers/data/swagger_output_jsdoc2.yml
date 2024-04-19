@@ -8,6 +8,13 @@ servers:
     description: Production server (EC2 MongoDB Altas)
   - url: https://13.115.132.26/api/1.0
     description: Production server (EC2 MongoDB Altas)
+  - url: https://tabcolab.live/api/1.0
+    description: Production server (EC2 MongoDB Altas)
+  - url: https://www.tabcolab.live/api/1.0
+    description: Production server (EC2 MongoDB Altas)
+  - url: https://d1d8qny6cjcfu0.cloudfront.net/api/1.0
+    description: Production server (EC2 MongoDB Altas)
+
   # - url: http://13.115.132.26:4000/api/1.0
   #   description: Production server (EC2 local MongoDB)
   # - url: http://13.115.132.26:5050/api/1.0
