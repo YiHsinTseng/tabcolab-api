@@ -31,7 +31,13 @@ server.use(middlewares);
 server.use(bodyParser.json());
 // 解析 URL 編碼的請求主體
 server.use(bodyParser.urlencoded({ extended: true }));
-server.use(cors());
+
+const corsOptions = {
+  origin: ['http://13.115.132.26', 'https://13.115.132.26', 'http://www.tabcolab.live', 'https://www.tabcolab.live', 'http://tabcolab.live', 'https://tabcolab.live', 'http://d1d8qny6cjcfu0.cloudfront.net', 'https://d1d8qny6cjcfu0.cloudfront.net'],
+  optionsSuccessStatus: 200,
+};
+
+server.use(cors(corsOptions));
 
 // api with api version
 server.use(`/api/${API_VERSION}`, userRoutes);
