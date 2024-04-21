@@ -55,12 +55,13 @@ function setupSwagger(server) {
   const fs = require('fs');
   const yaml = require('js-yaml');
   const path = require('path');
-  const spec = fs.readFileSync(path.resolve(__dirname, '../data/swagger_output_jsdoc2.yml'));
+  const spec = fs.readFileSync(path.resolve(__dirname, '../data/swagger_output_jsdoc.yml'));
   const swaggerSpec = yaml.load(spec);
 
   // FIXME - api-doc不用前綴。不然請求會重複路徑
-  server.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+  server.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    oauth2RedirectUrl: 'https://tabcolab.live/api-doc/oauth2-redirect.html',
+  }));
   return server;
 }
 

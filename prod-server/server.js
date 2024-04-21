@@ -3,6 +3,7 @@ require('dotenv').config();
 const { API_VERSION } = process.env;
 
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -11,6 +12,9 @@ const apiErrorHandler = require('../middlewares/errorHandler');
 const swagger = require('../swaggers/config/swaggerSetup');
 
 const server = express();
+
+// 靜態文件服務器中間件應該在所有其他中間件和路由之前應用
+server.use('/oauth2-redirect.html', express.static(path.join(__dirname, '../node_modules/swagger-ui-dist/oauth2-redirect.html')));
 
 const userRoutes = require('../routes').user;
 const groupRoutes = require('../routes').group;
