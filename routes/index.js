@@ -1,10 +1,6 @@
-const express = require('express');
-
-const router = express.Router();
-
-/* GET home page. */
-router.get('/', (req, res, next) => {
-  res.send('Hello, world!');
-});
-
-module.exports = router;
+module.exports = {
+  user: require('./modules/userRoutes'),
+  group: require('./modules/groupRoutes'),
+  item: require('./modules/itemsRoutes'),
+  specItem: require('./modules/specItemsRoutes'),
+};
