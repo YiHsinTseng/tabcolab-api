@@ -13,7 +13,6 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
     minlength: 6,
     maxlength: 50,
   },
@@ -26,6 +25,9 @@ const userSchema = new mongoose.Schema({
     maxlength: 50,
   },
   googleID: {
+    type: String,
+  },
+  githubID: {
     type: String,
   },
   thumbnail: {
@@ -52,6 +54,11 @@ userSchema.statics.findUserById = async function (user_id) {
 
 userSchema.statics.findUserByGoogleId = async function (google_id) {
   const user = await this.findOne({ googleID: google_id });
+  return user;
+};
+
+userSchema.statics.findUserByGithubId = async function (github_id) {
+  const user = await this.findOne({ githubID: github_id });
   return user;
 };
 

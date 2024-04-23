@@ -4,22 +4,21 @@ info:
   version: 1.0.0
   description: Your API Description
 servers:
-  - url: http://13.115.132.26/api/1.0
-    description: Production server (EC2 MongoDB Altas)
-  - url: https://13.115.132.26/api/1.0
-    description: Production server (EC2 MongoDB Altas)
   - url: https://tabcolab.live/api/1.0
     description: Production server (EC2 MongoDB Altas)
   - url: https://www.tabcolab.live/api/1.0
     description: Production server (EC2 MongoDB Altas)
   - url: https://d1d8qny6cjcfu0.cloudfront.net/api/1.0
     description: Production server (EC2 MongoDB Altas)
+  - url: http://13.115.132.26/api/1.0
+    description: Production server (EC2 MongoDB Altas)
+  - url: https://13.115.132.26/api/1.0
+    description: Production server (EC2 MongoDB Altas)
   - url: http://localhost:5000/api/1.0
     description: Production server (localhost MongoDB Altas)
   - url: http://localhost:4000/api/1.0
     description: Production server (localhost local MongoDB)
-  - url: http://localhost:5050/api/1.0
-    description: Mock server (localhost json-server)
+
   # - url: http://13.115.132.26:4000/api/1.0
   #   description: Production server (EC2 local MongoDB)
   # - url: http://13.115.132.26:5050/api/1.0
@@ -50,13 +49,38 @@ paths:
     get:
       tags:
         - Users(OAuths)
-      security:
-        - GoogleOAuth: [profile, email]
       summary: Display JWT token from Google OAuth2.0
       description: Login with Google OAuth2.0 and get JWT token. <br> url (cloud) <br> https://tabcolab.live/api/1.0/auth/google <br> url (localhost) <br> http://localhost:4000/api/1.0/auth/google
       responses:
         "200":
           description: receive JWT token from Google OAuth2.0
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid request
+  /auth/github/token:
+    get:
+      tags:
+        - Users(OAuths)
+      summary: Display JWT token from Github OAuth2.0
+      description: Login with Github OAuth2.0 and get JWT token. <br> url (cloud) <br> https://tabcolab.live/api/1.0/auth/github <br> url (localhost) <br> http://localhost:4000/api/1.0/auth/github
+      responses:
+        "200":
+          description: receive JWT token from Github OAuth2.0
           content:
             application/json:
               schema:
