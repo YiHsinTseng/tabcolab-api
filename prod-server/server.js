@@ -56,8 +56,9 @@ server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 
 const corsOptions = {
-  origin: ['http://13.115.132.26', 'https://13.115.132.26', 'http://www.tabcolab.live', 'https://www.tabcolab.live', 'http://tabcolab.live', 'https://tabcolab.live', 'http://d1d8qny6cjcfu0.cloudfront.net', 'https://d1d8qny6cjcfu0.cloudfront.net'],
+  origin: ['http://13.115.132.26', 'https://13.115.132.26', 'http://www.tabcolab.live', 'https://www.tabcolab.live', 'http://tabcolab.live', 'https://tabcolab.live', 'http://d1d8qny6cjcfu0.cloudfront.net', 'https://d1d8qny6cjcfu0.cloudfront.net', 'http://localhost:4000'],
   optionsSuccessStatus: 200,
+  credentials: true, // 允許跨來源的 cookie
 };
 
 server.use(cors(corsOptions));
