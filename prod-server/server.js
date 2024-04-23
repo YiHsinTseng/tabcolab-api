@@ -14,8 +14,8 @@ const swagger = require('../swaggers/config/swaggerSetup');
 
 const server = express();
 
-// // 靜態文件服務器中間件應該在所有其他中間件和路由之前應用
-// server.use('/oauth2-redirect.html', express.static(path.join(__dirname, '../node_modules/swagger-ui-dist/oauth2-redirect.html')));
+// 靜態文件服務器中間件應該在所有其他中間件和路由之前應用
+server.use('/google_login.html', express.static(path.join(__dirname, '../google_login.html')));
 
 const userRoutes = require('../routes').user;
 const groupRoutes = require('../routes').group;
