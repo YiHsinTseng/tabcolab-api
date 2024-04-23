@@ -60,7 +60,7 @@ function setupSwagger(server) {
 
   // FIXME - api-doc不用前綴。不然請求會重複路徑
   server.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-    oauth2RedirectUrl: 'https://tabcolab.live/api-doc/oauth2-redirect.html',
+    oauth2RedirectUrl: process.env.GOOGLE_AUTH_CALLBACK_URL,
   }));
   return server;
 }

@@ -31,6 +31,8 @@ servers:
   # - url: http://localhost:5050/api/1.0
   #   description: Mock server (localhost json-server)
 tags:
+  - name: Users(OAuths)
+    description: Operations related to users oauth authorization
   - name: Users(Auths)
     description: Operations related to users authorization
   - name: Users(Information)
@@ -44,6 +46,35 @@ tags:
   - name: Items
     description: General operations related to items management
 paths:
+  /auth/google/token:
+    get:
+      tags:
+        - Users(OAuths)
+      security:
+        - GoogleOAuth: [profile, email]
+      summary: Display JWT token from Google OAuth2.0
+      description: Login with Google OAuth2.0 and get JWT token. <br> url (cloud) <br> https://tabcolab.live/api/1.0/auth/google <br> url (localhost) <br> http://localhost:4000/api/1.0/auth/google
+      responses:
+        "200":
+          description: receive JWT token from Google OAuth2.0
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid request
   /groups:
     get:
       tags:
@@ -92,8 +123,6 @@ paths:
         - Groups
       security:
         - bearerAuth: []
-        - GoogleOAuth:
-            - email
       summary: Create a new group in workspace
       description: "Create a new group in the workspace. <br> It includes three scenarios: <br> 1. Create Group at Blank Space; <br> 2. Create Group by Dragging a Tab From Sidebar to Blank Space;<br> 3. Create Group by Dragging a Item(Tab, Note,Todo) From a Group to Blank Space. "
       requestBody:
@@ -1083,4 +1112,3 @@ components:
           tokenUrl: https://www.googleapis.com/oauth2/v4/token
           scopes:
             email: Access to your email address
-            profile: Access to your profile information

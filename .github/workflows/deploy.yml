@@ -14,6 +14,10 @@ jobs:
       DEV_PORT: ${{ secrets.DEV_PORT }}
       MONGODB_URI_LOCAL: ${{ secrets.MONGODB_URI_LOCAL }}
       MONGODB_URI_CLOUD: ${{ secrets.MONGODB_URI_CLOUD }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      GOOGLE_AUTH_CALLBACK_URL: ${{ secrets.GOOGLE_AUTH_CALLBACK_URL }}
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
 
     steps:
       - name: Checkout code
@@ -28,11 +32,11 @@ jobs:
           envs: API_VERSION,PASSPORT_SECRET,USE_CLOUD_DB,PROD_PORT,DEV_PORT,MONGODB_URI_LOCAL,MONGODB_URI_CLOUD
           script: |
             if [ ! -d "tabcolab" ]; then 
-              git clone -b Yang-0409-build-item-and-deploy git@github.com:SideProjectAC/tabcolab.git
+              git clone -b feature/add-oauth git@github.com:SideProjectAC/tabcolab.git
               cd tabcolab
             else
               cd tabcolab
-              git pull origin Yang-0409-build-item-and-deploy
+              git pull origin feature/add-oauth
             fi
             echo API_VERSION=$API_VERSION > .env
             echo PASSPORT_SECRET=$PASSPORT_SECRET >> .env
@@ -41,6 +45,10 @@ jobs:
             echo DEV_PORT=$DEV_PORT >> .env
             echo MONGODB_URI_LOCAL=$MONGODB_URI_LOCAL >> .env
             echo MONGODB_URI_CLOUD=$MONGODB_URI_CLOUD >> .env
+            echo GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID >> .env
+            echo GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET >> .env
+            echo GOOGLE_AUTH_CALLBACK_URL=$GOOGLE_AUTH_CALLBACK_URL >> .env
+            echo SESSION_SECRET=$SESSION_SECRET >> .env
             sudo chmod 600 .env
             sudo chown -R $USER /home/***/tabcolab/prod-server/mongodb_data
             cd Docker
