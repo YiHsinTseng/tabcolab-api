@@ -61,9 +61,9 @@ passport.use(
 passport.use(
   new GithubStrategy(
     {
-      clientID: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: process.env.GITHUB_AUTH_CALLBACK_URL,
+      clientID: process.env.CLOUD_GITHUB_CLIENT_ID,
+      clientSecret: process.env.CLOUD_GITHUB_CLIENT_SECRET,
+      callbackURL: process.env.CLOUD_GITHUB_AUTH_CALLBACK_URL,
     },
     async (accessToken, refreshToken, profile, done) => {
       console.log('進入 GithubStrategy 的區域');
