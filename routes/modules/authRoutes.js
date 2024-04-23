@@ -6,18 +6,20 @@ router.get(
   passport.authenticate('google', {
     scope: ['profile', 'email'],
     prompt: 'select_account',
-    session: false,
   }),
 );
 
 router.get('/google/redirect', passport.authenticate('google', { session: false }), (req, res) => {
-  res.cookie('jwt', req.user.token, {
-    httpOnly: false, // 防止 JavaScript 讀取此 cookie
-    secure: false, // 只在 HTTPS 連線中傳送此 cookie
-    sameSite: 'lax', // 在跨站點的 GET 請求中傳送此 cookie
-    domain: 'localhost', // 設置 cookie 的網域
-  });
+  req.session.googleToken = req.user.token; // 將 Google token 存到 session
   res.redirect('http://localhost:4000/oauthLogin.html');
+});
+
+router.get('/google/token', (req, res) => {
+  if (req.session.googleToken) {
+    res.json({ token: req.session.googleToken }); // 將 Google token 以 JSON 格式回傳
+  } else {
+    res.status(401).json({ error: '未授權' });
+  }
 });
 
 router.get(
@@ -25,18 +27,19 @@ router.get(
   passport.authenticate('github', {
     scope: ['profile', 'email'],
     prompt: 'select_account',
-    session: false,
   }),
 );
 
 router.get('/github/redirect', passport.authenticate('github', { session: false }), (req, res) => {
-  res.cookie('jwt', req.user.token, {
-    httpOnly: false, // 防止 JavaScript 讀取此 cookie
-    secure: false, // 只在 HTTPS 連線中傳送此 cookie
-    sameSite: 'lax', // 在跨站點的 GET 請求中傳送此 cookie
-    domain: 'localhost', // 設置 cookie 的網域
-  });
+  req.session.githubToken = req.user.token; // 將 GitHub token 存到 session
   res.redirect('http://localhost:4000/oauthLogin.html');
 });
 
+router.get('/github/token', (req, res) => {
+  if (req.session.githubToken) {
+    res.json({ token: req.session.githubToken }); // 將 GitHub token 以 JSON 格式回傳
+  } else {
+    res.status(401).json({ error: '未授權' });
+  }
+});
 module.exports = router;
