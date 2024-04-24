@@ -25,7 +25,7 @@ const register = async (req, res, next) => {
     const token = await newUser.generateAuthToken();
     const result = await newUser.createUser();
     if (result.success) {
-      return res.status(201).json({ message: result.message, token });
+      return res.status(201).json({ status: 'success', message: result.message, token });
     }
 
     return ErrorResponse(400, 'Failed to register', res);
@@ -46,7 +46,8 @@ const login = async (req, res, next) => {
     if (isMatch) {
       const token = await foundUser.generateAuthToken();
       return res.send({
-        message: '成功登入',
+        status: 'success',
+        message: 'User logged in successfully',
         token,
       });
     }
@@ -60,7 +61,7 @@ const getAllUsers = async (req, res, next) => {
   try {
     const result = await User.getAllUsers();
     if (result.success) {
-      return res.status(200).json({ users: result.users });
+      return res.status(200).json(result.users);
     }
     return ErrorResponse(400, 'Cannot get users', res);
   } catch (error) {
@@ -74,7 +75,7 @@ const getUserInfo = async (req, res, next) => {
     const { user_id } = req.user;
     const result = await User.getUserInfo(user_id);
     if (result.success) {
-      return res.status(200).json({ user: result.user });
+      return res.status(200).json(result.user);
     }
     return ErrorResponse(400, 'Cannot get users', res);
   } catch (error) {
@@ -111,7 +112,7 @@ const updateUserInfo = async (req, res, next) => {
     }
 
     if (result.success) {
-      return res.status(200).json({ message: result.message });
+      return res.status(200).json({ status: 'success', message: result.message });
     }
     return ErrorResponse(400, 'User failed to update', res);
   } catch (error) {
@@ -125,7 +126,7 @@ const deleteUser = async (req, res, next) => {
 
     const result = await User.deleteUser(user_id, next);
     if (result.success) {
-      return res.status(200).json({ message: result.message });
+      return res.status(200).json({ status: 'success', message: result.message });
     }
     return ErrorResponse(400, 'User failed to delete', res);
   } catch (error) {

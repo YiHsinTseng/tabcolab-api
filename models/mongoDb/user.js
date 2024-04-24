@@ -104,14 +104,23 @@ userSchema.methods.createUser = async function () {
 };
 
 userSchema.statics.getAllUsers = async function () {
-  const users = await this.find();
-  return { success: true, users };
+  const users = await this.find().select('-__v');
+  const userObjects = users.map((user) => {
+    const userObject = user.toJSON();
+    delete userObject.password;
+    return userObject;
+  });
+  return { success: true, users: userObjects };
 };
 
 userSchema.statics.getUserInfo = async function (user_id) {
-  const user = await this.findById(user_id);
+  const user = await this.findById(user_id).select('-__v');
   if (user) {
-    return { success: true, user };
+    // 將 user 物件轉換為一個普通的 JavaScript 物件
+    const userObject = user.toJSON();
+    // 刪除 password 屬性
+    delete userObject.password;
+    return { success: true, user: userObject };
   }
   return { success: false };
 };
