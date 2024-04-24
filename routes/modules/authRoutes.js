@@ -11,7 +11,7 @@ router.get(
 
 router.get('/google/redirect', passport.authenticate('google', { session: false }), (req, res) => {
   req.session.googleToken = req.user.token; // 將 Google token 存到 session
-  res.redirect('https://gfledkccocicmdgnjeafbnffcimdfonb.chromiumapp.org/');
+  res.redirect('chrome-extension://gfledkccocicmdgnjeafbnffcimdfonb/index.html');
 });
 
 router.get('/google/token', (req, res) => {
@@ -32,7 +32,7 @@ router.get(
 
 router.get('/github/redirect', passport.authenticate('github', { session: false }), (req, res) => {
   req.session.githubToken = req.user.token; // 將 GitHub token 存到 session
-  res.redirect('https://gfledkccocicmdgnjeafbnffcimdfonb.chromiumapp.org/');
+  res.redirect('chrome-extension://gfledkccocicmdgnjeafbnffcimdfonb/index.html');
 });
 
 router.get('/github/token', (req, res) => {
