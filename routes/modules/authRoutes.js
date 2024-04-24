@@ -23,7 +23,7 @@ router.get('/google/token', async (req, res, next) => {
     if (req.session.googleToken) {
       res.json({ token: req.session.googleToken }); // 將 Google token 以 JSON 格式回傳
     } else {
-      res.status(401).json({ error: '未授權' });
+      res.status(401).json({ error: 'Unauthorized' });
     }
   } catch (error) {
     next(error);
@@ -52,7 +52,7 @@ router.get('/github/token', async (req, res, next) => {
     if (req.session.githubToken) {
       res.json({ token: req.session.githubToken }); // 將 GitHub token 以 JSON 格式回傳
     } else {
-      res.status(401).json({ error: '未授權' });
+      res.status(401).json({ error: 'Unauthorized' });
     }
   } catch (error) {
     next(error);
