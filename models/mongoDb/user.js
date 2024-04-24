@@ -13,13 +13,25 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
     minlength: 6,
     maxlength: 50,
   },
   password: {
     type: String,
-    required: true,
+  },
+  name: {
+    type: String,
+    minlength: 1,
+    maxlength: 50,
+  },
+  googleID: {
+    type: String,
+  },
+  githubID: {
+    type: String,
+  },
+  thumbnail: {
+    type: String,
   },
 
 }, {
@@ -37,6 +49,16 @@ userSchema.statics.findUserById = async function (user_id) {
   if (!user) {
     throw new AppError(404, 'User not found or invalid user ID');
   }
+  return user;
+};
+
+userSchema.statics.findUserByGoogleId = async function (google_id) {
+  const user = await this.findOne({ googleID: google_id });
+  return user;
+};
+
+userSchema.statics.findUserByGithubId = async function (github_id) {
+  const user = await this.findOne({ githubID: github_id });
   return user;
 };
 
@@ -135,8 +157,8 @@ userSchema.statics.deleteUser = async function (user_id) {
 
 // 實現 hashPassword 中間件
 userSchema.pre('save', async function (next) {
-  // Only hash the password if it has been modified (or is new)
-  if (this.isNew || this.isModified('password')) {
+  // Only hash the password if it has been modified (or is new) and password exists
+  if (this.password && (this.isNew || this.isModified('password'))) {
     this.password = await bcrypt.hash(this.password, 10);
   }
   next();
