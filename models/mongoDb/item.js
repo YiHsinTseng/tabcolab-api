@@ -77,7 +77,7 @@ ItemSchema.statics.moveItem = async function (sourceGroupId, targetGroupId, item
     return { success: false, error: 'Source group not found' };
   }
 
-  const itemToMove = sourceGroup.items.find((item) => item.item_id === itemId);
+  const itemToMove = sourceGroup.items.find((item) => item._id === itemId);
 
   if (!itemToMove) {
     return { success: false, error: 'Item not found in source group' };
@@ -109,12 +109,12 @@ ItemSchema.statics.moveItem = async function (sourceGroupId, targetGroupId, item
 
 ItemSchema.statics.deleteItem = async function (groupId, itemId, user_id) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = userGroup.groups.find((group) => group.group_id === groupId);
+  const group = userGroup.groups.find((group) => group._id === groupId);
 
   if (!group) {
     return null; // 如果找不到該群組，返回null
   }
-  const index = group.items.findIndex((item) => item.item_id === itemId);
+  const index = group.items.findIndex((item) => item._id === itemId);
   if (index === -1) {
     return null; // 如果在群組中找不到該項目，返回null
   }
@@ -164,7 +164,7 @@ TabSchema.methods.addTab = async function (user_id, group_id, targetItem_positio
 
 TabSchema.statics.updateTab = async function (user_id, group_id, item_id, note_content) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = userGroup.groups.find((group) => group.group_id === group_id);
+  const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
     throw new Error('Group not found');
@@ -202,7 +202,7 @@ const NoteSchema = new mongoose.Schema({
 
 NoteSchema.methods.addNoteToGroup = async function (group_id, user_id) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = userGroup.groups.find((group) => group.group_id === group_id);
+  const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
     throw new Error('Group not found');
@@ -215,7 +215,7 @@ NoteSchema.methods.addNoteToGroup = async function (group_id, user_id) {
 
 NoteSchema.statics.updateNoteContent = async function (user_id, group_id, item_id, newContent) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = userGroup.groups.find((group) => group.group_id === group_id);
+  const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
     throw new Error('Group not found');
@@ -234,7 +234,7 @@ NoteSchema.statics.updateNoteContent = async function (user_id, group_id, item_i
 
 NoteSchema.statics.convertToTodo = async function (user_id, group_id, item_id) {
   const user_groups = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = user_groups.groups.find((group) => group.group_id === group_id);
+  const group = user_groups.groups.find((group) => group._id === group_id);
 
   if (!group) {
     throw new Error('Group not found');
@@ -274,7 +274,7 @@ const TodoSchema = new mongoose.Schema({
 
 TodoSchema.statics.updateTodo = async function (user_id, group_id, item_id, item_type, doneStatus, note_content) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = userGroup.groups.find((group) => group.group_id === group_id);
+  const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
     throw new Error('Group not found');

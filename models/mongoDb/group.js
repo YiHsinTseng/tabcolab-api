@@ -60,7 +60,7 @@ UserGroupSchema.statics.findGroupById = async function (user_id, group_id) {
   if (!userGroup) {
     throw new Error('User not found or invalid user ID');
   }
-  const group = userGroup.groups.find((group) => group.group_id === group_id);
+  const group = userGroup.groups.find((group) => group._id === group_id);
   if (!group) {
     throw new Error('Group not found or invalid group ID');
   }
@@ -86,7 +86,7 @@ UserGroupSchema.statics.findGroupItem = async function (user_id, group_id, item_
     throw new AppError(404, 'Target group does not contain items');
   }
 
-  const itemIndex = sourceGroup.items.findIndex((item) => item.item_id === item_id);
+  const itemIndex = sourceGroup.items.findIndex((item) => item._id === item_id);
   if (itemIndex === -1) {
     throw new AppError(404, 'Item not found in source group');
   }
@@ -105,7 +105,7 @@ UserGroupSchema.statics.deleteGroupItem = async function (user_id, group_id, ite
   const { itemIndex } = await this.model('UserGroup').findGroupItem(user_id, group_id, item_id);
 
   // Find the group
-  const group = userGroup.groups.find((group) => group.group_id === group_id);
+  const group = userGroup.groups.find((group) => group._id === group_id);
   if (!group) {
     throw new Error('Group not found or invalid group ID');
   }
