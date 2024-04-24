@@ -16,7 +16,7 @@ const getGroups = async (req, res, next) => {
     const { user_id } = req.user;
     const result = await UserGroup.getGroups(user_id);
     if (result.success) {
-      return res.status(200).json({ message: result.message, groups: result.groups });
+      return res.status(200).json(result.groups);
     }
     return ErrorResponse(404, result.message, res);
   } catch (error) {
@@ -59,6 +59,9 @@ const createGroup = async (req, res, next) => {
       newGroup = new Group({ group_icon, group_title, items: [] });
       newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
       result = await newUserGroup.createGroupatBlank(user_id);
+      if (result.success) {
+        return res.status(201).json({ message: result.message, group_id: newGroup.group_id });
+      }
     } else if (
       group_icon
       && group_title
@@ -71,6 +74,9 @@ const createGroup = async (req, res, next) => {
       newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
 
       result = await newUserGroup.createGroupwithSidebarTab(user_id);
+      if (result.success) {
+        return res.status(201).json({ message: result.message, group_id: newGroup.group_id, item_id: newTab.item_id });
+      }
     } else if (
       sourceGroup_id
       && group_icon
@@ -82,11 +88,11 @@ const createGroup = async (req, res, next) => {
       newGroup = new Group({ group_icon, group_title, items: [sourceGroupItem] });
       newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
       result = await newUserGroup.createGroupwithGroupTab(user_id, sourceGroup_id, item_id);
+      if (result.success) {
+        return res.status(201).json({ message: result.message, group_id: newGroup.group_id });
+      }
     } else {
       return ErrorResponse(400, 'Invalid request body', res);
-    }
-    if (result.success) {
-      return res.status(201).json({ message: result.message, group: newGroup });
     }
 
     return ErrorResponse(400, 'Group failed to create', res);
@@ -125,7 +131,7 @@ const updateGroup = async (req, res, next) => {
     }
 
     if (result.success) {
-      return res.status(200).json({ message: result.message });
+      return res.status(200).json({ status: 'success', message: result.message });
     }
     return ErrorResponse(400, 'Group failed to update', res);
   } catch (error) {
@@ -140,7 +146,7 @@ const deleteGroup = async (req, res, next) => {
 
     const result = await UserGroup.deleteGroup(user_id, group_id);
     if (result.success) {
-      return res.status(200).json({ message: result.message });
+      return res.status(200).json({ status: 'success', message: result.message });
     }
     return ErrorResponse(400, 'Group failed to delete', res);
   } catch (error) {
