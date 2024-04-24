@@ -9,16 +9,24 @@ router.get(
   }),
 );
 
-router.get('/google/redirect', passport.authenticate('google', { session: false }), (req, res) => {
-  req.session.googleToken = req.user.token; // 將 Google token 存到 session
-  res.redirect('chrome-extension://gfledkccocicmdgnjeafbnffcimdfonb/index.html');
+router.get('/google/redirect', passport.authenticate('google', { session: false }), async (req, res, next) => {
+  try {
+    req.session.googleToken = req.user.token; // 將 Google token 存到 session
+    res.redirect('https://tabcolab.live/oauthLogin.html');
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.get('/google/token', (req, res) => {
-  if (req.session.googleToken) {
-    res.json({ token: req.session.googleToken }); // 將 Google token 以 JSON 格式回傳
-  } else {
-    res.status(401).json({ error: '未授權' });
+router.get('/google/token', async (req, res, next) => {
+  try {
+    if (req.session.googleToken) {
+      res.json({ token: req.session.googleToken }); // 將 Google token 以 JSON 格式回傳
+    } else {
+      res.status(401).json({ error: '未授權' });
+    }
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -30,16 +38,24 @@ router.get(
   }),
 );
 
-router.get('/github/redirect', passport.authenticate('github', { session: false }), (req, res) => {
-  req.session.githubToken = req.user.token; // 將 GitHub token 存到 session
-  res.redirect('chrome-extension://gfledkccocicmdgnjeafbnffcimdfonb/index.html');
+router.get('/github/redirect', passport.authenticate('github', { session: false }), async (req, res, next) => {
+  try {
+    req.session.githubToken = req.user.token; // 將 GitHub token 存到 session
+    res.redirect('https://tabcolab.live/oauthLogin.html');
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.get('/github/token', (req, res) => {
-  if (req.session.githubToken) {
-    res.json({ token: req.session.githubToken }); // 將 GitHub token 以 JSON 格式回傳
-  } else {
-    res.status(401).json({ error: '未授權' });
+router.get('/github/token', async (req, res, next) => {
+  try {
+    if (req.session.githubToken) {
+      res.json({ token: req.session.githubToken }); // 將 GitHub token 以 JSON 格式回傳
+    } else {
+      res.status(401).json({ error: '未授權' });
+    }
+  } catch (error) {
+    next(error);
   }
 });
 module.exports = router;
