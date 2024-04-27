@@ -61,6 +61,6 @@ router.get('/github/token', async (req, res, next) => {
   }
 });
 
-router.post('/google/token', controller.googleLogin);
+router.post('/google/token', controller.googleOauth);
 
 module.exports = router;

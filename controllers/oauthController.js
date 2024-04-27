@@ -9,7 +9,7 @@ const User = require(`../${config[env].db.modelpath}/user`);
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-const googleLogin = async (req, res, next) => {
+const googleOauth = async (req, res, next) => {
   try {
     const { authorizationCode } = req.body;
 
@@ -58,5 +58,5 @@ const googleLogin = async (req, res, next) => {
 };
 
 module.exports = {
-  googleLogin,
+  googleOauth,
 };
