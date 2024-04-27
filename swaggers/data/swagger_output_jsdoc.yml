@@ -58,9 +58,12 @@ paths:
             schema:
               type: object
               properties:
-                authorizationCode:
+                authorization_code:
                   type: string
                   description: The authorization code from Google OAuth2.0
+                redirect_url:
+                  type: string
+                  description: The redirect URL from Google OAuth2.0
       responses:
         "200":
           description: receive JWT token from Google OAuth2.0
