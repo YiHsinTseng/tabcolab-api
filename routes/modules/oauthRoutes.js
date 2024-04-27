@@ -1,5 +1,7 @@
+require('dotenv').config();
 const router = require('express').Router();
 const passport = require('passport');
+const controller = require('../../controllers/oauthController');
 
 router.get(
   '/google',
@@ -58,4 +60,7 @@ router.get('/github/token', async (req, res, next) => {
     next(error);
   }
 });
+
+router.post('/google/token', controller.googleLogin);
+
 module.exports = router;

@@ -45,42 +45,25 @@ tags:
   - name: Items
     description: General operations related to items management
 paths:
-  /auth/google/token:
-    get:
+  /oauth/google/token:
+    post:
       tags:
         - Users(OAuths)
       summary: Display JWT token from Google OAuth2.0
-      description: Login with Google OAuth2.0 and get JWT token. <br> url (cloud) <br> https://tabcolab.live/api/1.0/auth/google <br> url (localhost) <br> http://localhost:4000/api/1.0/auth/google
+      description: Login with Google OAuth2.0 and get JWT token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                authorizationCode:
+                  type: string
+                  description: The authorization code from Google OAuth2.0
       responses:
         "200":
           description: receive JWT token from Google OAuth2.0
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Invalid request
-  /auth/github/token:
-    get:
-      tags:
-        - Users(OAuths)
-      summary: Display JWT token from Github OAuth2.0
-      description: Login with Github OAuth2.0 and get JWT token. <br> url (cloud) <br> https://tabcolab.live/api/1.0/auth/github <br> url (localhost) <br> http://localhost:4000/api/1.0/auth/github
-      responses:
-        "200":
-          description: receive JWT token from Github OAuth2.0
           content:
             application/json:
               schema:

@@ -3,5 +3,5 @@ module.exports = {
   group: require('./modules/groupRoutes'),
   item: require('./modules/itemsRoutes'),
   specItem: require('./modules/specItemsRoutes'),
-  auth: require('./modules/authRoutes'),
+  oauth: require('./modules/oauthRoutes'),
 };
