@@ -50,13 +50,21 @@ const googleOauth = async (req, res, next) => {
     const { sub: googleId } = ticket.getPayload();
 
     // 在這裡查找或創建使用者，並生成 JWT token
-    const user = await User.findOrCreate({
-      email,
-      name,
-      thumbnail: picture,
-      googleId,
-    });
+    let user = await User.findUserByGithubId(googleId);
+    if (user) {
+      console.log('使用者已經註冊過了。無須存入資料庫內。');
+    } else {
+      console.log('偵測到新用戶。須將資料存入資料庫內');
 
+      user = new User({
+        email,
+        googleID: googleId,
+        name,
+        thumbnail: picture,
+      });
+      await user.createUser();
+      console.log('成功創建新用戶。');
+    }
     // Generate a token for the user
     const token = user.generateAuthToken();
 
