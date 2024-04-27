@@ -50,7 +50,7 @@ const googleOauth = async (req, res, next) => {
     const { sub: googleId } = ticket.getPayload();
 
     // 在這裡查找或創建使用者，並生成 JWT token
-    let user = await User.findUserByGithubId(googleId);
+    let user = await User.findUserByGoogleId(googleId);
     if (user) {
       console.log('使用者已經註冊過了。無須存入資料庫內。');
     } else {
