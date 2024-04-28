@@ -2,17 +2,37 @@
 <html>
 
 <head>
+    <meta name="google-signin-client_id"
+        content="560502229224-mi0fugbocfd28g611gsrhsmrai6l5ird.apps.googleusercontent.com.apps.googleusercontent.com">
     <title>Google Login Demo</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        function handleCredentialResponse(response) {
+            // 發送 authorization code 到後端
+            fetch('http://localhost:4000/api/1.0/auth/google', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ authorization_code: response.credential })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // 處理登入成功的情況
+                })
+                .catch(error => {
+                    // 處理登入失敗的情況
+                });
+        }
+    </script>
 </head>
 
 <body>
     <h1>Welcome to our website!</h1>
     <p>Please log in to continue:</p>
-    <a href="https://tabcolab.live/api/1.0/auth/google">
-        <button>Log in with Google</button>
-    </a>
-    <a href="https://tabcolab.live/api/1.0/auth/github">
-        <button>Log in with GitHub</button>
+    <div class="g_id_signin" data-callback="handleCredentialResponse"></div>
+
+    <button>Log in with google</button>
     </a>
 </body>
 

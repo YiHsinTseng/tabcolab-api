@@ -42,10 +42,10 @@ class Item {
 
         const matchesKeyword = regexes.some((regex) => {
           const matchTitle = regex.test(browserTab_title) && browserTab_title !== undefined;
-          const matchUrl = regex.test(browserTab_url) && browserTab_url !== undefined;
-          const matchNote = regex.test(note_content) && note_content !== undefined;
+          // const matchUrl = regex.test(browserTab_url) && browserTab_url !== undefined;
+          // const matchNote = regex.test(note_content) && note_content !== undefined;
 
-          return matchTitle || matchUrl || matchNote;
+          return matchTitle; // || matchUrl || matchNote;
         });
 
         if (matchesKeyword) {

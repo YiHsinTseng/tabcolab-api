@@ -1,6 +1,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20');
-const GithubStrategy = require('passport-github2');
+const GithubStrategy = require('passport-github2')
 const JwtStrategy = require('passport-jwt').Strategy;
 const { ExtractJwt } = require('passport-jwt');
 require('dotenv').config();

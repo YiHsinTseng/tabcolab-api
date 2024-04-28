@@ -21,7 +21,7 @@ const userRoutes = require('../routes').user;
 const groupRoutes = require('../routes').group;
 const itemRoutes = require('../routes').item;
 const specItemRoutes = require('../routes').specItem;
-const authRoutes = require('../routes').auth;
+const oauthRoutes = require('../routes').oauth;
 
 const {
   PROD_PORT, MONGODB_URI_LOCAL, MONGODB_URI_CLOUD, USE_CLOUD_DB, SESSION_SECRET,
@@ -56,7 +56,7 @@ server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 
 const corsOptions = {
-  origin: ['http://13.115.132.26', 'https://13.115.132.26', 'http://www.tabcolab.live', 'https://www.tabcolab.live', 'http://tabcolab.live', 'https://tabcolab.live', 'http://d1d8qny6cjcfu0.cloudfront.net', 'https://d1d8qny6cjcfu0.cloudfront.net', 'http://localhost:4000'],
+  origin: ['http://13.115.132.26', 'https://13.115.132.26', 'http://www.tabcolab.live', 'https://www.tabcolab.live', 'http://tabcolab.live', 'https://tabcolab.live', 'http://d1d8qny6cjcfu0.cloudfront.net', 'https://d1d8qny6cjcfu0.cloudfront.net', 'http://localhost:4000', 'chrome-extension://aiiffbafnfldcklcghpokbogbiopkagp', 'chrome-extension://gfledkccocicmdgnjeafbnffcimdfonb', 'chrome-extension://okaekjldpoogggmmfagcfeglbgbbihfp'],
   optionsSuccessStatus: 200,
   credentials: true, // 允許跨來源的 cookie
 };
@@ -64,7 +64,7 @@ const corsOptions = {
 server.use(cors(corsOptions));
 
 // 先添加不需要 JWT 驗證的路由
-server.use(`/api/${API_VERSION}/auth`, authRoutes);
+server.use(`/api/${API_VERSION}/oauth`, oauthRoutes);
 server.use(`/api/${API_VERSION}`, userRoutes);
 
 // 在所有其他路由之前添加 JWT 驗證中間件
