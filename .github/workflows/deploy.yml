@@ -59,7 +59,7 @@ jobs:
             echo CLOUD_GITHUB_AUTH_CALLBACK_URL=$CLOUD_GITHUB_AUTH_CALLBACK_URL >> .env
             echo SESSION_SECRET=$SESSION_SECRET >> .env
             sudo chmod 600 .env
-            sudo chown -R $USER /home/***/tabcolab/prod-server/mongodb_data
+            sudo chown -R $USER /home/***/tabcolab/server/mongodb_data
             cd Docker
             sudo docker system prune -a -f
             docker-compose down --rmi all

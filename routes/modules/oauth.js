@@ -1,7 +1,7 @@
 require('dotenv').config();
 const router = require('express').Router();
 const passport = require('passport');
-const controller = require('../../controllers/oauthController');
+const controller = require('../../controllers/oauth');
 
 router.get(
   '/google',

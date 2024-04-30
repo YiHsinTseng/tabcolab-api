@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { validateRegisterandLoginDataTypes, validateUserInfoUpdateDataTypes } = require('../../validations/validation-user');
-const controller = require('../../controllers/userController');
+const controller = require('../../controllers/user');
 const { authenticateJwt, authenticateAdmin } = require('../../middlewares/authenticate');
 
 router.post('/users/register', validateRegisterandLoginDataTypes, controller.register);

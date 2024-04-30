@@ -1,7 +1,7 @@
 version: "3.9"
 services:
 
-  prod-server-cloud-db:
+  server-cloud-db:
     env_file:
       - ../.env
     environment:
@@ -11,7 +11,7 @@ services:
       - MONGODB_URI_LOCAL=mongodb://mongodb:27017/TabcolabDB
     build:
       context: ../
-      dockerfile: Docker/prod-server/Dockerfile
+      dockerfile: Docker/server/Dockerfile
     volumes:
       - ../.env:/app/.env
     ports:
@@ -26,11 +26,11 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - prod-server-cloud-db
-      # - prod-server-local-db
+      - server-cloud-db
+      # - server-local-db
       # - mongodb
       
-  # prod-server-local-db:
+  # server-local-db:
   #   env_file:
   #     - ../.env
   #   environment:
@@ -40,7 +40,7 @@ services:
   #     - MONGODB_URI_LOCAL=mongodb://mongodb:27017/TabcolabDB
   #   build:
   #     context: ../
-  #     dockerfile: Docker/prod-server/Dockerfile
+  #     dockerfile: Docker/server/Dockerfile
   #   volumes:
   #     - ../.env:/app/.env
   #   ports:
@@ -53,5 +53,5 @@ services:
   #   ports:
   #     - "27017:27017"
   #   volumes:
-  #     - ../prod-server/mongodb_data:/data/db
+  #     - ../server/mongodb_data:/data/db
   #   privileged: true

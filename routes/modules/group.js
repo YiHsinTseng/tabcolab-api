@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const controller = require('../../controllers/groupController');
+const controller = require('../../controllers/group');
 const { validateGroupDataTypes } = require('../../validations/validation-group');
 const { validateItemDataTypes } = require('../../validations/validation-item');
 const { validatePositionDataTypes } = require('../../validations/validation-position');

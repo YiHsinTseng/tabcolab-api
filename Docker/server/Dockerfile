@@ -13,4 +13,4 @@ RUN npm install
 EXPOSE 4000
 
 # Start the application
-CMD ["npm", "run", "prod-server"]
+CMD ["npm", "run", "server"]

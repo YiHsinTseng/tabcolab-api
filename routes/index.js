@@ -1,7 +1,7 @@
 module.exports = {
-  user: require('./modules/userRoutes'),
-  group: require('./modules/groupRoutes'),
-  item: require('./modules/itemsRoutes'),
-  specItem: require('./modules/specItemsRoutes'),
-  oauth: require('./modules/oauthRoutes'),
+  user: require('./modules/user'),
+  group: require('./modules/group'),
+  item: require('./modules/item'),
+  specItem: require('./modules/specItem'),
+  oauth: require('./modules/oauth'),
 };

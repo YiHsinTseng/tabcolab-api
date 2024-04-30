@@ -4,8 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
-    "mock-server": "node ./mock-server/initData/initDB.js && nodemon ./mock-server/server.js",
-    "prod-server": "NODE_ENV=production nodemon ./prod-server/server.js",
+    "server": "NODE_ENV=production nodemon ./server/server.js",
     "docker-compose": "cd Docker && USE_CLOUD_DB=true docker-compose up --build -d",
     "mongodb-dump": "mongodump --uri='mongodb://localhost:27017/TabcolabDB' --out=./",
     "mongodb-store": "mongorestore --uri='mongodb://localhost:27017/TabcolabDBTest' ./TabcolabDB"
