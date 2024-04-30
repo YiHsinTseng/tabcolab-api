@@ -1,7 +1,5 @@
 require('dotenv').config();
 
-const { API_VERSION } = process.env;
-
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
@@ -24,7 +22,7 @@ const specItemRoutes = require('../routes').specItem;
 const oauthRoutes = require('../routes').oauth;
 
 const {
-  PROD_PORT, MONGODB_URI_LOCAL, MONGODB_URI_CLOUD, USE_CLOUD_DB, SESSION_SECRET,
+  API_VERSION, PROD_PORT, MONGODB_URI_LOCAL, MONGODB_URI_CLOUD, USE_CLOUD_DB, SESSION_SECRET,
 } = process.env;
 
 let MONGODB_URI;
@@ -33,7 +31,6 @@ if (USE_CLOUD_DB === 'true') {
 } else {
   MONGODB_URI = MONGODB_URI_LOCAL;
 }
-console.log(MONGODB_URI);
 
 // Connect to MongoDB
 mongoose.connect(MONGODB_URI)

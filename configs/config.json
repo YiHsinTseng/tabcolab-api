@@ -1,18 +1,4 @@
 {
-  "development": {
-    "app": {
-      "name": "mock-server",
-      "path": "./mock-server/server.js",
-      "host": "localhost",
-      "port": 5050
-    },
-    "db": {
-      "host": "localhost",
-      "name": "db",
-      "path": "./mock-server/db.json",
-      "modelpath": "models/mock-server"
-    }
-  },
   "production": {
     "app": {
       "name": "prod-server",
@@ -24,7 +10,7 @@
       "host": "localhost",
       "name": "mongoDB",
       "path": "",
-      "modelpath": "models/mongoDb"
+      "modelpath": "models"
     }
   }
 }

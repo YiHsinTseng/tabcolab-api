@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { UserGroup } = require('./group');
-const { generateItemId } = require('../../utils/generateId');
+const { generateItemId } = require('../utils/generateId');
 
 const ItemSchema = new mongoose.Schema({
   _id: {

@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { generateUserId } = require('../../utils/generateId');
+const { generateUserId } = require('../utils/generateId');
 const { UserGroup } = require('./group');
-const AppError = require('../../utils/appError');
+const AppError = require('../utils/appError');
 
 const userSchema = new mongoose.Schema({
   _id: {
