@@ -1,0 +1,22 @@
+require('dotenv').config();
+
+const {
+  API_VERSION, PROD_PORT, MONGODB_URI_LOCAL, MONGODB_URI_CLOUD, USE_CLOUD_DB, SESSION_SECRET, WHITE_LIST,
+} = process.env;
+
+let MONGODB_URI;
+if (USE_CLOUD_DB === 'true') {
+  MONGODB_URI = MONGODB_URI_CLOUD;
+} else {
+  MONGODB_URI = MONGODB_URI_LOCAL;
+}
+
+const CORS_WHITE_LIST = WHITE_LIST.split(',');
+
+module.exports = {
+  API_VERSION,
+  PROD_PORT,
+  MONGODB_URI,
+  SESSION_SECRET,
+  CORS_WHITE_LIST,
+};
