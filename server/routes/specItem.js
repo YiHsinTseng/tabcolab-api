@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
-const { validateItemDataTypes } = require('../../validations/validation-item');
-const controller = require('../../controllers/specItem');
+const { validateItemDataTypes } = require('../validations/item');
+const controller = require('../controllers/specItem');
 
 router.post('/groups/:group_id/tabs', validateItemDataTypes, controller.addTab);
 router.patch('/groups/:group_id/tabs/:item_id', validateItemDataTypes, controller.updateTab);

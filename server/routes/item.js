@@ -1,6 +1,6 @@
 const router = require('express').Router();
-const controller = require('../../controllers/item');
-const { validateItemDataTypes } = require('../../validations/validation-item');
+const controller = require('../controllers/item');
+const { validateItemDataTypes } = require('../validations/item');
 
 router.get('/groups/items/search', validateItemDataTypes, controller.searchItemsInGroups);
 router.patch('/groups/:group_id/items/:item_id', validateItemDataTypes, controller.moveItem);

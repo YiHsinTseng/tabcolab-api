@@ -1,7 +1,7 @@
 const Joi = require('joi');
-const { groupSchema } = require('./validation-group');
-const { itemSchema } = require('./validation-item');
-const { positionSchema } = require('./validation-position');
+const { groupSchema } = require('./group');
+const { itemSchema } = require('./item');
+const { positionSchema } = require('./position');
 
 const validateDataTypes = (req, res, next) => {
   const schema = Joi.alternatives().try(

@@ -6,20 +6,20 @@ const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const { authenticateJwt } = require('../middlewares/authenticate');
-const apiErrorHandler = require('../middlewares/errorHandler');
-const swagger = require('../swaggers/config/swaggerSetup');
+const { authenticateJwt } = require('./middlewares/authenticate');
+const apiErrorHandler = require('./middlewares/errorHandler');
+const swagger = require('../swagger/config/swaggerSetup');
 
 const server = express();
 
 // 靜態文件服務器中間件應該在所有其他中間件和路由之前應用
 server.use('/oauthLogin.html', express.static(path.join(__dirname, '../oauthLogin.html')));
 
-const userRoutes = require('../routes').user;
-const groupRoutes = require('../routes').group;
-const itemRoutes = require('../routes').item;
-const specItemRoutes = require('../routes').specItem;
-const oauthRoutes = require('../routes').oauth;
+const userRoutes = require('./routes/user');
+const groupRoutes = require('./routes/group');
+const itemRoutes = require('./routes/item');
+const specItemRoutes = require('./routes/specItem');
+const oauthRoutes = require('./routes/oauth');
 
 const {
   API_VERSION, PROD_PORT, MONGODB_URI_LOCAL, MONGODB_URI_CLOUD, USE_CLOUD_DB, SESSION_SECRET,

@@ -1,6 +1,6 @@
 const env = process.env.NODE_ENV || 'development';
 
-const config = require('../configs/config.json');
+const config = require('../config/config.json');
 
 const User = require(`../${config[env].db.modelpath}/user`);
 
