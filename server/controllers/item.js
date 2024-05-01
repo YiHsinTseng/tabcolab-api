@@ -1,8 +1,4 @@
-const env = process.env.NODE_ENV || 'development';
-
-const config = require('../config/config.json');
-
-const { Item } = require(`../${config[env].db.modelpath}/item`);
+const { Item } = require('../models/item');
 
 const searchItemsInGroups = async (req, res) => {
   try {

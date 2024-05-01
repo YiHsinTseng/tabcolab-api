@@ -178,7 +178,7 @@ userSchema.pre('remove', async function (next) {
   const user = this;
 
   // Remove all UserGroup objects that reference this user
-  await mongoose.model('UserGroup').deleteMany({ user_id: user._id });
+  await mongoose.model('UserGroup').deleteMany({ _id: user._id });
 
   next();
 });

@@ -20,11 +20,6 @@ const itemRoutes = require('./routes/item');
 const specItemRoutes = require('./routes/specItem');
 const oauthRoutes = require('./routes/oauth');
 
-// Redirect the root directory to the API documentation
-server.get('/', (req, res) => {
-  res.redirect('/api-doc');
-});
-
 swagger.setupSwagger(server);
 
 server.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false }));

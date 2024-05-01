@@ -1,10 +1,8 @@
 require('dotenv').config();
 const { OAuth2Client } = require('google-auth-library');
 const { google } = require('googleapis');
-const config = require('../config/config.json');
 
-const env = process.env.NODE_ENV || 'development';
-const User = require(`../${config[env].db.modelpath}/user`);
+const User = require('../models/user');
 
 const googleOauth = async (req, res, next) => {
   try {

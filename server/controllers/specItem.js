@@ -1,8 +1,4 @@
-const env = process.env.NODE_ENV || 'development';
-
-const config = require('../config/config.json');
-
-const { Tab, Note, Todo } = require(`../${config[env].db.modelpath}/item`);
+const { Tab, Note, Todo } = require('../models/item');
 
 const addTab = async (req, res) => {
   try {

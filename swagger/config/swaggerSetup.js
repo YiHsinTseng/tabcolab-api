@@ -6,10 +6,10 @@ const yaml = require('js-yaml');
 const path = require('path');
 
 function setupSwagger(server) {
-  const spec = fs.readFileSync(path.resolve(__dirname, '../data/swagger_output_jsdoc.yml'));
+  const spec = fs.readFileSync(path.resolve(__dirname, '../data/swagger_output.yml'));
   const swaggerSpec = yaml.load(spec);
 
-  server.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  server.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   return server;
 }
 

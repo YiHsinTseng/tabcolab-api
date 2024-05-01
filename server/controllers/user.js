@@ -1,8 +1,4 @@
-const env = process.env.NODE_ENV || 'development';
-
-const config = require('../config/config.json');
-
-const User = require(`../${config[env].db.modelpath}/user`);
+const User = require('../models/user');
 
 const ErrorResponse = (statusCode, message, res) => {
   const status = statusCode === 500 ? 'error' : 'fail';

@@ -1,10 +1,6 @@
-const env = process.env.NODE_ENV || 'development';
+const { UserGroup, Group } = require('../models/group');
 
-const config = require('../config/config.json');
-
-const { UserGroup, Group } = require(`../${config[env].db.modelpath}/group`);
-
-const { Tab } = require(`../${config[env].db.modelpath}/item`);
+const { Tab } = require('../models/item');
 
 const ErrorResponse = (statusCode, message, res) => {
   const status = statusCode === 500 ? 'error' : 'fail';
