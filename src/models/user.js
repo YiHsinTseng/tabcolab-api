@@ -27,9 +27,6 @@ const userSchema = new mongoose.Schema({
   googleID: {
     type: String,
   },
-  githubID: {
-    type: String,
-  },
   thumbnail: {
     type: String,
   },
@@ -54,11 +51,6 @@ userSchema.statics.findUserById = async function (user_id) {
 
 userSchema.statics.findUserByGoogleId = async function (google_id) {
   const user = await this.findOne({ googleID: google_id });
-  return user;
-};
-
-userSchema.statics.findUserByGithubId = async function (github_id) {
-  const user = await this.findOne({ githubID: github_id });
   return user;
 };
 

@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
-    "server": "nodemon ./server/server.js",
+    "server": "nodemon server.js",
     "docker-compose": "cd Docker && docker-compose up --build -d",
     "mongodb-dump": "mongodump --uri='mongodb://localhost:27017/TabcolabDB' --out=./",
     "mongodb-store": "mongorestore --uri='mongodb://localhost:27017/TabcolabDBTest' ./TabcolabDB"
@@ -36,7 +36,6 @@
     "prettier": "^3.2.5",
     "i": "^0.3.7",
     "npm": "^10.5.1",
-    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "yamljs": "^0.3.0"
   }

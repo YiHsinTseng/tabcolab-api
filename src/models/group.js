@@ -55,7 +55,7 @@ const UserGroupSchema = new mongoose.Schema({
   },
 });
 
-UserGroupSchema.statics.findGroupById = async function (user_id, group_id) {
+UserGroupSchema.statics.findGroupById = async (user_id, group_id) => {
   const userGroup = await this.findOne({ _id: user_id }).exec();
   if (!userGroup) {
     throw new Error('User not found or invalid user ID');
@@ -67,7 +67,7 @@ UserGroupSchema.statics.findGroupById = async function (user_id, group_id) {
   return group;
 };
 
-UserGroupSchema.statics.getGroups = async function (user_id) {
+UserGroupSchema.statics.getGroups = async (user_id) => {
   const userGroup = await this.findOne({ _id: user_id }).exec();
   if (!userGroup) {
     throw new AppError(500, 'No user group model in database');
@@ -79,7 +79,7 @@ UserGroupSchema.statics.getGroups = async function (user_id) {
   return { success: false, message: 'Group not found' };
 };
 
-UserGroupSchema.statics.findGroupItem = async function (user_id, group_id, item_id) {
+UserGroupSchema.statics.findGroupItem = async (user_id, group_id, item_id) => {
   const sourceGroup = await this.model('UserGroup').findGroupById(user_id, group_id);
 
   if (!sourceGroup.items) {
@@ -96,7 +96,7 @@ UserGroupSchema.statics.findGroupItem = async function (user_id, group_id, item_
   return { sourceGroupItem, itemIndex };
 };
 
-UserGroupSchema.statics.deleteGroupItem = async function (user_id, group_id, item_id) {
+UserGroupSchema.statics.deleteGroupItem = async (user_id, group_id, item_id) => {
   const userGroup = await this.findOne({ _id: user_id }).exec();
   if (!userGroup) {
     throw new Error('User not found or invalid user ID');
@@ -119,7 +119,7 @@ UserGroupSchema.statics.deleteGroupItem = async function (user_id, group_id, ite
   return { success: true, message: 'Item deleted successfully' };
 };
 
-UserGroupSchema.methods.createGroup = async function (user_id) {
+UserGroupSchema.methods.createGroup = async (user_id) => {
   // Check if the userGroups document already exists
   let userGroup = await this.model('UserGroup').findOne({ _id: user_id });
 
@@ -142,23 +142,23 @@ UserGroupSchema.methods.createGroup = async function (user_id) {
   return { success: true, message: 'Group created successfully' };
 };
 
-UserGroupSchema.methods.createGroupatBlank = async function (user_id) {
+UserGroupSchema.methods.createGroupatBlank = async (user_id) => {
   await this.createGroup(user_id);
   return { success: true, message: 'Group created at blank successfully' };
 };
 
-UserGroupSchema.methods.createGroupwithSidebarTab = async function (user_id) {
+UserGroupSchema.methods.createGroupwithSidebarTab = async (user_id) => {
   await this.createGroup(user_id);
   return { success: true, message: 'Group created with sidebar tab successfully ' };
 };
 
-UserGroupSchema.methods.createGroupwithGroupTab = async function (user_id, sourceGroup_id, item_id) {
+UserGroupSchema.methods.createGroupwithGroupTab = async (user_id, sourceGroup_id, item_id) => {
   await this.createGroup(user_id);
   await this.model('UserGroup').deleteGroupItem(user_id, sourceGroup_id, item_id);
   return { success: true, message: 'Group created with group tab successfully ' };
 };
 
-UserGroupSchema.statics.updateGroupInfo = async function (user_id, group) {
+UserGroupSchema.statics.updateGroupInfo = async (user_id, group) => {
   // Find the UserGroup document
   const userGroup = await this.findOne({ _id: user_id });
 
@@ -176,7 +176,7 @@ UserGroupSchema.statics.updateGroupInfo = async function (user_id, group) {
   return { success: true, message: 'Group info updated successfully' };
 };
 
-UserGroupSchema.statics.changeGroupPosition = async function (user_id, group_id, group_pos) {
+UserGroupSchema.statics.changeGroupPosition = async (user_id, group_id, group_pos) => {
   // Find the UserGroup document
   const userGroup = await this.findOne({ _id: user_id });
 
@@ -199,7 +199,7 @@ UserGroupSchema.statics.changeGroupPosition = async function (user_id, group_id,
   throw new Error('Invalid group ID or position');
 };
 
-UserGroupSchema.statics.deleteGroup = async function (user_id, group_id) {
+UserGroupSchema.statics.deleteGroup = async (user_id, group_id) => {
   // Find the UserGroup document
   const userGroup = await this.findOne({ _id: user_id });
 

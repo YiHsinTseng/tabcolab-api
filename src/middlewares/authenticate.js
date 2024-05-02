@@ -1,4 +1,4 @@
-const passport = require('../config/passport');
+const passport = require('../../config/passport');
 
 const authenticateJwt = (req, res, next) => {
   const token = req.headers.authorization;

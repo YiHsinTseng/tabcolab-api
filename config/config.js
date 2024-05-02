@@ -13,10 +13,16 @@ if (USE_CLOUD_DB === 'true') {
 
 const CORS_WHITE_LIST = WHITE_LIST.split(',');
 
+const corsOptions = {
+  origin: CORS_WHITE_LIST,
+  optionsSuccessStatus: 200,
+  credentials: true, // 允許跨來源的 cookie
+};
+
 module.exports = {
   API_VERSION,
   PORT,
   MONGODB_URI,
   SESSION_SECRET,
-  CORS_WHITE_LIST,
+  corsOptions,
 };
