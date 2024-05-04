@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const AppError = require('../utils/appError');
 
 const registerSchema = Joi.object({
   email: Joi.string().min(6).max(50).required()
@@ -15,7 +16,7 @@ const validateRegisterandLoginDataTypes = (req, res, next) => {
   const { error } = registerSchema.validate(req.body);
 
   if (error) {
-    return res.status(400).json({ errors: error.message });
+    throw new AppError(400, error.message);
   }
 
   next();
@@ -25,7 +26,7 @@ const validateUserInfoUpdateDataTypes = (req, res, next) => {
   const { error } = updateSchema.validate(req.body);
 
   if (error) {
-    return res.status(400).json({ errors: error.message });
+    throw new AppError(400, error.message);
   }
 
   next();

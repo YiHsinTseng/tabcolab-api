@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const AppError = require('../utils/appError');
 
 const positionSchema = Joi.object({
   group_pos: Joi.number().integer().optional(),
@@ -9,7 +10,7 @@ const validatePositionDataTypes = (req, res, next) => {
   const { error } = positionSchema.validate(req.body);
 
   if (error) {
-    return res.status(400).json({ errors: error.message });
+    throw new AppError(400, error.message);
   }
 
   next();

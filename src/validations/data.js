@@ -2,6 +2,7 @@ const Joi = require('joi');
 const { groupSchema } = require('./group');
 const { itemSchema } = require('./item');
 const { positionSchema } = require('./position');
+const AppError = require('../utils/appError');
 
 const validateDataTypes = (req, res, next) => {
   const schema = Joi.alternatives().try(
@@ -13,7 +14,7 @@ const validateDataTypes = (req, res, next) => {
   const { error } = schema.validate(req.body);
 
   if (error) {
-    return res.status(400).json({ errors: error.message });
+    throw new AppError(400, error.message);
   }
 
   next();

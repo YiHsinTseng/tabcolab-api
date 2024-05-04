@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const AppError = require('../utils/appError');
 
 const groupSchema = Joi.object({
   group_id: Joi.string().optional(),
@@ -12,7 +13,7 @@ const validateGroupDataTypes = (req, res, next) => {
   const { error } = groupSchema.validate(req.body);
 
   if (error) {
-    return res.status(400).json({ errors: error.message });
+    throw new AppError(400, error.message);
   }
 
   next();
