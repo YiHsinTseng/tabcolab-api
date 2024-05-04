@@ -20,12 +20,12 @@ const ItemSchema = new mongoose.Schema({
   },
 });
 
-ItemSchema.statics.getItemById = async function (group_id, item_id, user_id) {
+ItemSchema.statics.getItemById = async function getItemById(group_id, item_id, user_id) {
   const { sourceGroupItem } = await UserGroup.findGroupItem(user_id, group_id, item_id);
   return sourceGroupItem;
 };
 
-ItemSchema.statics.searchItemsInGroups = async function (keyword, itemTypeOptions, user_id) {
+ItemSchema.statics.searchItemsInGroups = async function searchItemsInGroups(keyword, itemTypeOptions, user_id) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
   const { groups } = userGroup;
 
@@ -68,7 +68,7 @@ ItemSchema.statics.searchItemsInGroups = async function (keyword, itemTypeOption
   return matchingItems;
 };
 
-ItemSchema.statics.moveItem = async function (sourceGroupId, targetGroupId, itemId, newPosition, user_id) {
+ItemSchema.statics.moveItem = async function moveItem(sourceGroupId, targetGroupId, itemId, newPosition, user_id) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
   const sourceGroup = userGroup.groups.find((group) => group.group_id === sourceGroupId);
   let targetGroup = userGroup.groups.find((group) => group.group_id === targetGroupId);
@@ -107,7 +107,7 @@ ItemSchema.statics.moveItem = async function (sourceGroupId, targetGroupId, item
   return { success: true, message: 'Item moved successfully' };
 };
 
-ItemSchema.statics.deleteItem = async function (groupId, itemId, user_id) {
+ItemSchema.statics.deleteItem = async function deleteItem(groupId, itemId, user_id) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
   const group = userGroup.groups.find((group) => group._id === groupId);
 
@@ -143,7 +143,7 @@ const TabSchema = new mongoose.Schema({
   },
 });
 
-TabSchema.methods.addTab = async function (user_id, group_id, targetItem_position) {
+TabSchema.methods.addTab = async function addTab(user_id, group_id, targetItem_position) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
   const group = userGroup.groups.find((group) => group.group_id === group_id);
 
@@ -162,7 +162,7 @@ TabSchema.methods.addTab = async function (user_id, group_id, targetItem_positio
   await userGroup.save();
 };
 
-TabSchema.statics.updateTab = async function (user_id, group_id, item_id, note_content) {
+TabSchema.statics.updateTab = async function updateTab(user_id, group_id, item_id, note_content) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
   const group = userGroup.groups.find((group) => group._id === group_id);
 
@@ -200,7 +200,7 @@ const NoteSchema = new mongoose.Schema({
   },
 });
 
-NoteSchema.methods.addNoteToGroup = async function (group_id, user_id) {
+NoteSchema.methods.addNoteToGroup = async function addNoteToGroup(group_id, user_id) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
   const group = userGroup.groups.find((group) => group._id === group_id);
 
@@ -213,7 +213,7 @@ NoteSchema.methods.addNoteToGroup = async function (group_id, user_id) {
   await userGroup.save();
 };
 
-NoteSchema.statics.updateNoteContent = async function (user_id, group_id, item_id, newContent) {
+NoteSchema.statics.updateNoteContent = async function updateNoteContent(user_id, group_id, item_id, newContent) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
   const group = userGroup.groups.find((group) => group._id === group_id);
 
@@ -232,7 +232,7 @@ NoteSchema.statics.updateNoteContent = async function (user_id, group_id, item_i
   await userGroup.save();
 };
 
-NoteSchema.statics.convertToTodo = async function (user_id, group_id, item_id) {
+NoteSchema.statics.convertToTodo = async function convertToTodo(user_id, group_id, item_id) {
   const user_groups = await UserGroup.findOne({ _id: user_id }).exec();
   const group = user_groups.groups.find((group) => group._id === group_id);
 
@@ -272,7 +272,7 @@ const TodoSchema = new mongoose.Schema({
   },
 });
 
-TodoSchema.statics.updateTodo = async function (user_id, group_id, item_id, item_type, doneStatus, note_content) {
+TodoSchema.statics.updateTodo = async function updateTodo(user_id, group_id, item_id, item_type, doneStatus, note_content) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
   const group = userGroup.groups.find((group) => group._id === group_id);
 

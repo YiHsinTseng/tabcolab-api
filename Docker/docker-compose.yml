@@ -17,8 +17,6 @@ services:
       - "5000:5000"
       
   nginx:
-    environment:
-      - SERVER_NAME=13.115.132.26
     build:
       context: ./nginx
       dockerfile: Dockerfile

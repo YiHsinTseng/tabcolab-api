@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findUserById = async function (user_id) {
+userSchema.statics.findUserById = async function findUserById(user_id) {
   const user = await this.findById(user_id);
   if (!user) {
     throw new AppError(404, 'User not found or invalid user ID');
@@ -49,12 +49,12 @@ userSchema.statics.findUserById = async function (user_id) {
   return user;
 };
 
-userSchema.statics.findUserByGoogleId = async function (google_id) {
+userSchema.statics.findUserByGoogleId = async function findUserByGoogleId(google_id) {
   const user = await this.findOne({ googleID: google_id });
   return user;
 };
 
-userSchema.statics.findUserByEmail = async function (email) {
+userSchema.statics.findUserByEmail = async function findUserByEmail(email) {
   const user = await this.findOne({ email });
   if (!user) {
     throw new AppError(404, 'User not found or invalid email');
@@ -63,12 +63,12 @@ userSchema.statics.findUserByEmail = async function (email) {
 };
 
 // 實現 comparePassword 方法
-userSchema.methods.comparePassword = function (password) {
+userSchema.methods.comparePassword = function comparePassword(password) {
   return bcrypt.compare(password, this.password);
 };
 
 // 實現 generateAuthToken 方法
-userSchema.methods.generateAuthToken = function () {
+userSchema.methods.generateAuthToken = function generateAuthToken() {
   const tokenObject = {
     user_id: this.user_id, email: this.email, version: 'v1.0',
   };
@@ -77,13 +77,13 @@ userSchema.methods.generateAuthToken = function () {
 };
 
 // 實現 emailExists 靜態方法
-userSchema.statics.emailExists = async function (email) {
+userSchema.statics.emailExists = async function emailExists(email) {
   const user = await this.findOne({ email });
   return !!user;
 };
 
 // 實現 createUser 實例方法
-userSchema.methods.createUser = async function () {
+userSchema.methods.createUser = async function createUser() {
   await this.save();
 
   const userGroup = new UserGroup({
@@ -95,7 +95,7 @@ userSchema.methods.createUser = async function () {
   return { success: true, message: 'User created successfully' };
 };
 
-userSchema.statics.getAllUsers = async function () {
+userSchema.statics.getAllUsers = async function getAllUsers() {
   const users = await this.find().select('-__v');
   const userObjects = users.map((user) => {
     const userObject = user.toJSON();
@@ -105,7 +105,7 @@ userSchema.statics.getAllUsers = async function () {
   return { success: true, users: userObjects };
 };
 
-userSchema.statics.getUserInfo = async function (user_id) {
+userSchema.statics.getUserInfo = async function getUserInfo(user_id) {
   const user = await this.findById(user_id).select('-__v');
   if (user) {
     // 將 user 物件轉換為一個普通的 JavaScript 物件
@@ -117,7 +117,7 @@ userSchema.statics.getUserInfo = async function (user_id) {
   return { success: false };
 };
 
-userSchema.methods.updateUserInfo = async function (user_id) {
+userSchema.methods.updateUserInfo = async function updateUserInfo(user_id) {
   // `this` refers to the instance of the model
   const user = this;
 
@@ -131,7 +131,7 @@ userSchema.methods.updateUserInfo = async function (user_id) {
   return { success: true, message: 'User info updated successfully' };
 };
 
-userSchema.methods.updateUserPassword = async function (password) {
+userSchema.methods.updateUserPassword = async function updateUserPassword(password) {
   // `this` refers to the instance of the model
   const user = this;
 
@@ -143,7 +143,7 @@ userSchema.methods.updateUserPassword = async function (password) {
   return { success: true, message: 'User password updated successfully' };
 };
 
-userSchema.statics.deleteUser = async function (user_id) {
+userSchema.statics.deleteUser = async function deleteUser(user_id) {
   // `this` refers to the model
   const User = this;
 
@@ -157,7 +157,7 @@ userSchema.statics.deleteUser = async function (user_id) {
 };
 
 // 實現 hashPassword 中間件
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function saveUser(next) {
   // Only hash the password if it has been modified (or is new) and password exists
   if (this.password && (this.isNew || this.isModified('password'))) {
     this.password = await bcrypt.hash(this.password, 10);
@@ -165,7 +165,7 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-userSchema.pre('remove', async function (next) {
+userSchema.pre('remove', async function removeUser(next) {
   // 'this' is the user
   const user = this;
 

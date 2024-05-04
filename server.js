@@ -3,7 +3,6 @@ const session = require('express-session');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
-
 const swaggerSpec = require('./swagger/config/swaggerSpecSetup');
 
 // config
@@ -28,10 +27,10 @@ const pageNotFoundHandler = require('./src/middlewares/pageNotFoundHandler');
 const apiErrorHandler = require('./src/middlewares/apiErrorHandler');
 
 server.get('/', (req, res) => {
-  res.redirect('/api-docs');
+  res.redirect('/api-doc');
 });
 // swagger ui
-server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+server.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // middlewares
 server.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false }));
@@ -46,7 +45,8 @@ server.use(`/api/${API_VERSION}/oauth`, oauthRoutes);
 server.use(`/api/${API_VERSION}`, userRoutes);
 
 // group, item, specItem routes, with JWT authentication middleware
-server.use(`/api/${API_VERSION}`, authenticateJwt, [groupRoutes, itemRoutes, specItemRoutes]);
+server.use(`/api/${API_VERSION}/groups`, authenticateJwt, [groupRoutes, itemRoutes]);
+server.use(`/api/${API_VERSION}/groups/:group_id`, authenticateJwt, specItemRoutes);
 
 // 404 error handler
 server.use(pageNotFoundHandler);
