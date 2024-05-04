@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { UserGroup } = require('./group');
 const { generateItemId } = require('../utils/generateId');
+const AppError = require('../utils/appError');
 
 const ItemSchema = new mongoose.Schema({
   _id: {
@@ -150,7 +151,7 @@ TabSchema.methods.addTab = async function addTab(user_id, group_id, targetItem_p
   const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
-    throw new Error('Group not found');
+    throw new AppError(404, 'Group not found');
   }
   // 確保 targetItem_position 在有效範圍內
   if (targetItem_position >= 0 && targetItem_position <= group.items.length) {
@@ -169,13 +170,13 @@ TabSchema.statics.updateTab = async function updateTab(user_id, group_id, item_i
   const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
-    throw new Error('Group not found');
+    throw new AppError(404, 'Group not found');
   }
 
   const tab = group.items.find((item) => item._id === item_id && item.item_type === 0);
 
   if (!tab) {
-    throw new Error('Tab not found in group');
+    throw new AppError(404, 'Tab not found in group');
   }
 
   tab.note_content = String(note_content);
@@ -207,7 +208,7 @@ NoteSchema.methods.addNoteToGroup = async function addNoteToGroup(group_id, user
   const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
-    throw new Error('Group not found');
+    throw new AppError(404, 'Group not found');
   }
 
   group.items.push(this);
@@ -220,12 +221,12 @@ NoteSchema.statics.updateNoteContent = async function updateNoteContent(user_id,
   const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
-    throw new Error('Group not found');
+    throw new AppError(404, 'Group not found');
   }
 
   const noteIndex = group.items.findIndex((item) => item._id === item_id && item.item_type === 1);
   if (noteIndex === -1) {
-    throw new Error('Note not found in group');
+    throw new AppError(404, 'Note not found in group');
   }
 
   group.items[noteIndex].note_content = newContent;
@@ -239,12 +240,12 @@ NoteSchema.statics.convertToTodo = async function convertToTodo(user_id, group_i
   const group = user_groups.groups.find((group) => group._id === group_id);
 
   if (!group) {
-    throw new Error('Group not found');
+    throw new AppError(404, 'Group not found');
   }
 
   const noteIndex = group.items.findIndex((item) => item._id === item_id && item.item_type === 1);
   if (noteIndex === -1) {
-    throw new Error('Note not found in group');
+    throw new AppError(404, 'Note not found in group');
   }
 
   group.items[noteIndex].item_type = 2;
@@ -279,12 +280,12 @@ TodoSchema.statics.updateTodo = async function updateTodo(user_id, group_id, ite
   const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
-    throw new Error('Group not found');
+    throw new AppError(404, 'Group not found');
   }
 
   const todoIndex = group.items.findIndex((item) => item._id === item_id && item.item_type === 2);
   if (todoIndex === -1) {
-    throw new Error('Todo not found in group');
+    throw new AppError(404, 'Todo not found in group');
   }
   // 更新 todo 的 note_content
   if (group && todoIndex !== undefined && note_content !== undefined) {

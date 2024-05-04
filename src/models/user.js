@@ -150,7 +150,7 @@ userSchema.statics.deleteUser = async function deleteUser(user_id) {
   // Find the user
   const user = await User.findById(user_id);
   if (!user) {
-    throw new Error('User not found');
+    throw new AppError(404, 'User not found');
   }
 
   // Remove all UserGroup objects that reference this user

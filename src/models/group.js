@@ -58,11 +58,11 @@ const UserGroupSchema = new mongoose.Schema({
 UserGroupSchema.statics.findGroupById = async function findGroupById(user_id, group_id) {
   const userGroup = await this.findOne({ _id: user_id }).exec();
   if (!userGroup) {
-    throw new Error('User not found or invalid user ID');
+    throw new AppError(404, 'User not found or invalid user ID');
   }
   const group = userGroup.groups.find((group) => group._id === group_id);
   if (!group) {
-    throw new Error('Group not found or invalid group ID');
+    throw new AppError(404, 'Group not found or invalid group ID');
   }
   return group;
 };
@@ -70,13 +70,13 @@ UserGroupSchema.statics.findGroupById = async function findGroupById(user_id, gr
 UserGroupSchema.statics.getGroups = async function getGroups(user_id) {
   const userGroup = await this.findOne({ _id: user_id }).exec();
   if (!userGroup) {
-    throw new AppError(500, 'No user group model in database');
+    throw new AppError(404, 'No user group model in database');
   }
   const { groups } = userGroup;
   if (groups.length > 0) {
     return { success: true, message: 'Groups got successfully', groups };
   }
-  return { success: false, message: 'Group not found' };
+  return { success: false, message: 'No groups found for the user' };
 };
 
 UserGroupSchema.statics.findGroupItem = async function findGroupItem(user_id, group_id, item_id) {
@@ -99,7 +99,7 @@ UserGroupSchema.statics.findGroupItem = async function findGroupItem(user_id, gr
 UserGroupSchema.statics.deleteGroupItem = async function deleteGroupItem(user_id, group_id, item_id) {
   const userGroup = await this.findOne({ _id: user_id }).exec();
   if (!userGroup) {
-    throw new Error('User not found or invalid user ID');
+    throw new AppError(404, 'User not found or invalid user ID');
   }
 
   const { itemIndex } = await this.model('UserGroup').findGroupItem(user_id, group_id, item_id);
@@ -107,7 +107,7 @@ UserGroupSchema.statics.deleteGroupItem = async function deleteGroupItem(user_id
   // Find the group
   const group = userGroup.groups.find((group) => group._id === group_id);
   if (!group) {
-    throw new Error('Group not found or invalid group ID');
+    throw new AppError(404, 'Group not found or invalid group ID');
   }
 
   // Remove the item from the group
@@ -195,8 +195,7 @@ UserGroupSchema.statics.changeGroupPosition = async function changeGroupPosition
 
     return { success: true, message: 'Group position updated successfully' };
   }
-
-  throw new Error('Invalid group ID or position');
+  throw new AppError(400, 'Invalid group ID or position');
 };
 
 UserGroupSchema.statics.deleteGroup = async function deleteGroup(user_id, group_id) {
@@ -212,8 +211,7 @@ UserGroupSchema.statics.deleteGroup = async function deleteGroup(user_id, group_
     await userGroup.save();
     return { success: true, message: 'Group deleted successfully' };
   }
-
-  throw new Error('Group not found');
+  throw new AppError(404, 'Group not found');
 };
 
 const Group = mongoose.model('Group', GroupSchema);
