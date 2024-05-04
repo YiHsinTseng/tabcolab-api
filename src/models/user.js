@@ -147,13 +147,19 @@ userSchema.statics.deleteUser = async function deleteUser(user_id) {
   // `this` refers to the model
   const User = this;
 
-  // Delete the user from the database
-  const deletedUser = await User.findByIdAndDelete(user_id);
-
-  if (deletedUser) {
-    return { success: true, message: 'User deleted successfully' };
+  // Find the user
+  const user = await User.findById(user_id);
+  if (!user) {
+    throw new Error('User not found');
   }
-  throw new Error('User not found');
+
+  // Remove all UserGroup objects that reference this user
+  await mongoose.model('UserGroup').deleteMany({ _id: user._id });
+
+  // Delete the user
+  await User.deleteOne({ _id: user_id });
+
+  return { success: true, message: 'User deleted successfully' };
 };
 
 // 實現 hashPassword 中間件
@@ -162,16 +168,6 @@ userSchema.pre('save', async function saveUser(next) {
   if (this.password && (this.isNew || this.isModified('password'))) {
     this.password = await bcrypt.hash(this.password, 10);
   }
-  next();
-});
-
-userSchema.pre('remove', async function removeUser(next) {
-  // 'this' is the user
-  const user = this;
-
-  // Remove all UserGroup objects that reference this user
-  await mongoose.model('UserGroup').deleteMany({ _id: user._id });
-
   next();
 });
 
