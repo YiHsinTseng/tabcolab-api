@@ -35,7 +35,7 @@ const moveItem = async (req, res, next) => {
       return res.status(200).json({ status: 'success', message: moveResult.message, item_id });
     }
     return errorResponse(res, 400, moveResult.error);
-  } catch (err) {
+  } catch (error) {
     next(error);
   }
 };
@@ -49,7 +49,7 @@ const deleteItem = async (req, res, next) => {
       return errorResponse(res, 404, 'Group or item not found');
     }
     return res.status(204).header('X-Message', 'Item removed from group successfully').send();
-  } catch (err) {
+  } catch (error) {
     next(error);
   }
 };

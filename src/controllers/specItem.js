@@ -30,7 +30,7 @@ const addTab = async (req, res, next) => {
       return res.status(201).json({ status: 'success', message: 'New tab added to group successfully', item_id: newTab.item_id });
     }
     return errorResponse(res, 400, 'Invalid request body');
-  } catch (err) {
+  } catch (error) {
     next(error);
   }
 };
@@ -74,7 +74,7 @@ const addNote = async (req, res, next) => {
       return res.status(201).json({ status: 'success', message: 'Note added to group successfully', item_id: newNote.item_id });
     }
     return errResponse(res, 400, 'Invalid Request body');
-  } catch (err) {
+  } catch (error) {
     next(error);
   }
 };
@@ -105,7 +105,7 @@ const updateNote = async (req, res, next) => {
       return res.status(200).json({ status: 'success', message: 'Note changed to todo successfully' });
     }
     return res.status(400).json({ status: 'fail', message: 'Invalid request body' });
-  } catch (err) {
+  } catch (error) {
     next(error);
   }
 };
@@ -143,7 +143,7 @@ const updateTodo = async (req, res, next) => {
       return res.status(200).json({ status: 'success', message: 'Todo status updated successfully' });
     }
     return errorResponse(res, 400, 'Invalid request body');
-  } catch (err) {
+  } catch (error) {
     next(error);
   }
 };
