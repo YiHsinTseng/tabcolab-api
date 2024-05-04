@@ -73,8 +73,8 @@ ItemSchema.statics.searchItemsInGroups = async function searchItemsInGroups(keyw
 
 ItemSchema.statics.moveItem = async function moveItem(sourceGroupId, targetGroupId, itemId, newPosition, user_id) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const sourceGroup = userGroup.groups.find((group) => group._id === sourceGroupId);
-  let targetGroup = userGroup.groups.find((group) => group._id === targetGroupId);
+  const sourceGroup = await UserGroup.findGroupById(user_id, sourceGroupId);
+  let targetGroup = await UserGroup.findGroupById(user_id, targetGroupId);
 
   if (!sourceGroup) {
     return { success: false, error: 'Source group not found' };
@@ -112,11 +112,8 @@ ItemSchema.statics.moveItem = async function moveItem(sourceGroupId, targetGroup
 
 ItemSchema.statics.deleteItem = async function deleteItem(groupId, itemId, user_id) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = userGroup.groups.find((group) => group._id === groupId);
+  const group = await UserGroup.findGroupById(user_id, groupId);
 
-  if (!group) {
-    return null; // 如果找不到該群組，返回null
-  }
   const index = group.items.findIndex((item) => item._id === itemId);
   if (index === -1) {
     return null; // 如果在群組中找不到該項目，返回null
@@ -148,11 +145,7 @@ const TabSchema = new mongoose.Schema({
 
 TabSchema.methods.addTab = async function addTab(user_id, group_id, targetItem_position) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = userGroup.groups.find((group) => group._id === group_id);
-
-  if (!group) {
-    throw new AppError(404, 'Group not found');
-  }
+  const group = await UserGroup.findGroupById(user_id, group_id);
   // 確保 targetItem_position 在有效範圍內
   if (targetItem_position >= 0 && targetItem_position <= group.items.length) {
     // 使用 splice 在指定位置插入 newTab
@@ -167,11 +160,7 @@ TabSchema.methods.addTab = async function addTab(user_id, group_id, targetItem_p
 
 TabSchema.statics.updateTab = async function updateTab(user_id, group_id, item_id, note_content) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = userGroup.groups.find((group) => group._id === group_id);
-
-  if (!group) {
-    throw new AppError(404, 'Group not found');
-  }
+  const group = await UserGroup.findGroupById(user_id, group_id);
 
   const tab = group.items.find((item) => item._id === item_id && item.item_type === 0);
 
@@ -205,11 +194,7 @@ const NoteSchema = new mongoose.Schema({
 
 NoteSchema.methods.addNoteToGroup = async function addNoteToGroup(group_id, user_id) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = userGroup.groups.find((group) => group._id === group_id);
-
-  if (!group) {
-    throw new AppError(404, 'Group not found');
-  }
+  const group = await UserGroup.findGroupById(user_id, group_id);
 
   group.items.push(this);
 
@@ -218,11 +203,7 @@ NoteSchema.methods.addNoteToGroup = async function addNoteToGroup(group_id, user
 
 NoteSchema.statics.updateNoteContent = async function updateNoteContent(user_id, group_id, item_id, newContent) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = userGroup.groups.find((group) => group._id === group_id);
-
-  if (!group) {
-    throw new AppError(404, 'Group not found');
-  }
+  const group = await UserGroup.findGroupById(user_id, group_id);
 
   const noteIndex = group.items.findIndex((item) => item._id === item_id && item.item_type === 1);
   if (noteIndex === -1) {
@@ -236,12 +217,8 @@ NoteSchema.statics.updateNoteContent = async function updateNoteContent(user_id,
 };
 
 NoteSchema.statics.convertToTodo = async function convertToTodo(user_id, group_id, item_id) {
-  const user_groups = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = user_groups.groups.find((group) => group._id === group_id);
-
-  if (!group) {
-    throw new AppError(404, 'Group not found');
-  }
+  const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
+  const group = await UserGroup.findGroupById(user_id, group_id);
 
   const noteIndex = group.items.findIndex((item) => item._id === item_id && item.item_type === 1);
   if (noteIndex === -1) {
@@ -251,8 +228,8 @@ NoteSchema.statics.convertToTodo = async function convertToTodo(user_id, group_i
   group.items[noteIndex].item_type = 2;
   group.items[noteIndex].doneStatus = false;
 
-  await user_groups.markModified('groups'); // 告訴 Mongoose groups 欄位已被修改
-  await user_groups.save();
+  await userGroup.markModified('groups'); // 告訴 Mongoose groups 欄位已被修改
+  await userGroup.save();
 };
 
 const TodoSchema = new mongoose.Schema({
@@ -277,11 +254,7 @@ const TodoSchema = new mongoose.Schema({
 
 TodoSchema.statics.updateTodo = async function updateTodo(user_id, group_id, item_id, item_type, doneStatus, note_content) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = userGroup.groups.find((group) => group._id === group_id);
-
-  if (!group) {
-    throw new AppError(404, 'Group not found');
-  }
+  const group = await UserGroup.findGroupById(user_id, group_id);
 
   const todoIndex = group.items.findIndex((item) => item._id === item_id && item.item_type === 2);
   if (todoIndex === -1) {
