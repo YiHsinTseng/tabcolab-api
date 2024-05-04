@@ -21,9 +21,9 @@ const addTab = async (req, res, next) => {
       windowId: Number(browserTabReq.windowId),
     };
 
-    const validKeysForAddTab = [targetItem_position, ...Object.keys(browserTabData)];
+    const validValuesForAddTab = [targetItem_position, ...Object.values(browserTabData)];
 
-    if (group_id && targetItem_position != undefined && validKeysForAddTab.every((key) => key !== undefined)) {
+    if (group_id && validValuesForAddTab.every((value) => value !== undefined)) {
       const newTab = new Tab(browserTabData);
 
       await newTab.addTab(user_id, group_id, targetItem_position);

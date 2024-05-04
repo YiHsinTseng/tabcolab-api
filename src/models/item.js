@@ -147,7 +147,7 @@ const TabSchema = new mongoose.Schema({
 
 TabSchema.methods.addTab = async function addTab(user_id, group_id, targetItem_position) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const group = userGroup.groups.find((group) => group.group_id === group_id);
+  const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
     throw new Error('Group not found');

@@ -46,7 +46,7 @@ server.use(`/api/${API_VERSION}`, userRoutes);
 
 // group, item, specItem routes, with JWT authentication middleware
 server.use(`/api/${API_VERSION}/groups`, authenticateJwt, [groupRoutes, itemRoutes]);
-server.use(`/api/${API_VERSION}/groups/:group_id`, authenticateJwt, specItemRoutes);
+server.use(`/api/${API_VERSION}/groups`, authenticateJwt, specItemRoutes);
 
 // 404 error handler
 server.use(pageNotFoundHandler);
