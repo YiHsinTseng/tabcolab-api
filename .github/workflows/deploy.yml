@@ -50,7 +50,6 @@ jobs:
             echo SESSION_SECRET=$SESSION_SECRET >> .env
             echo WHITE_LIST=$WHITE_LIST >> .env
             sudo chmod 600 .env
-            sudo chown -R $USER /home/***/tabcolab/server/mongodb_data
             cd Docker
             sudo docker system prune -a -f
             docker-compose down --rmi all
