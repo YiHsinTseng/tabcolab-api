@@ -14,6 +14,8 @@ servers:
     description: Production server (EC2 MongoDB Altas)
   - url: https://13.115.132.26/api/1.0
     description: Production server (EC2 MongoDB Altas)
+  - url: http://localhost:80/api/1.0
+    description: Production server (localhost MongoDB Altas)
   - url: http://localhost:5000/api/1.0
     description: Production server (localhost MongoDB Altas)
   - url: http://localhost:4000/api/1.0

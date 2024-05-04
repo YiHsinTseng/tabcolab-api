@@ -3,14 +3,15 @@ const { OAuth2Client } = require('google-auth-library');
 const { google } = require('googleapis');
 
 const User = require('../models/user');
+const errorResponse = require('../utils/errorResponse');
 
 const googleOauth = async (req, res, next) => {
   try {
     const { authorization_code, redirect_url } = req.body;
 
     // 檢查請求是否包含授權碼
-    if (!authorization_code) {
-      throw new Error('Invalid request: authorization code is required');
+    if (!authorization_code || !redirect_url) {
+      return errorResponse(res, 400, 'Invalid request: authorization code and redirect url are required');
     }
 
     const client = new OAuth2Client(

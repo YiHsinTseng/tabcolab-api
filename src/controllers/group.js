@@ -2,10 +2,7 @@ const { UserGroup, Group } = require('../models/group');
 
 const { Tab } = require('../models/item');
 
-const ErrorResponse = (statusCode, message, res) => {
-  const status = statusCode === 500 ? 'error' : 'fail';
-  res.status(statusCode).json({ status, message });
-};
+const errorResponse = require('../utils/errorResponse');
 
 const getGroups = async (req, res, next) => {
   try {
@@ -14,7 +11,7 @@ const getGroups = async (req, res, next) => {
     if (result.success) {
       return res.status(200).json(result.groups);
     }
-    return ErrorResponse(404, result.message, res);
+    return errorResponse(res, 404, result.message);
   } catch (error) {
     next(error);
   }
@@ -88,10 +85,10 @@ const createGroup = async (req, res, next) => {
         return res.status(201).json({ message: result.message, group_id: newGroup.group_id });
       }
     } else {
-      return ErrorResponse(400, 'Invalid request body', res);
+      return errorResponse(res, 400, 'Invalid request body');
     }
 
-    return ErrorResponse(400, 'Group failed to create', res);
+    return errorResponse(res, 400, 'Group failed to create');
   } catch (error) {
     next(error);
   }
@@ -109,7 +106,7 @@ const updateGroup = async (req, res, next) => {
     // Check that only one of group_icon, group_title, or group_pos is present
     const numProps = [group_icon, group_title, group_pos].filter((prop) => prop !== undefined).length;
     if (numProps !== 1) {
-      return ErrorResponse(400, 'Invalid request body, only one of group_icon, group_title, or group_pos should be present', res);
+      return errorResponse(res, 400, 'Invalid request body, only one of group_icon, group_title, or group_pos should be present');
     }
 
     let result;
@@ -123,13 +120,13 @@ const updateGroup = async (req, res, next) => {
     } else if (group_id && group_pos !== undefined) {
       result = await UserGroup.changeGroupPosition(user_id, group_id, group_pos);
     } else {
-      return ErrorResponse(400, 'Invalid request body', res);
+      return errorResponse(res, 400, 'Invalid request body');
     }
 
     if (result.success) {
       return res.status(200).json({ status: 'success', message: result.message });
     }
-    return ErrorResponse(400, 'Group failed to update', res);
+    return errorResponse(res, 400, 'Group failed to update');
   } catch (error) {
     next(error);
   }
@@ -144,7 +141,7 @@ const deleteGroup = async (req, res, next) => {
     if (result.success) {
       return res.status(200).json({ status: 'success', message: result.message });
     }
-    return ErrorResponse(400, 'Group failed to delete', res);
+    return errorResponse(res, 400, 'Group failed to delete');
   } catch (error) {
     next(error);
   }

@@ -1,6 +1,7 @@
 const { Tab, Note, Todo } = require('../models/item');
+const errorResponse = require('../utils/errorResponse');
 
-const addTab = async (req, res) => {
+const addTab = async (req, res, next) => {
   try {
     const { group_id } = req.params;
     const { user_id } = req.user;
@@ -28,14 +29,13 @@ const addTab = async (req, res) => {
       await newTab.addTab(user_id, group_id, targetItem_position);
       return res.status(201).json({ status: 'success', message: 'New tab added to group successfully', item_id: newTab.item_id });
     }
-
-    return res.status(400).json({ status: 'fail', message: 'Invalid request body' });
-  } catch (error) {
-    return res.status(404).json({ status: 'fail', message: error.message });
+    return errorResponse(res, 400, 'Invalid request body');
+  } catch (err) {
+    next(error);
   }
 };
 
-const updateTab = async (req, res) => {
+const updateTab = async (req, res, next) => {
   try {
     const { group_id, item_id } = req.params;
     const { user_id } = req.user;
@@ -45,26 +45,26 @@ const updateTab = async (req, res) => {
 
     return res.status(201).json({ status: 'success', message: 'Note added to tab successfully', note_content: updatedNoteContent });
   } catch (error) {
-    return res.status(400).json({ status: 'fail', message: error.message });
+    next(error);
   }
 };
 
-const addNote = async (req, res) => {
+const addNote = async (req, res, next) => {
   try {
     const { group_id } = req.params;
     const { user_id } = req.user;
     const { note_content, note_bgColor } = req.body;
 
     if (Object.keys(req.body).length > 2) {
-      return res.status(404).json({ status: 'fail', message: 'Unexpected Additional Parameters' });
+      return errorResponse(res, 404, 'Unexpected Additional Parameters');
     }
 
     if (note_content === '') {
-      return res.status(404).json({ status: 'fail', message: '"note_content" is not allowed to be empty' });
+      return errorResponse(res, 404, '"note_content" is not allowed to be empty');
     }
 
     if (note_content === undefined && note_bgColor === undefined && Object.keys(req.body).length === 2) {
-      return res.status(404).json({ status: 'fail', message: 'Request Bodies Required' });
+      return errorResponse(res, 404, 'Invalid Request Bodies');
     }
 
     if (group_id && note_content !== undefined && note_bgColor) {
@@ -73,59 +73,59 @@ const addNote = async (req, res) => {
       await newNote.addNoteToGroup(group_id, user_id);
       return res.status(201).json({ status: 'success', message: 'Note added to group successfully', item_id: newNote.item_id });
     }
-    return res.status(400).json({ status: 'fail', message: 'Invalid request body' });
+    return errResponse(res, 400, 'Invalid Request body');
   } catch (err) {
-    return res.status(400).json({ status: 'fail', message: err.message });
+    next(error);
   }
 };
 
-const updateNote = async (req, res) => {
+const updateNote = async (req, res, next) => {
   try {
     const { group_id, item_id } = req.params;
     const { user_id } = req.user;
     const { item_type, note_content } = req.body;
 
     if (Object.keys(req.body).length === 0) {
-      return res.status(404).json({ status: 'fail', message: 'Request Bodies Required' });
+      return errorResponse(res, 404, 'Request Bodies Required');
     }
     if (Object.keys(req.body).length > 1) {
-      return res.status(404).json({ status: 'fail', message: 'Unexpected Additional Parameters' });
+      return errorResponse(res, 404, 'Unexpected Additional Parameters');
     }
     if (note_content === undefined && item_type !== 2) {
-      return res.status(404).json({ status: 'fail', message: 'Invaild Request Bodies', detail: 'Only change Note to Todo, item_type must be 2' });
+      return errorResponse(res, 404, 'Invaild Request Bodies, detail: Only change Note to Todo, item_type must be 2');
     }
-
+    // modify note content
     if (group_id && note_content !== undefined) {
       await Note.updateNoteContent(user_id, group_id, item_id, note_content);
       return res.status(200).json({ status: 'success', message: 'Note content changed successfully' });
     }
-
+    // change note to todo
     if (group_id && note_content === undefined && item_type === 2) {
       await Note.convertToTodo(user_id, group_id, item_id);
       return res.status(200).json({ status: 'success', message: 'Note changed to todo successfully' });
     }
     return res.status(400).json({ status: 'fail', message: 'Invalid request body' });
   } catch (err) {
-    return res.status(400).json({ status: 'fail', message: err.message });
+    next(error);
   }
 };
 
-const updateTodo = async (req, res) => {
+const updateTodo = async (req, res, next) => {
   try {
     const { group_id, item_id } = req.params;
     const { user_id } = req.user;
     const { item_type, doneStatus, note_content } = req.body;
 
     if (Object.keys(req.body).length > 1) {
-      return res.status(404).json({ status: 'fail', message: 'Unexpected Additional Parameters' });
+      return errorResponse(res, 404, 'Unexpected Additional Parameters');
     }
 
     if (item_type === undefined && doneStatus === undefined && note_content === undefined) {
-      return res.status(404).json({ status: 'fail', message: 'Request Bodies Required' });
+      return errorResponse(res, 404, 'Request Bodies Required');
     }
 
     if (item_type !== 1 && doneStatus === undefined && note_content === undefined) {
-      return res.status(404).json({ status: 'fail', message: 'Invaild Request Bodies', detail: 'Only change Todo to Note, item_type must be 1' });
+      return errorResponse(res, 404, 'Invalid Request Bodies, detail: Only change Todo to Note, item_type must be 1');
     }
 
     if (note_content !== undefined) {
@@ -142,9 +142,9 @@ const updateTodo = async (req, res) => {
       await Todo.updateTodo(user_id, group_id, item_id, item_type, doneStatus, note_content);
       return res.status(200).json({ status: 'success', message: 'Todo status updated successfully' });
     }
-    return res.status(400).json({ status: 'fail', message: 'Invalid request body' });
+    return errorResponse(res, 400, 'Invalid request body');
   } catch (err) {
-    return res.status(400).json({ status: 'fail', message: err.message });
+    next(error);
   }
 };
 
