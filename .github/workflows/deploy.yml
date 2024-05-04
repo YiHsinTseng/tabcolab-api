@@ -1,9 +1,6 @@
 name: Deploy to EC2
 
-on:
-  push:
-    branches:
-      - main
+on: push
 
 jobs:
   Deploy:
@@ -35,11 +32,11 @@ jobs:
           envs: API_VERSION,PASSPORT_SECRET,USE_CLOUD_DB,PORT,MONGODB_URI_LOCAL,MONGODB_URI_CLOUD,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_AUTH_CALLBACK_URL,SESSION_SECRET,WHITE_LIST
           script: |
             if [ ! -d "tabcolab" ]; then 
-              git clone -b main git@github.com:SideProjectAC/tabcolab.git
+              git clone -b feature/clean-code git@github.com:SideProjectAC/tabcolab.git
               cd tabcolab
             else
               cd tabcolab
-              git pull origin main
+              git pull origin feature/clean-code
             fi
             echo API_VERSION=$API_VERSION > .env
             echo PASSPORT_SECRET=$PASSPORT_SECRET >> .env

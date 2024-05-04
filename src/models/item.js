@@ -53,11 +53,13 @@ ItemSchema.statics.searchItemsInGroups = async function searchItemsInGroups(keyw
       });
 
       if (matchesKeyword) {
-        const key = `${group.group_id}_${item.item_id}`;
+        const key = `${group._id}_${item._id}`;
         if (!seenItems[key]) {
+          const { _id, id, ...rest } = item; // 解構出 _id 和 id
           matchingItems.push({
             group_id: group.group_id,
-            ...item,
+            item_id: _id, // 將 _id 轉換為 item_id
+            ...rest, // 展開剩餘的屬性
           });
           seenItems[key] = true;
         }
@@ -70,8 +72,8 @@ ItemSchema.statics.searchItemsInGroups = async function searchItemsInGroups(keyw
 
 ItemSchema.statics.moveItem = async function moveItem(sourceGroupId, targetGroupId, itemId, newPosition, user_id) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
-  const sourceGroup = userGroup.groups.find((group) => group.group_id === sourceGroupId);
-  let targetGroup = userGroup.groups.find((group) => group.group_id === targetGroupId);
+  const sourceGroup = userGroup.groups.find((group) => group._id === sourceGroupId);
+  let targetGroup = userGroup.groups.find((group) => group._id === targetGroupId);
 
   if (!sourceGroup) {
     return { success: false, error: 'Source group not found' };
