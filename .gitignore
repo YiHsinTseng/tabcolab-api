@@ -9,3 +9,7 @@ package-lock.json
 swaggerSplit.yml
 
 **/mongodb_data/
+
+coverage
+
+--test__/archive

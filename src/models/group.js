@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
+<<<<<<< Updated upstream:src/models/group.js
 const { generateGroupId } = require('../utils/generateId');
+=======
+const debug = require('debug')('myapp:concurrency');
+const { generateGroupId } = require('../../utils/generateId');
+>>>>>>> Stashed changes:models/mongoDb/group.js
 
 const AppError = require('../utils/appError');
 
@@ -121,6 +126,9 @@ UserGroupSchema.statics.deleteGroupItem = async function deleteGroupItem(user_id
 
 UserGroupSchema.methods.createGroup = async function createGroup(user_id) {
   // Check if the userGroups document already exists
+  // const currentDate = new Date();
+  // console.log('in:', currentDate.getSeconds(), currentDate.getMilliseconds());
+  debug('BEFORE');
   let userGroup = await this.model('UserGroup').findOne({ _id: user_id });
 
   // If not, create a new one
@@ -135,10 +143,11 @@ UserGroupSchema.methods.createGroup = async function createGroup(user_id) {
 
   // Add the new group to the groups array
   userGroup.groups = userGroup.groups.concat(this.groups);
-
+  debug('PROCESSED');
   // Save the updated UserGroup document
   await userGroup.save();
-
+  // console.log('out:', currentDate.getSeconds(), currentDate.getMilliseconds());
+  debug('WRITED');
   return { success: true, message: 'Group created successfully' };
 };
 

@@ -171,6 +171,20 @@ userSchema.pre('save', async function saveUser(next) {
   next();
 });
 
+<<<<<<< Updated upstream:src/models/user.js
+=======
+userSchema.pre('remove', async function (next) {
+  // 'this' is the user
+  const user = this;
+  console.log('山山山山山山山');
+
+  // Remove all UserGroup objects that reference this user
+  await mongoose.model('UserGroup').deleteMany({ user_id: user.user_id });
+
+  next();
+});
+
+>>>>>>> Stashed changes:models/mongoDb/user.js
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
