@@ -1,10 +1,5 @@
 const mongoose = require('mongoose');
-<<<<<<< Updated upstream:src/models/group.js
 const { generateGroupId } = require('../utils/generateId');
-=======
-const debug = require('debug')('myapp:concurrency');
-const { generateGroupId } = require('../../utils/generateId');
->>>>>>> Stashed changes:models/mongoDb/group.js
 
 const AppError = require('../utils/appError');
 

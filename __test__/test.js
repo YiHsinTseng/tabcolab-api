@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const { MongoClient } = require('mongodb');
-const server = require('../prod-server/server');
+const server = require('../server');
 
 // 清空資料庫的函式
 async function clearDatabase() {

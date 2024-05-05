@@ -33,7 +33,7 @@ server.get('/', (req, res) => {
 server.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // middlewares
-server.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false }));
+// server.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false }));
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 
@@ -54,5 +54,7 @@ server.use(pageNotFoundHandler);
 server.use(apiErrorHandler);
 
 server.listen(PORT, () => {
-  console.log('Server is running');
+  // console.log('Server is running');
 });
+
+module.exports = server;

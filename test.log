@@ -1,0 +1,22 @@
+[13:45:21.356][emittery:subscribe][undefined] Event Name: test-file-start
+	data: undefined
+[13:45:21.358][emittery:emit][undefined] Event Name: Symbol(listenerAdded)
+	data: {"eventName":"test-file-start"}
+[13:45:21.358][emittery:subscribe][undefined] Event Name: test-file-success
+	data: undefined
+[13:45:21.359][emittery:emit][undefined] Event Name: Symbol(listenerAdded)
+	data: {"eventName":"test-file-success"}
+[13:45:21.359][emittery:subscribe][undefined] Event Name: test-file-failure
+	data: undefined
+[13:45:21.359][emittery:emit][undefined] Event Name: Symbol(listenerAdded)
+	data: {"eventName":"test-file-failure"}
+[13:45:21.359][emittery:subscribe][undefined] Event Name: test-case-start
+	data: undefined
+[13:45:21.359][emittery:emit][undefined] Event Name: Symbol(listenerAdded)
+	data: {"eventName":"test-case-start"}
+[13:45:21.359][emittery:subscribe][undefined] Event Name: test-case-result
+	data: undefined
+[13:45:21.359][emittery:emit][undefined] Event Name: Symbol(listenerAdded)
+	data: {"eventName":"test-case-result"}
+[13:45:21.361][emittery:emit][undefined] Event Name: test-file-start
+	data: [{"context":{"config":{"automock":false,"cache":true,"cacheDirectory":"/private/var/folders/3c/01ym3xd546g9vw5hjqn5ssvc0000gn/T/jest_dx","clearMocks":false,"collectCoverageFrom":[],"coverageDirectory":"/Users/easontseng/Coding/tabcolab-api/coverage","coveragePathIgnorePatterns":["/node_modules/"],"cwd":"/Users/easontseng/Coding/tabcolab-api","detectLeaks":false,"detectOpenHandles":false,"errorOnDeprecated":false,"extensionsToTreatAsEsm":[],"fakeTimers":{"enableGlobally":false},"forceCoverageMatch":[],"globals":{},"haste":{"computeSha1":false,"enableSymlinks":false,"forceNodeFilesystemAPI":true,"throwOnModuleCollision":false},"id":"fb4b2ec2ce22f3b0d0e043e20ab13edb","injectGlobals":true,"moduleDirectories":["node_modules"],"moduleFileExtensions":["js","mjs","cjs","jsx","ts","tsx","json","node"],"moduleNameMapper":[],"modulePathIgnorePatterns":[],"openHandlesTimeout":1000,"prettierPath":"prettier","resetMocks":false,"resetModules":false,"restoreMocks":false,"rootDir":"/Users/easontseng/Coding/tabcolab-api","roots":["/Users/easontseng/Coding/tabcolab-api"],"runner":"/Users/easontseng/Coding/tabcolab-api/node_modules/jest-runner/build/index.js","sandboxInjectedGlobals":[],"setupFiles":[],"setupFilesAfterEnv":[],"skipFilter":false,"slowTestThreshold":5,"snapshotFormat":{"escapeString":false,"printBasicPrototype":false},"snapshotSerializers":[],"testEnvironment":"/Users/easontseng/Coding/tabcolab-api/node_modules/jest-environment-node/build/index.js","testEnvironmentOptions":{},"testLocationInResults":false,"testMatch":["**/__tests__/**/*.[jt]s?(x)","**/?(*.)+(spec|test).[tj]s?(x)"],"testPathIgnorePatterns":["/node_modules/"],"testRegex":[],"testRunner":"/Users/easontseng/Coding/tabcolab-api/node_modules/jest-circus/runner.js","transform":[["\\.[jt]sx?$","/Users/easontseng/Coding/tabcolab-api/node_modules/babel-jest/build/index.js",{}]],"transformIgnorePatterns":["/node_modules/","\\.pnp\\.[^\\/]+$"],"watchPathIgnorePatterns":[]},"hasteFS":{"_rootDir":"/Users/easontseng/Coding/tabcolab-api","_files":{}},"moduleMap":{"duplicates":[],"map":[["tabcolab",{"g":["package.json",1]}]],"mocks":[],"rootDir":"/Users/easontseng/Coding/tabcolab-api"},"resolver":{"_options":{"extensions":[".js",".mjs",".cjs",".jsx",".ts",".tsx",".json",".node"],"hasCoreModules":true,"moduleDirectories":["node_modules"],"moduleNameMapper":null,"rootDir":"/Users/easontseng/Coding/tabcolab-api"},"_moduleMap":{"duplicates":[],"map":[["tabcolab",{"g":["package.json",1]}]],"mocks":[],"rootDir":"/Users/easontseng/Coding/tabcolab-api"},"_moduleIDCache":{},"_moduleNameCache":{},"_modulePathCache":{},"_supportsNativePlatform":false}},"duration":3836,"path":"/Users/easontseng/Coding/tabcolab-api/__test__/test.js"}]
