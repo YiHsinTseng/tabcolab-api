@@ -39,7 +39,8 @@ jobs:
               cd tabcolab
             else
               cd tabcolab
-              git pull origin feature/clean-code
+              git fetch origin
+              git reset --hard origin/feature/clean-code
             fi
             echo API_VERSION=$API_VERSION > .env
             echo PASSPORT_SECRET=$PASSPORT_SECRET >> .env
