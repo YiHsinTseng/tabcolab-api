@@ -210,7 +210,6 @@ NoteSchema.methods.addNoteToGroup = async function addNoteToGroup(group_id, user
   if (!group) {
     throw new AppError(404, 'Group not found');
   }
-
   group.items.push(this);
 
   await userGroup.save();

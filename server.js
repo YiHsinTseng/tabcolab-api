@@ -4,6 +4,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger/config/swaggerSpecSetup');
+const debug = require('debug')('myapp:server');
+const morgan = require('morgan');
 
 // config
 const {
@@ -31,7 +33,7 @@ server.get('/', (req, res) => {
 });
 // swagger ui
 server.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+server.use(morgan('dev'));
 // middlewares
 server.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false }));
 server.use(bodyParser.json());
@@ -56,3 +58,5 @@ server.use(apiErrorHandler);
 server.listen(PORT, () => {
   console.log('Server is running');
 });
+
+module.exports = server;
