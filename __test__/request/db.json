@@ -1,0 +1,88 @@
+{
+  "user_groups":[
+    {
+      "user_id":"1",
+      "groups": [
+        {
+          "group_id": "1",
+          "group_icon": "group_icon_url",
+          "group_title": "Group 1",
+          "items": [
+            {
+              "item_id": "1",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "Tab Title",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 123,
+              "browserTab_index": 12,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 1348438505,
+              "note_content": "",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "item_id": "2",
+              "item_type": 1,
+              "note_content": "",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "item_id": "3",
+              "item_type": 2,
+              "doneStatus": true,
+              "note_content": "Note content3",
+              "note_bgColor": "#ffffff"
+            }
+          ]
+        },
+        {
+          "group_id": "2",
+          "group_icon": "group_icon_url",
+          "group_title": "Group 2",
+          "items": [
+            {
+              "item_id": "4",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "Tab Title",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 456,
+              "browserTab_index": 7,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513405
+            },
+            {
+              "item_id": "5",
+              "item_type": 1,
+              "note_content": "Note content5",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "item_id": "6",
+              "item_type": 2,
+              "doneStatus": false,
+              "note_content": "",
+              "note_bgColor": "#ffffff"
+            }
+          ]
+        },
+        {
+          "group_id": "10",
+          "group_icon": "group_icon_url",
+          "group_title": "Group 10",
+          "items": []
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "user_id": "1",
+      "email": "user@example.com",
+      "password": "$2a$10$hceXwRBwcdo/uPO/WL6kDuWY7QtcsbP5o/QSw7zr5Zye231PeR0xG"
+    }
+  ]
+}
