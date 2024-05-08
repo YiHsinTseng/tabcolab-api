@@ -1,12 +1,8 @@
 const request = require('supertest');
+const { handleException } = require('../../utils/testErrorHandler');
+const { groupsChanges } = require('../../utils/groupsChanges');
 
 let userData = { email: 'login@gmail.com', password: 'password1' };
-
-// 函数：处理异常
-function handleException(response, e) {
-  const customErrorMessage = `Actual Response Body:\n ${JSON.stringify(response.body, null, 2)}\n \n ${e.message}`;
-  throw new Error(customErrorMessage); // 重新抛出异常
-}
 
 const UserTest = async (server) => {
   let authToken;
@@ -14,44 +10,9 @@ const UserTest = async (server) => {
     userData = { email: 'login@gmail.com', password: 'password1' };
   });
 
-  async function registerRequest(userData) {
-    return request(server)
-      .post('/api/1.0/users/register')
-      .send(userData);
-  }
-
-  async function loginRequest(userData) {
-    return request(server)
-      .post('/api/1.0/users/login')
-      .send(userData);
-  }
-  async function getRequest(authToken) {
-    const requestObject = request(server)
-      .get('/api/1.0/user');
-    if (authToken) {
-      requestObject.set('Authorization', `Bearer ${authToken}`);
-    }
-    return requestObject;
-  }
-
-  async function patchRequest(requestBody, authToken) {
-    const requestObject = request(server)
-      .patch('/api/1.0/user')
-      .send(requestBody);
-    if (authToken) {
-      requestObject.set('Authorization', `Bearer ${authToken}`);
-    }
-    return requestObject;
-  }
-
-  async function deleteRequest(authToken) {
-    const requestObject = request(server)
-      .delete('/api/1.0/user');
-    if (authToken) {
-      requestObject.set('Authorization', `Bearer ${authToken}`);
-    }
-    return requestObject;
-  }
+  const {
+    registerUser, loginUser, getUser, patchUser, deleteUser,
+  } = require('../apis/usersAPI');
 
   // 要單一功能完整測試還是要交互？
   describe('Post /users/register', () => {
@@ -59,7 +20,7 @@ const UserTest = async (server) => {
     it('201: User signed up successfully.', async () => {
       let response;
       try {
-        response = await registerRequest(userData);
+        response = await registerUser(userData);
         expect(response.status).toBe(201);
         authToken = response.body.token;
         expect(response.body.message).toBe('User signed up successfully.');
@@ -72,7 +33,7 @@ const UserTest = async (server) => {
         // try {
         let response;
         try {
-          response = await registerRequest(123);
+          response = await registerUser(123);
           // console.log(response.body, 'Request Format Error');
           expect(response.status).toBe(400);
         } catch (e) {
@@ -90,7 +51,7 @@ const UserTest = async (server) => {
         userData.email = 123;
         let response;
         try {
-          response = await registerRequest(userData);
+          response = await registerUser(userData);
 
           expect(response.status).toBe(400);
           expect(response.body.status).toMatch('fail');
@@ -103,7 +64,7 @@ const UserTest = async (server) => {
         userData.password = 123;
         let response;
         try {
-          response = await registerRequest(userData);
+          response = await registerUser(userData);
 
           expect(response.status).toBe(400);
           expect(response.body.status).toMatch('fail');
@@ -118,7 +79,7 @@ const UserTest = async (server) => {
         let response;
         try {
           const { password, ...newUserData } = userData;
-          const response = await registerRequest(newUserData);
+          const response = await registerUser(newUserData);
 
           expect(response.status).toBe(400);
           expect(response.body.status).toMatch('fail');
@@ -131,7 +92,7 @@ const UserTest = async (server) => {
         let response;
         try {
           userData.username = 'user';
-          response = await registerRequest(userData);
+          response = await registerUser(userData);
           expect(response.status).toBe(400);
           expect(response.body.status).toMatch('fail');
           expect(response.body.message).toMatch('not allowed');
@@ -144,7 +105,7 @@ const UserTest = async (server) => {
     it('409: Email has been registered.', async () => {
       let response;
       try {
-        response = await registerRequest(userData);
+        response = await registerUser(userData);
 
         expect(response.status).toBe(409);
         expect(response.body.status).toMatch('fail');
@@ -159,7 +120,7 @@ const UserTest = async (server) => {
     it('200: User signed in successfully.', async () => {
       let response;
       try {
-        response = await loginRequest(userData);
+        response = await loginUser(userData);
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('User signed in successfully');
         expect(response.body.token).toBe('User signed in successfully');
@@ -174,7 +135,7 @@ const UserTest = async (server) => {
         // try {
         let response;
         try {
-          response = await loginRequest(123);
+          response = await loginUser(123);
           // console.log(response.body, 'Request Format Error');
           expect(response.status).toBe(400);
         } catch (e) {
@@ -192,7 +153,7 @@ const UserTest = async (server) => {
         userData.email = 123;
         let response;
         try {
-          response = await loginRequest(userData);
+          response = await loginUser(userData);
 
           expect(response.status).toBe(400);
           expect(response.body.status).toMatch('fail');
@@ -205,7 +166,7 @@ const UserTest = async (server) => {
         userData.password = 123;
         let response;
         try {
-          response = await loginRequest(userData);
+          response = await loginUser(userData);
 
           expect(response.status).toBe(400);
           expect(response.body.status).toMatch('fail');
@@ -220,7 +181,7 @@ const UserTest = async (server) => {
         const newUserData = {};
         let response;
         try {
-          response = await loginRequest(newUserData);
+          response = await loginUser(newUserData);
 
           expect(response.status).toBe(400);
           expect(response.body.status).toMatch('fail');
@@ -233,7 +194,7 @@ const UserTest = async (server) => {
         const { password, ...newUserData } = userData;
         let response;
         try {
-          response = await loginRequest(newUserData);
+          response = await loginUser(newUserData);
 
           expect(response.status).toBe(400);
           expect(response.body.status).toMatch('fail');
@@ -246,7 +207,7 @@ const UserTest = async (server) => {
         userData.username = 'user';
         let response;
         try {
-          response = await loginRequest(userData);
+          response = await loginUser(userData);
 
           expect(response.status).toBe(400);
           expect(response.body.status).toMatch('fail');
@@ -262,7 +223,7 @@ const UserTest = async (server) => {
     it('200: Change Password success', async () => {
       let response;
       try {
-        response = await getRequest(authToken);
+        response = await getUser(authToken);
         expect(response.status).toBe(200);
       } catch (e) {
         handleException(response, e);
@@ -272,7 +233,7 @@ const UserTest = async (server) => {
       it('Missing Field', async () => {
         let response;
         try {
-          response = await getRequest();
+          response = await getUser();
           expect(response.status).toBe(401);
         } catch (e) {
           handleException(response, e);
@@ -281,7 +242,7 @@ const UserTest = async (server) => {
       it('Undefined Field', async () => {
         let response;
         try {
-          response = await getRequest(123);
+          response = await getUser(123);
           expect(response.status).toBe(401);
         } catch (e) {
           handleException(response, e);
@@ -297,7 +258,7 @@ const UserTest = async (server) => {
       let response;
       try {
         requestBody.password = 'password1';
-        response = await patchRequest(requestBody, authToken);
+        response = await patchUser(requestBody, authToken);
         expect(response.status).toBe(200);
       } catch (e) {
         handleException(response, e);
@@ -309,7 +270,7 @@ const UserTest = async (server) => {
         try {
           requestBody.password = 'p';
           // console.log(requestBody);
-          response = await patchRequest(requestBody, authToken);
+          response = await patchUser(requestBody, authToken);
           expect(response.status).toBe(400);
         } catch (e) {
           handleException(response, e);
@@ -322,7 +283,7 @@ const UserTest = async (server) => {
         // try {
         let response;
         try {
-          response = await patchRequest(123);
+          response = await patchUser(123);
           expect(response.status).toBe(400);
         } catch (e) {
           handleException(response, e);
@@ -332,7 +293,7 @@ const UserTest = async (server) => {
         const newUserData = {};
         let response;
         try {
-          response = await patchRequest(newUserData, authToken);
+          response = await patchUser(newUserData, authToken);
 
           expect(response.status).toBe(400);
           expect(response.body.status).toMatch('fail');
@@ -345,7 +306,7 @@ const UserTest = async (server) => {
         userData.username = 'user';
         let response;
         try {
-          response = await patchRequest(userData, authToken);
+          response = await patchUser(userData, authToken);
 
           expect(response.status).toBe(400);
           expect(response.body.status).toMatch('fail');
@@ -360,7 +321,7 @@ const UserTest = async (server) => {
         let response;
         try {
         // console.log(requestBody);
-          response = await patchRequest(requestBody);
+          response = await patchUser(requestBody);
           expect(response.status).toBe(401);
           expect(response.body.status).toBe('fail');
           expect(response.body.message).toBe('Missing JWT token');
@@ -372,7 +333,7 @@ const UserTest = async (server) => {
         let response;
         try {
         // console.log(requestBody);
-          response = await patchRequest(requestBody, 123);
+          response = await patchUser(requestBody, 123);
           expect(response.status).toBe(401);
           expect(response.body.status).toBe('fail');
           expect(response.body.message).toBe('Invalid JWT token');
@@ -387,7 +348,7 @@ const UserTest = async (server) => {
       it('delete without authToken', async () => {
         let response;
         try {
-          response = await deleteRequest();
+          response = await deleteUser();
           expect(response.status).toBe(401);
         } catch (e) {
           handleException(response, e);
@@ -396,7 +357,7 @@ const UserTest = async (server) => {
       it('delete with incorrect authToken', async () => {
         let response;
         try {
-          response = await deleteRequest(123);
+          response = await deleteUser(123);
           expect(response.status).toBe(401);
         } catch (e) {
           handleException(response, e);
@@ -407,9 +368,9 @@ const UserTest = async (server) => {
       it('delete success and register again success', async () => {
         let response;
         try {
-          response = await deleteRequest(authToken); // 在前面測試已經被刪掉，要再加authToken
+          response = await deleteUser(authToken); // 在前面測試已經被刪掉，要再加authToken
           expect(response.status).toBe(200);
-          response = await registerRequest(userData);
+          response = await registerUser(userData);
           authToken = response.body.token;
           expect(response.status).toBe(201);
         } catch (e) {
@@ -419,9 +380,9 @@ const UserTest = async (server) => {
       it('delete success and login again fail', async () => {
         let response;
         try {
-          response = await deleteRequest(authToken);
+          response = await deleteUser(authToken);
           expect(response.status).toBe(200);
-          response = await loginRequest(userData);
+          response = await loginUser(userData);
 
           expect(response.status).toBe(404);
           expect(response.body.status).toBe('fail');
