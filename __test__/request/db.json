@@ -9,6 +9,7 @@
           "group_title": "Group 1",
           "items": [
             {
+              "_id": "1",
               "item_id": "1",
               "item_type": 0,
               "browserTab_favIconURL": "favicon_url",
@@ -23,12 +24,14 @@
               "note_bgColor": "#ffffff"
             },
             {
+              "_id": "2",
               "item_id": "2",
               "item_type": 1,
               "note_content": "",
               "note_bgColor": "#ffffff"
             },
             {
+              "_id": "3",
               "item_id": "3",
               "item_type": 2,
               "doneStatus": true,
@@ -43,6 +46,7 @@
           "group_title": "Group 2",
           "items": [
             {
+              "_id": "4",
               "item_id": "4",
               "item_type": 0,
               "browserTab_favIconURL": "favicon_url",
@@ -55,12 +59,14 @@
               "windowId": 8438513405
             },
             {
+              "_id": "5",
               "item_id": "5",
               "item_type": 1,
               "note_content": "Note content5",
               "note_bgColor": "#ffffff"
             },
             {
+              "_id": "6",
               "item_id": "6",
               "item_type": 2,
               "doneStatus": false,
