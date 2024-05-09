@@ -1,6 +1,8 @@
 const request = require('supertest');
 const { handleException } = require('../../utils/testErrorHandler');
 const { groupsChanges } = require('../../utils/groupsChanges');
+const { extractFieldType } = require('../../utils/extractFieldType');
+const { testValues, getTestValueByType } = require('../../utils/FieldDataTypeTest');
 
 // 要不要有測試資料集單獨測試各功能，要有。
 
@@ -278,36 +280,40 @@ const GroupTest = async (server) => {
         });
       });
       // TODO 有個別屬性 規範 string
-      // describe('400 Bad request: Field Data Format Error', () => {
-      //   const fieldTypeRequired = 'string';
-      //   const SidebarTabDataFields = Object.keys(newSidebarTabData);
-      //   const testReqData = SidebarTabDataFields.map((field) => ({
-      //     field,
-      //     values: {
-      //       number: 123,
-      //       boolean: true,
-      //       // 可以添加更多的值和類型
-      //     },
-      //   }));
-      //   testReqData.forEach(({ field, values }) => {
-      //     Object.entries(values).forEach(([type, value]) => {
-      //       it(`${field} field required ${fieldTypeRequired} (but value type: ${type})`, async () => {
-      //         // 複製一份用戶數據以避免污染其他測試
-      //         const testData = { ...newSidebarTabData };
-      //         testData[field] = value;
-      //         let res;
-      //         try {
-      //           res = await postGroup(testData, authToken);
-      //           expect(res.status).toBe(400);
-      //           expect(res.body.status).toMatch('fail');
-      //           expect(res.body.message).toMatch(`"${field}" must be a ${fieldTypeRequired}`);
-      //         } catch (e) {
-      //           handleException(res, e);
-      //         }
-      //       });
-      //     });
-      //   });
-      // });
+      // console.log(extractFieldType(newSidebarTabData));
+
+      const typeChecks = extractFieldType(newSidebarTabData);
+      // Helper function to get test value based on type
+
+      describe('400 Bad request: Field Data Format Error', () => {
+        Object.entries(typeChecks).forEach(([type, fields]) => {
+          fields.forEach((field) => {
+            const testData = { ...newSidebarTabData };
+
+            // Generate test request data with specified type for the field
+            Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
+              if (writetype !== type) {
+                testData[field] = writedvalue;
+
+                it(`${field} field required ${type} but ${writetype}`, async () => {
+                  let res;
+                  // console.log(testData);
+                  try {
+                    res = await postGroup(testData, authToken);
+                    expect(res.status).toBe(400);
+                    expect(res.body.status).toMatch('fail');
+                    expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
+                    // console.log(`${field} field required ${type} but ${writetype}`);
+                    // console.log(res.body);
+                  } catch (e) {
+                    handleException(res, e);
+                  }
+                });
+              }
+            });
+          });
+        });
+      });
     });
     describe('createGroup(GroupTab) => 測試吃不到既有groupID和itemID', () => {
       let newGroupTabData = { // 如何控制不確定變數
@@ -430,6 +436,38 @@ const GroupTest = async (server) => {
           }
         });
       });
+      const typeChecks = extractFieldType(newGroupTabData);
+      // Helper function to get test value based on type
+
+      describe('400 Bad request: Field Data Format Error', () => {
+        Object.entries(typeChecks).forEach(([type, fields]) => {
+          fields.forEach((field) => {
+            const testData = { ...newGroupTabData };
+
+            // Generate test request data with specified type for the field
+            Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
+              if (writetype !== type) {
+                testData[field] = writedvalue;
+
+                it(`${field} field required ${type} but ${writetype}`, async () => {
+                  let res;
+                  // console.log(testData);
+                  try {
+                    res = await postGroup(testData, authToken);
+                    expect(res.status).toBe(400);
+                    expect(res.body.status).toMatch('fail');
+                    expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
+                  // console.log(`${field} field required ${type} but ${writetype}`);
+                  // console.log(res.body);
+                  } catch (e) {
+                    handleException(res, e);
+                  }
+                });
+              }
+            });
+          });
+        });
+      });
       describe('404', () => {
         it('404: invalid groupID', async () => {
           // console.log(newGroupTabData);
@@ -500,7 +538,7 @@ const GroupTest = async (server) => {
       });
     });
   });
-
+  // }; // test
   describe('PATCH /groups/:group_id', () => {
     const groupId = '10'; // 假設這是要刪除的群組的ID，無法預先指定
     let patchGroupRequest;
@@ -580,7 +618,7 @@ const GroupTest = async (server) => {
           patchGroupRequest.username = 'user';
           let res;
           try {
-            res = await postGroup(patchGroupRequest, authToken);
+            res = await patchGroup(groupId, patchGroupRequest, authToken);
 
             expect(res.status).toBe(400);
             expect(res.body.status).toMatch('fail');
@@ -590,7 +628,42 @@ const GroupTest = async (server) => {
           }
         });
       });
+      const typeChecks = extractFieldType(patchGroupRequest);
+      // Helper function to get test value based on type
+
+      describe('400 Bad request: Field Data Format Error', () => {
+        Object.entries(typeChecks).forEach(([type, fields]) => {
+          fields.forEach((field) => {
+            const testData = { ...patchGroupRequest };
+
+            // Generate test request data with specified type for the field
+            Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
+              if (writetype !== type) {
+                testData[field] = writedvalue;
+
+                it(`${field} field required ${type} but ${writetype}`, async () => {
+                  let res;
+                  // console.log(testData);
+                  try {
+                    res = await patchGroup(groupId, testData, authToken);
+                    // console.log(testData);
+                    expect(res.status).toBe(400);
+                    expect(res.body.status).toMatch('fail');
+                    expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
+                  // console.log(`${field} field required ${type} but ${writetype}`);
+                  // console.log(res.body);
+                  } catch (e) {
+                    handleException(res, e);
+                  }
+                });
+              }
+            });
+          });
+        });
+      });
+    // });
     });
+
     describe('Patch Group Icon', () => {
       patchGroupRequest = {
         group_icon: 'https://example.com/updated_icon.png',
@@ -645,6 +718,7 @@ const GroupTest = async (server) => {
             handleException(res, e);
           }
         });
+
         describe('Missing field', () => {
           // console.log(patchGroupRequest);
           const testData = Object.keys(patchGroupRequest);
@@ -662,6 +736,52 @@ const GroupTest = async (server) => {
                 handleException(res, e);
               }
             });
+          });
+        });
+        it('Undefined Field', async () => {
+          patchGroupRequest.username = 'user';
+          let res;
+          try {
+            res = await patchGroup(groupId, patchGroupRequest, authToken);
+
+            expect(res.status).toBe(400);
+            expect(res.body.status).toMatch('fail');
+            expect(res.body.message).toMatch('not allowed');
+          } catch (e) {
+            handleException(res, e);
+          }
+        });
+      });
+    });
+    const typeChecks = extractFieldType(patchGroupRequest);
+    // Helper function to get test value based on type
+
+    describe('400 Bad request: Field Data Format Error', () => {
+      Object.entries(typeChecks).forEach(([type, fields]) => {
+        fields.forEach((field) => {
+          const testData = { ...patchGroupRequest };
+
+          // Generate test request data with specified type for the field
+          Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
+            if (writetype !== type) {
+              testData[field] = writedvalue;
+
+              it(`${field} field required ${type} but ${writetype}`, async () => {
+                let res;
+                // console.log(testData);
+                try {
+                  res = await patchGroup(groupId, testData, authToken);
+                  // console.log(testData);
+                  expect(res.status).toBe(400);
+                  expect(res.body.status).toMatch('fail');
+                  expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
+                  // console.log(`${field} field required ${type} but ${writetype}`);
+                  // console.log(res.body);
+                } catch (e) {
+                  handleException(res, e);
+                }
+              });
+            }
           });
         });
       });
