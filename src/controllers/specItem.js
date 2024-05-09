@@ -73,7 +73,7 @@ const addNote = async (req, res, next) => {
       await newNote.addNoteToGroup(group_id, user_id);
       return res.status(201).json({ status: 'success', message: 'Note added to group successfully', item_id: newNote.item_id });
     }
-    return errResponse(res, 400, 'Invalid Request body');
+    return errorResponse(res, 400, 'Invalid Request body');
   } catch (error) {
     next(error);
   }
