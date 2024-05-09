@@ -5,16 +5,13 @@ const { positionSchema } = require('./position');
 const AppError = require('../utils/appError');
 
 const validateDataTypes = (req, res, next) => {
-  const schema = Joi.alternatives().try(
-    groupSchema.unknown(),
-    itemSchema.unknown(),
-    positionSchema.unknown(),
-  );
+  const schemas = [groupSchema, itemSchema, positionSchema];
 
-  const { error } = schema.validate(req.body);
-
-  if (error) {
-    throw new AppError(400, error.message);
+  for (const schema of schemas) {
+    const { error } = schema.unknown().validate(req.body);
+    if (error) {
+      throw new AppError(400, error.message);
+    }
   }
 
   next();
