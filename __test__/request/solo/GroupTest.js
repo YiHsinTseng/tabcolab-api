@@ -29,7 +29,7 @@ const GroupTest = async (server) => {
 
         expect(res.status).toBe(200);
         expect(Array.isArray(res.body)).toBe(true);
-
+        // console.log(res.body);
         // 驗證每個元素是否都是物件並且包含特定屬性
         res.body.forEach((group) => {
           expect(typeof group).toBe('object');
@@ -75,7 +75,7 @@ const GroupTest = async (server) => {
         expect(res.body.status).toBe('fail');
         expect(res.body.message).toBe('No groups found for the user');
       } catch (e) {
-        console.log(typeof (res.body));
+        // console.log(typeof (res.body));
         handleException(res, e);
       }
     });
@@ -104,21 +104,16 @@ const GroupTest = async (server) => {
   });
 
   describe('POST /group', () => {
-    beforeEach(() => {
-      resetNewGroupData(); // 在每個測試案例前重新設置 newGroupData
-    });
-    const resetNewGroupData = () => {
-      // 重置 newGroupData
-      newGroupData = {
-        group_icon: 'icon-url',
-        group_title: 'New Group',
-      };
-    };
-
     let newGroupData = {
       group_icon: 'icon-url',
       group_title: 'New Group',
     }; //
+    beforeEach(() => {
+      newGroupData = {
+        group_icon: 'icon-url',
+        group_title: 'New Group',
+      };
+    });
 
     describe('createGroup(Blank): should create a new group => 前端已棄用僅供測試', () => {
       it('201: should successfully create a new group', async () => {
@@ -145,7 +140,18 @@ const GroupTest = async (server) => {
       });
     });
     describe('createGroup(SidebarTab)', () => {
-      let newSidebarTabData;
+      let newSidebarTabData = {
+        group_icon: 'test_group_icon',
+        group_title: 'test_group_title',
+        browserTab_favIconURL: 'test_favIconURL',
+        browserTab_title: 'SidebarTab_title',
+        browserTab_url: 'test_url',
+        browserTab_id: 456,
+        browserTab_index: 7,
+        browserTab_active: false,
+        browserTab_status: 'complete',
+        windowId: 8438513405,
+      }; // 初始化 newGroupData
       beforeEach(() => {
         newSidebarTabData = {
           group_icon: 'test_group_icon',
@@ -163,19 +169,21 @@ const GroupTest = async (server) => {
       it('201: create SidebarTab within a new group', async () => {
         // newItemId = res.body.item_id; // 因為是非同步，無法傳給全域變數
         // newGroupId = res.body.group_id; // 因為是非同步，無法傳給全域變數
+        // GIVEN
         let notice;
         try {
         // 并行获取旧的和新的组数据
           let res;
           let oldResult;
           let newResult;
-
+          // WHEN
           [oldResult, res] = await Promise.all([
             getGroup(authToken),
             postGroup(newSidebarTabData, authToken),
           ]);
           notice = res;
           // 检查创建组的响应
+          // THEN
           expect(res.status).toBe(201);
           expect(res.body).toEqual({
             message: 'Group created with sidebar tab successfully ',
@@ -187,13 +195,15 @@ const GroupTest = async (server) => {
           const itemID = res.body.item_id;
 
           // 获取新的组数据
-          newResult = await getGroup(authToken);
 
+          // WHEN
+          newResult = await getGroup(authToken);
           // 计算更改
           const result = groupsChanges(oldResult.body, newResult.body);
           notice = result;
           // console.log(JSON.stringify(result, null, 2));
 
+          // THEN
           // 检查更改结果
           expect(result.addedItems[0].group_id).toBe(groupID);
           // console.log(result.addedItems[0].items[0].item_id);
@@ -203,9 +213,110 @@ const GroupTest = async (server) => {
           handleException(notice, e);
         }
       });
+      describe('400 Bad request: Body Format Error', () => { // 不好測
+        it('JSON Format Error', async () => {
+          // try {
+          let res;
+          try {
+            res = await postGroup(123, authToken);
+            // console.log(res.body, 'Request Format Error');
+            expect(res.status).toBe(400);
+          } catch (e) {
+            handleException(res, e);
+          }
+          // } catch (e) {
+          //   console.log(e.message);
+          // }
+
+          // expect(res.status).toBe(400);
+          // expect(res.body.status).toBe('fail');
+          // expect(res.body.message).toBe('Unexpected end of JSON input');
+        });
+        it('No field', async () => {
+          newSidebarTabData = {};
+          let res;
+          try {
+            res = await postGroup(newSidebarTabData, authToken);
+
+            expect(res.status).toBe(400);
+            expect(res.body.status).toMatch('fail');
+            expect(res.body.message).toMatch('is required');
+          } catch (e) {
+            handleException(res, e);
+          }
+        });
+        describe('Missing field', () => {
+          const testData = Object.keys(newSidebarTabData);
+          testData.forEach((field) => {
+            it(`Missing ${field} field`, async () => {
+              let res;
+              try {
+                const { [field]: removedField, ...testSidebarTabData } = newSidebarTabData;
+                res = await postGroup(testSidebarTabData, authToken);
+
+                expect(res.status).toBe(400);
+                expect(res.body.status).toMatch('fail');
+                expect(res.body.message).toMatch(`"${field}" is required`);
+              } catch (e) {
+                handleException(res, e);
+              }
+            });
+          });
+        });
+        it('Undefined Field', async () => {
+          newSidebarTabData.username = 'user';
+          let res;
+          try {
+            res = await postGroup(newSidebarTabData, authToken);
+
+            expect(res.status).toBe(400);
+            expect(res.body.status).toMatch('fail');
+            expect(res.body.message).toMatch('not allowed');
+          } catch (e) {
+            handleException(res, e);
+          }
+        });
+      });
+      // TODO 有個別屬性 規範 string
+      // describe('400 Bad request: Field Data Format Error', () => {
+      //   const fieldTypeRequired = 'string';
+      //   const SidebarTabDataFields = Object.keys(newSidebarTabData);
+      //   const testReqData = SidebarTabDataFields.map((field) => ({
+      //     field,
+      //     values: {
+      //       number: 123,
+      //       boolean: true,
+      //       // 可以添加更多的值和類型
+      //     },
+      //   }));
+      //   testReqData.forEach(({ field, values }) => {
+      //     Object.entries(values).forEach(([type, value]) => {
+      //       it(`${field} field required ${fieldTypeRequired} (but value type: ${type})`, async () => {
+      //         // 複製一份用戶數據以避免污染其他測試
+      //         const testData = { ...newSidebarTabData };
+      //         testData[field] = value;
+      //         let res;
+      //         try {
+      //           res = await postGroup(testData, authToken);
+      //           expect(res.status).toBe(400);
+      //           expect(res.body.status).toMatch('fail');
+      //           expect(res.body.message).toMatch(`"${field}" must be a ${fieldTypeRequired}`);
+      //         } catch (e) {
+      //           handleException(res, e);
+      //         }
+      //       });
+      //     });
+      //   });
+      // });
     });
     describe('createGroup(GroupTab) => 測試吃不到既有groupID和itemID', () => {
-      let newGroupTabData;
+      let newGroupTabData = { // 如何控制不確定變數
+        group_icon: 'test_group_icon',
+        group_title: 'test_group_title',
+        sourceGroup_id: '2', // 如果造假特定GroupID
+        item_id: '4', // 前端如果沒有到要怎樣打 //item_id不等於_id
+      };
+
       beforeEach(() => {
         newGroupTabData = { // 如何控制不確定變數
           group_icon: 'test_group_icon',
@@ -253,7 +364,73 @@ const GroupTest = async (server) => {
           handleException(notice, e);
         }
       });
-      describe('404 => 測試吃不到既有groupID和itemID', () => {
+      describe('400 Bad request: Body Format Error', () => { // 不好測
+        it('JSON Format Error', async () => {
+          // try {
+          let res;
+          try {
+            res = await postGroup(123, authToken),
+            // console.log(res.body, 'Request Format Error');
+            expect(res.status).toBe(400);
+          } catch (e) {
+            handleException(res, e);
+          }
+          // } catch (e) {
+          //   console.log(e.message);
+          // }
+
+          // expect(res.status).toBe(400);
+          // expect(res.body.status).toBe('fail');
+          // expect(res.body.message).toBe('Unexpected end of JSON input');
+        });
+        it('No field', async () => {
+          const newGroupTabData = {};
+          let res;
+          try {
+            res = await postGroup(newGroupTabData, authToken),
+
+            expect(res.status).toBe(400);
+            expect(res.body.status).toMatch('fail');
+            expect(res.body.message).toMatch('is required');
+          } catch (e) {
+            handleException(res, e);
+          }
+        });
+        describe('Missing field', () => {
+          const testData = Object.keys(newGroupTabData);
+          // console.log(newGroupTabData);
+          testData.forEach((field) => {
+            it(`Missing ${field} field`, async () => {
+              let res;
+              // console.log(newGroupTabData);
+              try {
+                const { [field]: removedField, ...testGroupTabData } = newGroupTabData;
+                res = await postGroup(testGroupTabData, authToken);
+
+                expect(res.status).toBe(400);
+                expect(res.body.status).toMatch('fail');
+                expect(res.body.message).toMatch(`"${field}" is required`);
+              } catch (e) {
+                handleException(res, e);
+              }
+            });
+          });
+        });
+        it('Undefined Field', async () => {
+          newGroupTabData.username = 'user';
+          let res;
+          try {
+            res = await postGroup(newGroupTabData, authToken);
+
+            expect(res.status).toBe(400);
+            expect(res.body.status).toMatch('fail');
+            expect(res.body.message).toMatch('not allowed');
+          } catch (e) {
+            handleException(res, e);
+          }
+        });
+      });
+      describe('404', () => {
         it('404: invalid groupID', async () => {
           // console.log(newGroupTabData);
           newGroupTabData.sourceGroup_id = '100';
@@ -322,123 +499,247 @@ const GroupTest = async (server) => {
         });
       });
     });
-    // describe('400 Bad request: Body Format Error=>怎樣一次測全部', () => { // 不好測//要一次測完
-    //   it('should fail if icon type is not string', async () => {
-    //     newGroupData.group_icon = 1; // 不確定是不是requet的鍋
-    //     let res;
-    //     try {
-    //       res = await postGroup(newGroupData, authToken);
-    //       expect(res.status).toBe(400);
-    //       expect(res.body.errors).toMatch('must be a string');
-    //     } catch (e) {
-    //       handleException(res, e);
-    //     }
-    //   });
-
-    //   it('should fail if title type is not string', async () => {
-    //     newGroupData.group_title = 1; // 不確定是不是requet的鍋
-    //     let res;
-    //     try {
-    //       res = await postGroup(newGroupData, authToken);
-    //       expect(res.status).toBe(400);
-    //       expect(res.body.errors).toMatch('must be a string');
-    //     } catch (e) {
-    //       handleException(res, e);
-    //     }
-    //   });
-    // });
-    // describe('400 Bad request: Field Error=>怎樣一次測全部', () => {});
-    // describe('401: JWT problem', () => {
-    //   it('Missing Field', async () => {
-    //     let res;
-    //     try {
-    //       res = await postGroup(newGroupData);
-    //       expect(res.status).toBe(401);
-    //       expect(res.body.message).toBe('Missing JWT token');
-    //     } catch (e) {
-    //       handleException(res, e);
-    //     }
-    //   });
-    //   it('Undefined Field', async () => {
-    //     let res;
-    //     try {
-    //       res = await postGroup(newGroupData, 123);
-    //       expect(res.status).toBe(401);
-    //       expect(res.body.message).toBe('Invalid JWT token');
-    //     } catch (e) {
-    //       handleException(res, e);
-    //     }
-    //   });
-    // });
   });
 
-  // describe('PATCH /groups/:group_id', () => {
-  //   const groupId = '10'; // 假設這是要刪除的群組的ID，無法預先指定
-  //   let patchGroupRequest;
-  //   it('200: Patch Group Title', async () => {
-  //     patchGroupRequest = {
-  //       group_title: 'Updated Group Title',
-  //     };
-  //     let res;
-  //     try {
-  //       res = await patchGroup(groupId, patchGroupRequest, authToken);
-  //       expect(res.status).toBe(200);
-  //     } catch (e) {
-  //       handleException(res, e);
-  //     }
-  //   });
-  //   it('200: Patch Group Icon', async () => {
-  //     patchGroupRequest = {
-  //       group_icon: 'https://example.com/updated_icon.png',
-  //     };
-  //     let res;
-  //     try {
-  //       res = await patchGroup(groupId, patchGroupRequest, authToken);
-  //       expect(res.status).toBe(200);
-  //     } catch (e) {
-  //       handleException(res, e);
-  //     }
-  //   });
-  //   describe('401: JWT problem', () => {
-  //     it('Missing Field', async () => {
-  //       let res;
-  //       try {
-  //         res = await patchGroup(groupId, patchGroupRequest);
-  //         expect(res.status).toBe(401);
-  //         expect(res.body.message).toBe('Missing JWT token');
-  //       } catch (e) {
-  //         handleException(res, e);
-  //       }
-  //     });
-  //     it('Undefined Field', async () => {
-  //       let res;
-  //       try {
-  //         res = await patchGroup(groupId, patchGroupRequest, 123);
-  //         expect(res.status).toBe(401);
-  //         expect(res.body.message).toBe('Invalid JWT token');
-  //       } catch (e) {
-  //         handleException(res, e);
-  //       }
-  //     });
-  //   });
-  //   it('404: invaild Group ID', async () => {
-  //     const groupId = '10'; // 假設這是要刪除的群組的ID，無法預先指定
-  //     patchGroupRequest = {
-  //       group_icon: 'https://example.com/updated_icon.png',
-  //     };
-  //     let res;
-  //     try {
-  //       res = await patchGroup(groupId, patchGroupRequest, authToken);
-  //       expect(res.status).toBe(404);
-  //       expect(res.body.message).toBe('Group not found or invalid group ID');
-  //     } catch (e) {
-  //       handleException(res, e);
-  //     }
-  //   });
-  // });
+  describe('PATCH /groups/:group_id', () => {
+    const groupId = '10'; // 假設這是要刪除的群組的ID，無法預先指定
+    let patchGroupRequest;
+    describe('Patch Group Title', () => {
+      patchGroupRequest = {
+        group_title: 'Updated Group Title',
+      };
+      beforeAll(async () => {
+        patchGroupRequest = {
+          group_title: 'Updated Group Title',
+        };
+      });
+      it('200: Patch Group Title', async () => {
+        patchGroupRequest = {
+          group_title: 'Updated Group Title',
+        };
+        let res;
+        try {
+          res = await patchGroup(groupId, patchGroupRequest, authToken);
+          expect(res.status).toBe(200);
+        } catch (e) {
+          handleException(res, e);
+        }
+      });
+      describe('400 Bad request: Body Format Error', () => { // 不好測
+        it('JSON Format Error', async () => {
+          // try {
+          let res;
+          try {
+            res = await patchGroup(groupId, 123, authToken);
+            // console.log(res.body, 'Request Format Error');
+            expect(res.status).toBe(400);
+          } catch (e) {
+            handleException(res, e);
+          }
+          // } catch (e) {
+          //   console.log(e.message);
+          // }
+
+          // expect(res.status).toBe(400);
+          // expect(res.body.status).toBe('fail');
+          // expect(res.body.message).toBe('Unexpected end of JSON input');
+        });
+        it('No field', async () => {
+          patchGroupRequest = {};
+          let res;
+          try {
+            res = await patchGroup(groupId, patchGroupRequest, authToken);
+
+            expect(res.status).toBe(400);
+            expect(res.body.status).toMatch('fail');
+            expect(res.body.message).toMatch('is required');
+          } catch (e) {
+            handleException(res, e);
+          }
+        });
+        describe('Missing field', () => {
+          // console.log(patchGroupRequest);
+          const testData = Object.keys(patchGroupRequest);
+          testData.forEach((field) => {
+            it(`Missing ${field} field`, async () => {
+              let res;
+              try {
+                const { [field]: removedField, ...testpatchGroupRequest } = patchGroupRequest;
+                res = await patchGroup(groupId, testpatchGroupRequest, authToken);
+
+                expect(res.status).toBe(400);
+                expect(res.body.status).toMatch('fail');
+                expect(res.body.message).toMatch(`"${field}" is required`);
+              } catch (e) {
+                handleException(res, e);
+              }
+            });
+          });
+        });
+        it('Undefined Field', async () => {
+          patchGroupRequest.username = 'user';
+          let res;
+          try {
+            res = await postGroup(patchGroupRequest, authToken);
+
+            expect(res.status).toBe(400);
+            expect(res.body.status).toMatch('fail');
+            expect(res.body.message).toMatch('not allowed');
+          } catch (e) {
+            handleException(res, e);
+          }
+        });
+      });
+    });
+    describe('Patch Group Icon', () => {
+      patchGroupRequest = {
+        group_icon: 'https://example.com/updated_icon.png',
+      };
+      beforeAll(async () => {
+        patchGroupRequest = {
+          group_icon: 'https://example.com/updated_icon.png',
+        };
+      });
+
+      it('200: Patch Group Icon', async () => {
+        patchGroupRequest = {
+          group_icon: 'https://example.com/updated_icon.png',
+        };
+        let res;
+        try {
+          res = await patchGroup(groupId, patchGroupRequest, authToken);
+          expect(res.status).toBe(200);
+        } catch (e) {
+          handleException(res, e);
+        }
+      });
+      describe('400 Bad request: Body Format Error', () => { // 不好測
+        it('JSON Format Error', async () => {
+          // try {
+          let res;
+          try {
+            res = await patchGroup(groupId, 123, authToken);
+            // console.log(res.body, 'Request Format Error');
+            expect(res.status).toBe(400);
+          } catch (e) {
+            handleException(res, e);
+          }
+          // } catch (e) {
+          //   console.log(e.message);
+          // }
+
+          // expect(res.status).toBe(400);
+          // expect(res.body.status).toBe('fail');
+          // expect(res.body.message).toBe('Unexpected end of JSON input');
+        });
+        it('No field', async () => {
+          patchGroupRequest = {};
+          let res;
+          try {
+            res = await patchGroup(groupId, patchGroupRequest, authToken);
+
+            expect(res.status).toBe(400);
+            expect(res.body.status).toMatch('fail');
+            expect(res.body.message).toMatch('is required');
+          } catch (e) {
+            handleException(res, e);
+          }
+        });
+        describe('Missing field', () => {
+          // console.log(patchGroupRequest);
+          const testData = Object.keys(patchGroupRequest);
+          testData.forEach((field) => {
+            it(`Missing ${field} field`, async () => {
+              let res;
+              try {
+                const { [field]: removedField, ...testpatchGroupRequest } = patchGroupRequest;
+                res = await patchGroup(groupId, testpatchGroupRequest, authToken);
+
+                expect(res.status).toBe(400);
+                expect(res.body.status).toMatch('fail');
+                expect(res.body.message).toMatch(`"${field}" is required`);
+              } catch (e) {
+                handleException(res, e);
+              }
+            });
+          });
+        });
+      });
+    });
+    describe('401: JWT problem', () => {
+      it('Missing Field', async () => {
+        let res;
+        try {
+          res = await patchGroup(groupId, patchGroupRequest);
+          expect(res.status).toBe(401);
+          expect(res.body.message).toBe('Missing JWT token');
+        } catch (e) {
+          handleException(res, e);
+        }
+      });
+      it('Undefined Field', async () => {
+        let res;
+        try {
+          res = await patchGroup(groupId, patchGroupRequest, 123);
+          expect(res.status).toBe(401);
+          expect(res.body.message).toBe('Invalid JWT token');
+        } catch (e) {
+          handleException(res, e);
+        }
+      });
+    });
+    it('404: invaild Group ID', async () => {
+      const groupId = '100'; // 假設這是要刪除的群組的ID，無法預先指定
+      patchGroupRequest = {
+        group_icon: 'https://example.com/updated_icon.png',
+      };
+      let res;
+      try {
+        res = await patchGroup(groupId, patchGroupRequest, authToken);
+        expect(res.status).toBe(404);
+        expect(res.body.message).toBe('Group not found or invalid group ID');
+      } catch (e) {
+        handleException(res, e);
+      }
+    });
+  });
 
   describe('Delete /groups/:group_id', () => {
     let groupIdToDelete = '10'; // 假設這是要刪除的群組的ID，無法預先指定
+
+    it('200', async () => {
+      let notice;
+      try {
+        let res;
+        let oldResult;
+        let newResult;
+
+        [oldResult, res] = await Promise.all([
+          getGroup(authToken),
+          deleteGroup(groupIdToDelete, authToken),
+          // getGroup(authToken), // 不能寫在一起
+        ]);
+        // res = await deleteGroup(groupIdToDelete, authToken),
+        // console.log('old', oldResult.body);
+        // console.log(res.body);
+        // console.log('new', newResult.body);
+
+        notice = res;
+        expect(res.status).toBe(200);
+        newResult = await getGroup(authToken);
+
+        // console.log(JSON.stringify(oldResult.body, null, 2));
+
+        // console.log(JSON.stringify(newResult.body, null, 2));
+        const result = groupsChanges(oldResult.body, newResult.body);
+        // console.log(JSON.stringify(result, null, 2));
+        notice = result;
+
+        expect(result.deletedItems[0].group_id).toBe('10');
+      } catch (e) {
+        handleException(notice, e);
+      }
+    });
     it('404: valid groupId', async () => {
       groupIdToDelete = '100'; // 假設這是要刪除的群組的ID，無法預先指定
       let notice;
@@ -446,23 +747,26 @@ const GroupTest = async (server) => {
         let res;
         let oldResult;
         let newResult;
-        let result;
 
         [oldResult, res] = await Promise.all([
           getGroup(authToken),
           deleteGroup(groupIdToDelete, authToken),
+          // getGroup(authToken), // 不能寫在一起
         ]);
-
-        expect(res.status).toBe(404);
+        // res = await deleteGroup(groupIdToDelete, authToken),
+        // console.log('old', oldResult.body);
         // console.log(res.body);
-        expect(res.body).toEqual({
-          status: 'fail',
-          message: 'Group not found',
-        });
+        // console.log('new', newResult.body);
+
+        notice = res;
+        expect(res.status).toBe(404);
         newResult = await getGroup(authToken);
 
-        // // 计算更改
-        result = groupsChanges(oldResult.body, newResult.body);
+        // console.log(JSON.stringify(oldResult.body, null, 2));
+
+        // console.log(JSON.stringify(newResult.body, null, 2));
+        const result = groupsChanges(oldResult.body, newResult.body);
+        // console.log(JSON.stringify(result, null, 2));
         notice = result;
 
         expect(result.addedItems).toEqual([]);
@@ -471,74 +775,27 @@ const GroupTest = async (server) => {
         handleException(notice, e);
       }
     });
-    // describe('400 Bad request: Body Format Error=>groupID無法在測試中取得怎樣一次測全部', () => { // 不好測//要一次測完
-    //   it('should fail if icon type is not string', async () => {
-    //     let res;
-    //     try {
-    //       res = await deleteGroup(groupIdToDelete, authToken);
-    //       expect(res.status).toBe(400);
-    //       expect(res.body.errors).toMatch('must be a string');
-    //     } catch (e) {
-    //       handleException(res, e);
-    //     }
-    //   });
-
-    //   it('should fail if title type is not string', async () => {
-    //     let res;
-    //     try {
-    //       res = await deleteGroup(groupIdToDelete, authToken);
-    //       expect(res.status).toBe(400);
-    //       expect(res.body.errors).toMatch('must be a string');
-    //     } catch (e) {
-    //       handleException(res, e);
-    //     }
-    //   });
-    // });
-    // describe('400 Bad request: Field Error=>怎樣一次測全部', () => {});
-    // describe('401: JWT problem', () => {
-    //   it('Missing Field', async () => {
-    //     let res;
-    //     try {
-    //       res = await deleteGroup(groupIdToDelete);
-    //       expect(res.status).toBe(401);
-    //       expect(res.body.message).toBe('Missing JWT token');
-    //     } catch (e) {
-    //       handleException(res, e);
-    //     }
-    //   });
-    //   it('Undefined Field', async () => {
-    //     let res;
-    //     try {
-    //       res = await deleteGroup(groupIdToDelete, 123);
-    //       expect(res.status).toBe(401);
-    //       expect(res.body.message).toBe('Invalid JWT token');
-    //     } catch (e) {
-    //       handleException(res, e);
-    //     }
-    //   });
-    // });
-    it('204: valid groupId', async () => {
-      groupIdToDelete = '10'; // 假設這是要刪除的群組的ID，無法預先指定
-
-      let res;
-      try {
-        res = await getGroup(authToken);
-        const oldJson = res.body;
-
-        res = await deleteGroup(groupIdToDelete, authToken);
-        // console.log(res.body);
-        expect(res.status).toBe(200);
-
-        res = await getGroup(authToken);
-        const newJson = res.body;
-        // console.log(res.body);
-        const result = groupsChanges(oldJson, newJson);
-        // console.log(result.deletedItems[0].group_id);
-        // console.log(result);
-        expect(result.deletedItems[0].group_id).toBe('10');
-      } catch (e) {
-        handleException(res, e);
-      }
+    describe('401: JWT problem', () => {
+      it('Missing Field', async () => {
+        let res;
+        try {
+          res = await deleteGroup(groupIdToDelete);
+          expect(res.status).toBe(401);
+          expect(res.body.message).toBe('Missing JWT token');
+        } catch (e) {
+          handleException(res, e);
+        }
+      });
+      it('Undefined Field', async () => {
+        let res;
+        try {
+          res = await deleteGroup(groupIdToDelete, 123);
+          expect(res.status).toBe(401);
+          expect(res.body.message).toBe('Invalid JWT token');
+        } catch (e) {
+          handleException(res, e);
+        }
+      });
     });
   });
 };
