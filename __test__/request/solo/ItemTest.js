@@ -1,7 +1,9 @@
 const request = require('supertest');
 const { handleException } = require('../../utils/testErrorHandler');
-const { groupsChanges } = require('../../utils/groupsChanges');
+const { groupsChanges, ArraysChanges } = require('../../utils/groupsChanges');
 const { getGroup } = require('./GroupTest');
+const { extractFieldType } = require('../../utils/extractFieldType');
+const { testValues, getTestValueByType } = require('../../utils/FieldDataTypeTest');
 
 const ItemTest = async (server) => {
   let authToken;
@@ -15,7 +17,7 @@ const ItemTest = async (server) => {
     // console.log(res.body);
   });
 
-  let req;
+  let req = { params: {}, body: {} };
 
   beforeEach(() => {
     req = { params: {}, body: {} };
@@ -82,7 +84,7 @@ const ItemTest = async (server) => {
             ]);
 
             notice = res;
-            const result = groupsChanges(oldResult.body, res.body);
+            const result = ArraysChanges(oldResult.body, res.body);
             notice = result;
 
             expect(result.addedItems).toEqual([]);
@@ -105,7 +107,7 @@ const ItemTest = async (server) => {
             ]);
 
             notice = res;
-            const result = groupsChanges(oldResult.body, res.body);
+            const result = ArraysChanges(oldResult.body, res.body);
             notice = result;
             expect(result.addedItems).toEqual([]);
             expect(result.deletedItems).toEqual([]);
@@ -146,7 +148,7 @@ const ItemTest = async (server) => {
             notice = res;
             throw new Error('Incomplete !!!');
 
-            const result = groupsChanges(oldResult.body, res.body);
+            const result = ArraysChanges(oldResult.body, res.body);
             notice = result;
 
             expect(result.addedItems).toEqual([]);
@@ -171,7 +173,7 @@ const ItemTest = async (server) => {
             ]);
 
             notice = res;
-            const result = groupsChanges(oldResult.body, res.body);
+            const result = ArraysChanges(oldResult.body, res.body);
             notice = result;
 
             expect(result.addedItems).toEqual([]);
@@ -194,7 +196,7 @@ const ItemTest = async (server) => {
             ]);
 
             notice = res;
-            const result = groupsChanges(oldResult.body, res.body);
+            const result = ArraysChanges(oldResult.body, res.body);
             notice = result;
 
             expect(result.addedItems).toEqual([]);
@@ -234,7 +236,7 @@ const ItemTest = async (server) => {
             ]);
 
             notice = res;
-            const result = groupsChanges(oldResult.body, res.body);
+            const result = ArraysChanges(oldResult.body, res.body);
             notice = result;
 
             expect(result.addedItems).toEqual([]);
@@ -257,7 +259,7 @@ const ItemTest = async (server) => {
             ]);
 
             notice = res;
-            const result = groupsChanges(oldResult.body, res.body);
+            const result = ArraysChanges(oldResult.body, res.body);
             notice = result;
 
             expect(result.addedItems).toEqual([]);
@@ -280,7 +282,7 @@ const ItemTest = async (server) => {
             ]);
 
             notice = res;
-            const result = groupsChanges(oldResult.body, res.body);
+            const result = ArraysChanges(oldResult.body, res.body);
             notice = result;
 
             expect(result.addedItems).toEqual([]);
@@ -305,7 +307,7 @@ const ItemTest = async (server) => {
             ]);
 
             notice = res;
-            const result = groupsChanges(oldResult.body, res.body);
+            const result = ArraysChanges(oldResult.body, res.body);
             notice = result;
 
             expect(result.addedItems).toEqual([]);
@@ -328,7 +330,7 @@ const ItemTest = async (server) => {
             ]);
 
             notice = res;
-            const result = groupsChanges(oldResult.body, res.body);
+            const result = ArraysChanges(oldResult.body, res.body);
             notice = result;
 
             expect(result.addedItems).toEqual([]);
@@ -351,7 +353,7 @@ const ItemTest = async (server) => {
             ]);
 
             notice = res;
-            const result = groupsChanges(oldResult.body, res.body);
+            const result = ArraysChanges(oldResult.body, res.body);
             notice = result;
 
             expect(result.addedItems).toEqual([]);
@@ -365,6 +367,10 @@ const ItemTest = async (server) => {
   });
 
   describe('Patch /groups/:group_id/items/:item_id', () => {
+    req.params.group_id = '1';
+    req.params.item_id = '1';
+    req.body.targetItem_position = 1;
+
     beforeEach(async () => {
       req.params.group_id = '1';
       req.params.item_id = '1';
@@ -399,18 +405,90 @@ const ItemTest = async (server) => {
         }
       });
     });
-    test('moveItem(toGroup): moves item from one group to another', async () => {
-      req.body.targetGroup_id = '2';
-      const res = await patchItem(req.params.group_id, req.params.item_id, req.body, authToken);
+    describe('400 Bad request: Body Format Error', () => { // 不好測
+      it('JSON Format Error', async () => {
+        // try {
+        let res;
+        try {
+          res = await patchItem(req.params.group_id, req.params.item_id, 123, authToken);
+          // console.log(res.body, 'Request Format Error');
+          expect(res.status).toBe(400);
+        } catch (e) {
+          handleException(res, e);
+        }
+        // } catch (e) {
+        //   console.log(e.message);
+        // }
 
-      expect(res.status).toBe(200);
-      expect(res.body).toEqual({ message: 'Item moved successfully', item_id: '1' });
+        // expect(res.status).toBe(400);
+        // expect(res.body.status).toBe('fail');
+        // expect(res.body.message).toBe('Unexpected end of JSON input');
+      });
+      it('No field', async () => {
+        req.body = {};
+        let res;
+        try {
+          res = await patchItem(req.params.group_id, req.params.item_id, req.body, authToken),
+
+          expect(res.status).toBe(400);
+          expect(res.body.status).toMatch('fail');
+          expect(res.body.message).toMatch('is required');
+        } catch (e) {
+          handleException(res, e);
+        }
+      });
+
+      it('Undefined Field', async () => {
+        req.body.username = 'user';
+        let res;
+        try {
+          res = await patchItem(req.params.group_id, req.params.item_id, req.body, authToken);
+
+          expect(res.status).toBe(400);
+          expect(res.body.status).toMatch('fail');
+          expect(res.body.message).toMatch('not allowed');
+        } catch (e) {
+          handleException(res, e);
+        }
+      });
     });
+    const typeChecks = extractFieldType(req.body);
 
+    // Helper function to get test value based on type
+
+    describe('400 Bad request: Field Data Format Error', () => {
+      Object.entries(typeChecks).forEach(([type, fields]) => {
+        fields.forEach((field) => {
+          const testData = { ...req.body };
+
+          // Generate test request data with specified type for the field
+          Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
+            if (writetype !== type) {
+              testData[field] = writedvalue;
+
+              it(`${field} field required ${type} but ${writetype}`, async () => {
+                let res;
+                // console.log(testData);
+                try {
+                  res = await patchItem(req.params.group_id, req.params.item_id, req.body, authToken);
+                  expect(res.status).toBe(400);
+                  expect(res.body.status).toMatch('fail');
+                  expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
+                // console.log(`${field} field required ${type} but ${writetype}`);
+                // console.log(res.body);
+                } catch (e) {
+                  handleException(res, e);
+                }
+              });
+            }
+          });
+        });
+      });
+    });
     test('moveItem: returns 404 if source group not found', async () => {
       let notice;
       try {
-        req.params.group_id = '3'; // Non-existent group
+        req.params.group_id = '100'; // Non-existent group
 
         const res = await patchItem(req.params.group_id, req.params.item_id, req.body, authToken);
         notice = res;
@@ -420,6 +498,13 @@ const ItemTest = async (server) => {
       } catch (e) {
         handleException(notice, e);
       }
+    });
+    test('moveItem(toGroup): moves item from one group to another', async () => {
+      req.body.targetGroup_id = '2';
+      const res = await patchItem(req.params.group_id, req.params.item_id, req.body, authToken);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({ message: 'Item moved successfully', item_id: '1' });
     });
   });
 
