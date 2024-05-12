@@ -23,4 +23,19 @@ async function testUserAction(action, args, expectedStatus, expectedBodyStatus, 
     return res;
 }
 
-module.exports = { testUserAction };
+const verifyJwt = require('./verifyJwt');
+
+// Helper function to verify JWT token
+async function testTokenValidity(token) {
+    try {
+        // Verify the token
+        const isValidJwt = verifyJwt(token, process.env.PASSPORT_SECRET);
+        expect(isValidJwt).toBe(true);
+    } catch (e) {
+        throw e;
+    }
+}
+
+
+
+module.exports = { testUserAction, testTokenValidity };

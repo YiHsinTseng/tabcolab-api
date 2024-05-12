@@ -1,8 +1,6 @@
 const request = require('supertest');
 const { handleException } = require('../../utils/testErrorHandler');
-const { testUserAction } = require('../../utils/testUserHelper');
-const { groupsChanges } = require('../../utils/groupsChanges');
-const verifyJwt = require('../../utils/verifyJwt');
+const { testUserAction, testTokenValidity } = require('../../utils/testUserHelper');
 
 let userData = { email: 'login@gmail.com', password: 'password1' };
 
@@ -27,13 +25,7 @@ const UserTest = async (server) => {
       }
     });
     it('Token is valid', async () => {
-      try {
-        // Verify the token
-        const isValidJwt = verifyJwt(authToken, process.env.PASSPORT_SECRET);
-        expect(isValidJwt).toBe(true);
-      } catch (e) {
-        throw e;
-      }
+      await testTokenValidity(authToken);
     });
     describe('400 Bad request: Body Format Error', () => {
       it('JSON Format Error', async () => {
@@ -132,13 +124,7 @@ const UserTest = async (server) => {
       }
     });
     it('Token is valid', async () => {
-      try {
-        // Verify the token
-        const isValidJwt = verifyJwt(authToken, process.env.PASSPORT_SECRET);
-        expect(isValidJwt).toBe(true);
-      } catch (e) {
-        throw e;
-      }
+      await testTokenValidity(authToken);
     });
 
     describe('400 Bad request: Body Format Error', () => {
