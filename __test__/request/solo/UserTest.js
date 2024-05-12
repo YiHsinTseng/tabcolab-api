@@ -1,5 +1,6 @@
 const request = require('supertest');
 const { handleException } = require('../../utils/testErrorHandler');
+const { testUserAction } = require('../../utils/testUserHelper');
 const { groupsChanges } = require('../../utils/groupsChanges');
 const verifyJwt = require('../../utils/verifyJwt');
 
@@ -18,13 +19,8 @@ const UserTest = async (server) => {
 
   describe('Post /users/register', () => {
     it('201: User signed up successfully.', async () => {
-      let res;
       try {
-        res = await registerUser(userData);
-        expect(res.status).toBe(201);
-        expect(res.body.status).toBe('success');
-        expect(res.body.message).toBe('User signed up successfully.');
-        expect(res.body.token).toBeDefined();
+        res = await testUserAction(registerUser, [userData], 201, 'success', 'User signed up successfully.');
         authToken = res.body.token;
       } catch (e) {
         handleException(res, e);
@@ -44,10 +40,8 @@ const UserTest = async (server) => {
         let invalidJson = '{ "email": 123, }';
         let res;
         try {
-          res = await registerUser(invalidJson);
-          expect(res.status).toBe(400);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('Invalid JSON format in request body');
+          res = await testUserAction(registerUser, [invalidJson], 400, 'fail', 'Invalid JSON format in request body');
+
         } catch (e) {
           handleException(res, e);
         }
@@ -56,11 +50,7 @@ const UserTest = async (server) => {
         let res;
         const newUserData = {};
         try {
-          res = await registerUser(newUserData);
-
-          expect(res.status).toBe(400);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toMatch('is required');
+          res = await testUserAction(registerUser, [newUserData], 400, 'fail', 'is required', 'toMatch');
         } catch (e) {
           handleException(res, e);
         }
@@ -69,10 +59,7 @@ const UserTest = async (server) => {
         let res;
         try {
           userData.username = 'user';
-          res = await registerUser(userData);
-          expect(res.status).toBe(400);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toMatch('not allowed');
+          res = await testUserAction(registerUser, [userData], 400, 'fail', 'not allowed', 'toMatch');
         } catch (e) {
           const customErrorMessage = `Actual res Body: ${JSON.stringify(res.body)}\n \n ${e.message}`;
           throw new Error(customErrorMessage);
@@ -85,11 +72,7 @@ const UserTest = async (server) => {
             let res;
             try {
               const { [field]: removedField, ...newUserData } = userData;
-              res = await registerUser(newUserData);
-
-              expect(res.status).toBe(400);
-              expect(res.body.status).toBe('fail');
-              expect(res.body.message).toBe(`"${field}" is required`);
+              res = await testUserAction(registerUser, [newUserData], 400, 'fail', `"${field}" is required`);
             } catch (e) {
               handleException(res, e);
             }
@@ -117,10 +100,7 @@ const UserTest = async (server) => {
             testData[field] = value;
             let res;
             try {
-              res = await registerUser(testData);
-              expect(res.status).toBe(400);
-              expect(res.body.status).toBe('fail');
-              expect(res.body.message).toBe(`"${field}" must be a ${fieldTypeRequired}`);
+              res = await testUserAction(registerUser, [testData], 400, 'fail', `"${field}" must be a ${fieldTypeRequired}`);
             } catch (e) {
               handleException(res, e);
             }
@@ -132,11 +112,8 @@ const UserTest = async (server) => {
       it('409: Email has been registered.', async () => {
         let res;
         try {
-          res = await registerUser(userData);
+          res = await testUserAction(registerUser, [userData], 409, 'fail', 'This email has already been registered');
 
-          expect(res.status).toBe(409);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('This email has already been registered');
         } catch (e) {
           handleException(res, e);
         }
@@ -148,11 +125,7 @@ const UserTest = async (server) => {
     it('200: User signed in successfully.', async () => {
       let res;
       try {
-        res = await loginUser(userData);
-        expect(res.status).toBe(200);
-        expect(res.body.status).toBe('success');
-        expect(res.body.message).toBe('User signed in successfully');
-        expect(res.body.token).toBeDefined();
+        res = await testUserAction(loginUser, [userData], 200, 'success', 'User signed in successfully');
         authToken = res.body.token;
       } catch (e) {
         handleException(res, e);
@@ -173,10 +146,7 @@ const UserTest = async (server) => {
         let invalidJson = '{ "email" }';
         let res;
         try {
-          res = await loginUser(invalidJson);
-          expect(res.status).toBe(400);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('Invalid JSON format in request body');
+          res = await testUserAction(loginUser, [invalidJson], 400, 'fail', 'Invalid JSON format in request body');
         } catch (e) {
           handleException(res, e);
         }
@@ -185,11 +155,7 @@ const UserTest = async (server) => {
         const newUserData = {};
         let res;
         try {
-          res = await loginUser(newUserData);
-
-          expect(res.status).toBe(400);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toMatch('is required');
+          res = await testUserAction(loginUser, [newUserData], 400, 'fail', 'is required', 'toMatch');
         } catch (e) {
           handleException(res, e);
         }
@@ -201,11 +167,7 @@ const UserTest = async (server) => {
             let res;
             try {
               const { [field]: removedField, ...newUserData } = userData;
-              res = await loginUser(newUserData);
-
-              expect(res.status).toBe(400);
-              expect(res.body.status).toBe('fail');
-              expect(res.body.message).toBe(`"${field}" is required`);
+              res = await testUserAction(loginUser, [newUserData], 400, 'fail', `"${field}" is required`);
             } catch (e) {
               handleException(res, e);
             }
@@ -216,11 +178,7 @@ const UserTest = async (server) => {
         userData.username = 'user';
         let res;
         try {
-          res = await loginUser(userData);
-
-          expect(res.status).toBe(400);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toMatch('not allowed');
+          res = await testUserAction(loginUser, [userData], 400, 'fail', 'not allowed', 'toMatch');
         } catch (e) {
           handleException(res, e);
         }
@@ -245,10 +203,7 @@ const UserTest = async (server) => {
             testData[field] = value;
             let res;
             try {
-              res = await loginUser(testData);
-              expect(res.status).toBe(400);
-              expect(res.body.status).toBe('fail');
-              expect(res.body.message).toBe(`"${field}" must be a ${fieldTypeRequired}`);
+              res = await testUserAction(loginUser, [testData], 400, 'fail', `"${field}" must be a ${fieldTypeRequired}`);
             } catch (e) {
               handleException(res, e);
             }
@@ -262,8 +217,7 @@ const UserTest = async (server) => {
     it('200: Get user info', async () => {
       let res;
       try {
-        res = await getUser(authToken);
-        expect(res.status).toBe(200);
+        res = await testUserAction(getUser, [authToken], 200);
       } catch (e) {
         handleException(res, e);
       }
@@ -272,10 +226,7 @@ const UserTest = async (server) => {
       it('Missing JWT', async () => {
         let res;
         try {
-          res = await getUser();
-          expect(res.status).toBe(401);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('Missing JWT');
+          res = await testUserAction(getUser, [], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -283,10 +234,7 @@ const UserTest = async (server) => {
       it('Invalid JWT', async () => {
         let res;
         try {
-          res = await getUser(123);
-          expect(res.status).toBe(401);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('Invalid JWT');
+          res = await testUserAction(getUser, [123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -303,9 +251,7 @@ const UserTest = async (server) => {
       try {
         const adminLogin = await registerUser(adminData);
         const adminToken = adminLogin.body.token;
-
-        res = await getAllUsers(adminToken);
-        expect(res.status).toBe(200);
+        res = await testUserAction(getAllUsers, [adminToken], 200);
       } catch (e) {
         handleException(res, e);
       }
@@ -314,10 +260,7 @@ const UserTest = async (server) => {
       it('Missing JWT', async () => {
         let res;
         try {
-          res = await getAllUsers();
-          expect(res.status).toBe(401);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('Missing JWT');
+          res = await testUserAction(getAllUsers, [], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -325,10 +268,7 @@ const UserTest = async (server) => {
       it('Invalid JWT', async () => {
         let res;
         try {
-          res = await getAllUsers(123);
-          expect(res.status).toBe(401);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('Invalid JWT');
+          res = await testUserAction(getAllUsers, [123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -338,10 +278,7 @@ const UserTest = async (server) => {
       it('Not an admin, denied access', async () => {
         let res;
         try {
-          res = await getAllUsers(authToken);
-          expect(res.status).toBe(403);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('Access denied. You are not an admin.');
+          res = await testUserAction(getAllUsers, [authToken], 403, 'fail', 'Access denied. You are not an admin.');
         } catch (e) {
           handleException(res, e);
         }
@@ -363,10 +300,7 @@ const UserTest = async (server) => {
       let res;
       try {
         requestBody.password = 'test1234';
-        res = await patchUser(requestBody, authToken);
-        expect(res.status).toBe(200);
-        expect(res.body.status).toBe('success');
-        expect(res.body.message).toBe('User password updated successfully');
+        res = await testUserAction(patchUser, [requestBody, authToken], 200, 'success', 'User password updated successfully');
       } catch (e) {
         handleException(res, e);
       }
@@ -375,10 +309,7 @@ const UserTest = async (server) => {
       let loginRequestBody = { email: 'test123@gmail.com', password: 'test1234' };
       let res;
       try {
-        res = await loginUser(loginRequestBody);
-        expect(res.status).toBe(200);
-        expect(res.body.status).toBe('success');
-        expect(res.body.message).toBe('User signed in successfully');
+        res = await testUserAction(loginUser, [loginRequestBody], 200, 'success', 'User signed in successfully');
       } catch (e) {
         handleException(res, e);
       }
@@ -388,10 +319,7 @@ const UserTest = async (server) => {
       let res;
       try {
         requestBody.email = 'test1234@gmail.com'
-        res = await patchUser(requestBody, authToken);
-        expect(res.status).toBe(200);
-        expect(res.body.status).toBe('success');
-        expect(res.body.message).toBe('User info updated successfully');
+        res = await testUserAction(patchUser, [requestBody, authToken], 200, 'success', 'User info updated successfully');
       } catch (e) {
         handleException(res, e);
       }
@@ -400,10 +328,7 @@ const UserTest = async (server) => {
       let loginRequestBody = { email: 'test1234@gmail.com', password: 'test1234' };
       let res;
       try {
-        res = await loginUser(loginRequestBody);
-        expect(res.status).toBe(200);
-        expect(res.body.status).toBe('success');
-        expect(res.body.message).toBe('User signed in successfully');
+        res = await testUserAction(loginUser, [loginRequestBody], 200, 'success', 'User signed in successfully');
       } catch (e) {
         handleException(res, e);
       }
@@ -413,10 +338,7 @@ const UserTest = async (server) => {
         let invalidJson = '{ password: }';
         let res;
         try {
-          res = await patchUser(invalidJson, authToken);
-          expect(res.status).toBe(400);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('Invalid JSON format in request body');
+          res = await testUserAction(patchUser, [invalidJson, authToken], 400, 'fail', 'Invalid JSON format in request body');
         } catch (e) {
           handleException(res, e);
         }
@@ -425,11 +347,7 @@ const UserTest = async (server) => {
         let res;
         const newUserData = {};
         try {
-          res = await patchUser(newUserData, authToken);
-
-          expect(res.status).toBe(400);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toMatch('must contain');
+          res = await testUserAction(patchUser, [newUserData, authToken], 400, 'fail', 'must contain', 'toMatch');
         } catch (e) {
           handleException(res, e);
         }
@@ -438,11 +356,7 @@ const UserTest = async (server) => {
         requestBody.username = 'user';
         let res;
         try {
-          res = await patchUser(requestBody, authToken);
-
-          expect(res.status).toBe(400);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toMatch('not allowed');
+          res = await testUserAction(patchUser, [requestBody, authToken], 400, 'fail', 'not allowed', 'toMatch');
         } catch (e) {
           handleException(res, e);
         }
@@ -451,13 +365,26 @@ const UserTest = async (server) => {
     describe('400 Bad request: Field Data Format Error', () => {
       it('Password length short fail', async () => {
         let res;
+        const originalPassword = requestBody.password;
         try {
           requestBody.password = 'p';
-          // console.log(requestBody);
-          res = await patchUser(requestBody, authToken);
-          expect(res.status).toBe(400);
+          res = await testUserAction(patchUser, [requestBody, authToken], 400, 'fail', 'must be at least 6 characters long', 'toMatch');
         } catch (e) {
           handleException(res, e);
+        } finally {
+          requestBody.password = originalPassword;
+        }
+      });
+      it('email should be email format', async () => {
+        let res;
+        const originalEmail = requestBody.email;
+        try {
+          requestBody.email = 'test1234';
+          res = await testUserAction(patchUser, [requestBody, authToken], 400, 'fail', 'must be a valid email', 'toMatch');
+        } catch (e) {
+          handleException(res, e);
+        } finally {
+          requestBody.email = originalEmail;
         }
       });
 
@@ -481,10 +408,7 @@ const UserTest = async (server) => {
 
             let res;
             try {
-              res = await patchUser(testData, authToken);
-              expect(res.status).toBe(400);
-              expect(res.body.status).toBe('fail');
-              expect(res.body.message).toBe(`"${field}" must be a ${fieldTypeRequired}`);
+              res = await testUserAction(patchUser, [testData, authToken], 400, 'fail', `"${field}" must be a ${fieldTypeRequired}`);
             } catch (e) {
               handleException(res, e);
             }
@@ -496,11 +420,7 @@ const UserTest = async (server) => {
       it('Missing JWT', async () => {
         let res;
         try {
-          // console.log(requestBody);
-          res = await patchUser(requestBody);
-          expect(res.status).toBe(401);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('Missing JWT');
+          res = await testUserAction(patchUser, [requestBody], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -508,11 +428,7 @@ const UserTest = async (server) => {
       it('Invalid JWT', async () => {
         let res;
         try {
-          // console.log(requestBody);
-          res = await patchUser(requestBody, 123);
-          expect(res.status).toBe(401);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('Invalid JWT');
+          res = await testUserAction(patchUser, [requestBody, 123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -524,8 +440,7 @@ const UserTest = async (server) => {
       it('delete without authToken', async () => {
         let res;
         try {
-          res = await deleteUser();
-          expect(res.status).toBe(401);
+          res = await testUserAction(deleteUser, [], 401);
         } catch (e) {
           handleException(res, e);
         }
@@ -533,10 +448,7 @@ const UserTest = async (server) => {
       it('delete with incorrect authToken', async () => {
         let res;
         try {
-          res = await deleteUser(123);
-          expect(res.status).toBe(401);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('Invalid JWT');
+          res = await testUserAction(deleteUser, [123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -546,11 +458,9 @@ const UserTest = async (server) => {
       it('delete success and register again success', async () => {
         let res;
         try {
-          res = await deleteUser(authToken); // 在前面測試已經被刪掉，要再加authToken
-          expect(res.status).toBe(204);
-          res = await registerUser(userData);
+          res = await testUserAction(deleteUser, [authToken], 204); // 在前面測試已經被刪掉，要再加authToken
+          res = await testUserAction(registerUser, [userData], 201, 'success', 'User signed up successfully.');
           authToken = res.body.token;
-          expect(res.status).toBe(201);
         } catch (e) {
           handleException(res, e);
         }
@@ -558,13 +468,8 @@ const UserTest = async (server) => {
       it('delete success and login again fail', async () => {
         let res;
         try {
-          res = await deleteUser(authToken);
-          expect(res.status).toBe(204);
-          res = await loginUser(userData);
-
-          expect(res.status).toBe(404);
-          expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('User not found or invalid email');
+          res = await testUserAction(deleteUser, [authToken], 204)
+          res = await testUserAction(loginUser, [userData], 404, 'fail', 'User not found or invalid email');
         } catch (e) {
           handleException(res, e);
         }
