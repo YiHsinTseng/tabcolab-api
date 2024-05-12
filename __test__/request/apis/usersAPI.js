@@ -2,14 +2,14 @@ const request = require('supertest');
 const server = require('../../../server');
 
 async function registerUser(userData) {
-  return request(server)
+  return await request(server)
     .post('/api/1.0/users/register')
     .set('Content-Type', 'application/json')
     .send(userData);
 }
 
 async function loginUser(userData) {
-  return request(server)
+  return await request(server)
     .post('/api/1.0/users/login')
     .set('Content-Type', 'application/json')
     .send(userData);
@@ -20,7 +20,8 @@ async function getUser(authToken) {
   if (authToken) {
     requestObject.set('Authorization', `Bearer ${authToken}`);
   }
-  return requestObject;
+  const response = await requestObject;
+  return response;
 }
 
 async function getAllUsers(authToken) {
@@ -29,7 +30,8 @@ async function getAllUsers(authToken) {
   if (authToken) {
     requestObject.set('Authorization', `Bearer ${authToken}`);
   }
-  return requestObject;
+  const response = await requestObject;
+  return response;
 }
 
 async function patchUser(requestBody, authToken) {
@@ -40,7 +42,8 @@ async function patchUser(requestBody, authToken) {
   if (authToken) {
     requestObject.set('Authorization', `Bearer ${authToken}`);
   }
-  return requestObject;
+  const response = await requestObject;
+  return response;
 }
 
 async function deleteUser(authToken) {
@@ -49,7 +52,8 @@ async function deleteUser(authToken) {
   if (authToken) {
     requestObject.set('Authorization', `Bearer ${authToken}`);
   }
-  return requestObject;
+  const response = await requestObject;
+  return response;
 }
 
 module.exports = {

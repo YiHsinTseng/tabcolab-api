@@ -1,6 +1,7 @@
 const request = require('supertest');
 const { handleException } = require('../../utils/testErrorHandler');
-const { testUserAction, testTokenValidity } = require('../../utils/testUserHelper');
+const { testUserAction, testTokenValidity, registerUserWithUniqueEmail } = require('../../utils/testUserHelper');
+const { UserRequestBodyTest } = require('../../classes/UserTest');
 
 let userData = { email: 'login@gmail.com', password: 'password1' };
 
@@ -16,6 +17,7 @@ const UserTest = async (server) => {
   } = require('../apis/usersAPI');
 
   describe('Post /users/register', () => {
+    const userTest = new UserRequestBodyTest(registerUser, userData);
     it('201: User signed up successfully.', async () => {
       try {
         res = await testUserAction(registerUser, [userData], 201, 'success', 'User signed up successfully.');
@@ -28,84 +30,34 @@ const UserTest = async (server) => {
       await testTokenValidity(authToken);
     });
     describe('400 Bad request: Body Format Error', () => {
-      it('JSON Format Error', async () => {
-        let invalidJson = '{ "email": 123, }';
-        let res;
-        try {
-          res = await testUserAction(registerUser, [invalidJson], 400, 'fail', 'Invalid JSON format in request body');
 
-        } catch (e) {
-          handleException(res, e);
-        }
+      it('JSON Format Error', async () => {
+        const invalidJson = '{ "email":123;}';
+        await userTest.jsonFormatError(invalidJson);
       });
       it('No field', async () => {
-        let res;
-        const newUserData = {};
-        try {
-          res = await testUserAction(registerUser, [newUserData], 400, 'fail', 'is required', 'toMatch');
-        } catch (e) {
-          handleException(res, e);
-        }
+        await userTest.noField();
       });
       it('Undefined Field', async () => {
-        let res;
-        try {
-          userData.username = 'user';
-          res = await testUserAction(registerUser, [userData], 400, 'fail', 'not allowed', 'toMatch');
-        } catch (e) {
-          const customErrorMessage = `Actual res Body: ${JSON.stringify(res.body)}\n \n ${e.message}`;
-          throw new Error(customErrorMessage);
-        }
+        await userTest.undefinedField();
       });
       describe('Missing field', () => {
-        const testData = Object.keys(userData);
-        testData.forEach((field) => {
-          it(`Missing ${field} field`, async () => {
-            let res;
-            try {
-              const { [field]: removedField, ...newUserData } = userData;
-              res = await testUserAction(registerUser, [newUserData], 400, 'fail', `"${field}" is required`);
-            } catch (e) {
-              handleException(res, e);
-            }
-          });
-        });
+        userTest.missingField();
       });
 
     });
     describe('400 Bad request: Field Data Format Error', () => {
-      const fieldTypeRequired = 'string';
-      const userDataFields = Object.keys(userData);
-      const testReqData = userDataFields.map((field) => ({
-        field,
-        values: {
-          number: 123,
-          boolean: true,
-          // 可以添加更多的值和類型
-        },
-      }));
-      testReqData.forEach(({ field, values }) => {
-        Object.entries(values).forEach(([type, value]) => {
-          it(`${field} field required ${fieldTypeRequired} (but value type: ${type})`, async () => {
-            // 複製一份用戶數據以避免污染其他測試
-            const testData = { ...userData };
-            testData[field] = value;
-            let res;
-            try {
-              res = await testUserAction(registerUser, [testData], 400, 'fail', `"${field}" must be a ${fieldTypeRequired}`);
-            } catch (e) {
-              handleException(res, e);
-            }
-          });
-        });
-      });
+      userTest.fieldDataFormatError();
+
     });
     describe('409 Conflict: Email has been registered.', () => {
       it('409: Email has been registered.', async () => {
         let res;
         try {
-          res = await testUserAction(registerUser, [userData], 409, 'fail', 'This email has already been registered');
+          const uniqueUserData = await registerUserWithUniqueEmail(userData, registerUser);
 
+          // 再次使用相同的電子郵件地址嘗試註冊，預期會收到一個 409 錯誤
+          res = await testUserAction(registerUser, [uniqueUserData], 409, 'fail', 'This email has already been registered');
         } catch (e) {
           handleException(res, e);
         }
@@ -114,6 +66,7 @@ const UserTest = async (server) => {
   });
 
   describe('Post /users/login', () => {
+    const userTest = new UserRequestBodyTest(loginUser, userData);
     it('200: User signed in successfully.', async () => {
       let res;
       try {
@@ -129,73 +82,21 @@ const UserTest = async (server) => {
 
     describe('400 Bad request: Body Format Error', () => {
       it('JSON Format Error', async () => {
-        let invalidJson = '{ "email" }';
-        let res;
-        try {
-          res = await testUserAction(loginUser, [invalidJson], 400, 'fail', 'Invalid JSON format in request body');
-        } catch (e) {
-          handleException(res, e);
-        }
+        const invalidJson = '{ "email" }';
+        await userTest.jsonFormatError(invalidJson);
       });
       it('No field', async () => {
-        const newUserData = {};
-        let res;
-        try {
-          res = await testUserAction(loginUser, [newUserData], 400, 'fail', 'is required', 'toMatch');
-        } catch (e) {
-          handleException(res, e);
-        }
+        await userTest.noField();
       });
       describe('Missing field', () => {
-        const testData = Object.keys(userData);
-        testData.forEach((field) => {
-          it(`Missing ${field} field`, async () => {
-            let res;
-            try {
-              const { [field]: removedField, ...newUserData } = userData;
-              res = await testUserAction(loginUser, [newUserData], 400, 'fail', `"${field}" is required`);
-            } catch (e) {
-              handleException(res, e);
-            }
-          });
-        });
+        userTest.missingField();
       });
       it('Undefined Field', async () => {
-        userData.username = 'user';
-        let res;
-        try {
-          res = await testUserAction(loginUser, [userData], 400, 'fail', 'not allowed', 'toMatch');
-        } catch (e) {
-          handleException(res, e);
-        }
+        await userTest.undefinedField();
       });
     });
     describe('400 Bad request: Field Data Format Error', () => {
-      const fieldTypeRequired = 'string';
-      const userDataFields = Object.keys(userData);
-      const testReqData = userDataFields.map((field) => ({
-        field,
-        values: {
-          number: 123,
-          boolean: true,
-          // 可以添加更多的值和類型
-        },
-      }));
-      testReqData.forEach(({ field, values }) => {
-        Object.entries(values).forEach(([type, value]) => {
-          it(`${field} field required ${fieldTypeRequired} (but value type: ${type})`, async () => {
-            // 複製一份用戶數據以避免污染其他測試
-            const testData = { ...userData };
-            testData[field] = value;
-            let res;
-            try {
-              res = await testUserAction(loginUser, [testData], 400, 'fail', `"${field}" must be a ${fieldTypeRequired}`);
-            } catch (e) {
-              handleException(res, e);
-            }
-          });
-        });
-      });
+      userTest.fieldDataFormatError();
     });
   });
 
@@ -227,8 +128,6 @@ const UserTest = async (server) => {
       });
     });
   });
-
-  // 特定使用者帳號？
   describe('Get /users', () => {
     it('200: Get all user info (only admin)', async () => {
       const adminData = { email: 'admin123@gmail.com', password: 'admin123' };
@@ -273,6 +172,8 @@ const UserTest = async (server) => {
   });
 
   describe('Patch /user', () => {
+    const userTest = new UserRequestBodyTest(patchUser, userData);
+
     let authToken;
 
     beforeAll(async () => {
@@ -321,31 +222,14 @@ const UserTest = async (server) => {
     });
     describe('400 Bad request: Body Format Error', () => {
       it('JSON Format Error', async () => {
-        let invalidJson = '{ password: }';
-        let res;
-        try {
-          res = await testUserAction(patchUser, [invalidJson, authToken], 400, 'fail', 'Invalid JSON format in request body');
-        } catch (e) {
-          handleException(res, e);
-        }
+        const invalidJson = '{ password: }';
+        await userTest.jsonFormatError(invalidJson);
       });
       it('No field', async () => {
-        let res;
-        const newUserData = {};
-        try {
-          res = await testUserAction(patchUser, [newUserData, authToken], 400, 'fail', 'must contain', 'toMatch');
-        } catch (e) {
-          handleException(res, e);
-        }
+        await userTest.noField({}, authToken, 'must contain');
       });
       it('Undefined Field', async () => {
-        requestBody.username = 'user';
-        let res;
-        try {
-          res = await testUserAction(patchUser, [requestBody, authToken], 400, 'fail', 'not allowed', 'toMatch');
-        } catch (e) {
-          handleException(res, e);
-        }
+        await userTest.undefinedField(authToken);
       });
     });
     describe('400 Bad request: Field Data Format Error', () => {
@@ -374,8 +258,10 @@ const UserTest = async (server) => {
         }
       });
 
+      // 測試所有字段的類型是否正確
       const fieldTypeRequired = 'string';
-      const testReqData = ['email', 'password'].map((field) => ({
+      const userDataFields = Object.keys(userData);
+      const testReqData = userDataFields.map((field) => ({
         field,
         values: {
           number: 88888888,

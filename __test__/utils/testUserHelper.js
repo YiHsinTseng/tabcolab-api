@@ -5,9 +5,6 @@ async function testUserAction(action, args, expectedStatus, expectedBodyStatus, 
 
     res = await action(...args);
 
-    if (!res || !res.body) {
-        throw new Error('Response or response body is undefined');
-    }
     expect(res.status).toBe(expectedStatus);
     if (expectedBodyStatus) {
         expect(res.body.status).toBe(expectedBodyStatus);
@@ -36,6 +33,17 @@ async function testTokenValidity(token) {
     }
 }
 
+async function registerUserWithUniqueEmail(userData, registerUser) {
+    // 使用一個新的、唯一的電子郵件地址
+    const uniqueEmail = `test${Date.now()}@example.com`;
+    const uniqueUserData = { ...userData, email: uniqueEmail };
+
+    // 執行註冊操作
+    await testUserAction(registerUser, [uniqueUserData], 201, 'success');
+
+    return uniqueUserData;
+}
 
 
-module.exports = { testUserAction, testTokenValidity };
+
+module.exports = { testUserAction, testTokenValidity, registerUserWithUniqueEmail };
