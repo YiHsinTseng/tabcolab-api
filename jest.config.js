@@ -1,5 +1,5 @@
 module.exports = {
-  // silent: true,
-  // coverageDirectory: './coverage/',
-  // collectCoverage: true,
+  silent: true,
+  coverageDirectory: './coverage/',
+  collectCoverage: true,
 };

@@ -5,7 +5,7 @@ const register = async (req, res, next) => {
   try {
     // 確認信箱是否被註冊過
     const emailExist = await User.emailExists(req.body.email);
-    if (emailExist) return errorResponse(res, 400, 'This email has already been registered');
+    if (emailExist) return errorResponse(res, 409, 'This email has already been registered');
 
     // 製作新用戶
     const {
@@ -39,7 +39,7 @@ const login = async (req, res, next) => {
       const token = await foundUser.generateAuthToken();
       return res.send({
         status: 'success',
-        message: 'User logged in successfully',
+        message: 'User signed in successfully',
         token,
       });
     }
@@ -93,7 +93,7 @@ const updateUserInfo = async (req, res, next) => {
     if (user_id && email) {
       // 確認信箱是否被註冊過
       const emailExist = await User.emailExists(email);
-      if (emailExist) return errorResponse(res, 400, 'This email has already been registered');
+      if (emailExist) return errorResponse(res, 409, 'This email has already been registered');
       userToUpdate.email = email;
       result = await userToUpdate.updateUserInfo(user_id);
     } else if (user_id && password) {
@@ -117,7 +117,7 @@ const deleteUser = async (req, res, next) => {
 
     const result = await User.deleteUser(user_id, next);
     if (result.success) {
-      return res.status(200).json({ status: 'success', message: result.message });
+      return res.status(204).header('X-Message', 'User removed successfully').send();
     }
     return errorResponse(res, 400, 'User failed to delete');
   } catch (error) {

@@ -92,7 +92,7 @@ userSchema.methods.createUser = async function createUser() {
   });
   await userGroup.save();
 
-  return { success: true, message: 'User created successfully' };
+  return { success: true, message: 'User signed up successfully.' };
 };
 
 userSchema.statics.getAllUsers = async function getAllUsers() {

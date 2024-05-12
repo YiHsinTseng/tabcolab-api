@@ -127,7 +127,7 @@ paths:
                       item_type: 2
                       doneStatus: false
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "500":
           description: Internal server error
     post:
@@ -185,7 +185,7 @@ paths:
         "400":
           description: Bad Request
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "404":
           description: Not Found
         "500":
@@ -233,7 +233,7 @@ paths:
         "400":
           description: Bad Request
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "404":
           description: Not Found
         "500":
@@ -259,7 +259,7 @@ paths:
         "400":
           description: Bad Request
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "404":
           description: Not Found
         "500":
@@ -307,7 +307,7 @@ paths:
         "400":
           description: Invalid Query Parameters
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "500":
           description: Internal server error
   /groups/{group_id}/items/{item_id}:
@@ -355,7 +355,7 @@ paths:
         "400":
           description: Bad Request
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "404":
           description: Not Found
         "500":
@@ -380,7 +380,7 @@ paths:
         "400":
           description: Bad Request
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "404":
           description: Not Found
         "500":
@@ -411,7 +411,7 @@ paths:
         "400":
           description: Bad Request
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "404":
           description: Not Found
         "500":
@@ -449,7 +449,7 @@ paths:
         "400":
           description: Bad Request
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "404":
           description: Not Found
         "500":
@@ -489,7 +489,7 @@ paths:
         "400":
           description: Bad Request
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "500":
           description: Internal server error
   /groups/{group_id}/notes/{item_id}:
@@ -538,7 +538,7 @@ paths:
         "400":
           description: Bad Request
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "404":
           description: Not Found
         "500":
@@ -594,7 +594,7 @@ paths:
         "400":
           description: Bad Request
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "404":
           description: Not Found
         "500":
@@ -625,7 +625,7 @@ paths:
             application/json:
               $ref: "#/responses/getUserResponse200"
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "404":
           description: Invalid user ID
     patch:
@@ -655,7 +655,7 @@ paths:
         "400":
           description: Bad request
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "404":
           description: Invalid user ID
         "500":
@@ -670,7 +670,7 @@ paths:
         "200":
           description: User deleted successfully.
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "404":
           description: Invalid user ID
         "500":
@@ -714,7 +714,7 @@ paths:
                     statas: fail
                     message: field  is required.
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "409":
           description: This email has already been registered.
         "500":
@@ -740,7 +740,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: User logged in successfully
+                    example: User signed in successfully
                   token:
                     type: string
                     example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImVtYWlsIjoidXNlckBleGFtcGxlLmNvbSIsInZlcnNpb24iOiJ2MS4wIiwiaWF0IjoxNzExOTA1NTc4LCJleHAiOjE3MTI1MTAzNzh9.umagmr0uU8ItdxPGz6JSTGcRXiitFdTGCCfzHCRB4Ew
@@ -767,7 +767,7 @@ paths:
                   value:
                     message: field  is required.
         "401":
-          description: Invalid JWT or Missing JWT token
+          description: Invalid JWT or Missing JWT
         "500":
           description: Internal server error.
   security:

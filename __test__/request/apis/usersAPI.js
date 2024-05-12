@@ -4,12 +4,14 @@ const server = require('../../../server');
 async function registerUser(userData) {
   return request(server)
     .post('/api/1.0/users/register')
+    .set('Content-Type', 'application/json')
     .send(userData);
 }
 
 async function loginUser(userData) {
   return request(server)
     .post('/api/1.0/users/login')
+    .set('Content-Type', 'application/json')
     .send(userData);
 }
 async function getUser(authToken) {
@@ -21,9 +23,19 @@ async function getUser(authToken) {
   return requestObject;
 }
 
+async function getAllUsers(authToken) {
+  const requestObject = request(server)
+    .get('/api/1.0/users');
+  if (authToken) {
+    requestObject.set('Authorization', `Bearer ${authToken}`);
+  }
+  return requestObject;
+}
+
 async function patchUser(requestBody, authToken) {
   const requestObject = request(server)
     .patch('/api/1.0/user')
+    .set('Content-Type', 'application/json')
     .send(requestBody);
   if (authToken) {
     requestObject.set('Authorization', `Bearer ${authToken}`);
@@ -41,5 +53,5 @@ async function deleteUser(authToken) {
 }
 
 module.exports = {
-  registerUser, loginUser, getUser, patchUser, deleteUser,
+  registerUser, loginUser, getUser, getAllUsers, patchUser, deleteUser,
 };

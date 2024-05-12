@@ -83,7 +83,7 @@ const ItemTest = async (server) => {
           try {
             res = await postTab(req.params.group_id, newTabData);
             expect(res.status).toBe(401);
-            expect(res.body.message).toBe('Missing JWT token');
+            expect(res.body.message).toBe('Missing JWT');
           } catch (e) {
             handleException(res, e);
           }
@@ -93,7 +93,7 @@ const ItemTest = async (server) => {
           try {
             res = await postTab(req.params.group_id, req.params.group_id, newTabData, 123);
             expect(res.status).toBe(401);
-            expect(res.body.message).toBe('Invalid JWT token');
+            expect(res.body.message).toBe('Invalid JWT');
           } catch (e) {
             handleException(res, e);
           }
@@ -186,8 +186,8 @@ const ItemTest = async (server) => {
                     expect(res.status).toBe(400);
                     expect(res.body.status).toMatch('fail');
                     expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                  // console.log(`${field} field required ${type} but ${writetype}`);
-                  // console.log(res.body);
+                    // console.log(`${field} field required ${type} but ${writetype}`);
+                    // console.log(res.body);
                   } catch (e) {
                     handleException(res, e);
                   }
@@ -286,7 +286,7 @@ const ItemTest = async (server) => {
             try {
               res = await postNote(req.params.group_id, newNoteData);
               expect(res.status).toBe(401);
-              expect(res.body.message).toBe('Missing JWT token');
+              expect(res.body.message).toBe('Missing JWT');
             } catch (e) {
               handleException(res, e);
             }
@@ -296,7 +296,7 @@ const ItemTest = async (server) => {
             try {
               res = await postNote(req.params.group_id, newNoteData, 123);
               expect(res.status).toBe(401);
-              expect(res.body.message).toBe('Invalid JWT token');
+              expect(res.body.message).toBe('Invalid JWT');
             } catch (e) {
               handleException(res, e);
             }
@@ -632,7 +632,7 @@ const ItemTest = async (server) => {
             try {
               res = await patchTodo(req.params.group_id, req.params.item_id, patchTodoRequest);
               expect(res.status).toBe(401);
-              expect(res.body.message).toBe('Missing JWT token');
+              expect(res.body.message).toBe('Missing JWT');
             } catch (e) {
               handleException(res, e);
             }
@@ -642,7 +642,7 @@ const ItemTest = async (server) => {
             try {
               res = await patchTodo(req.params.group_id, req.params.item_id, patchTodoRequest, 123);
               expect(res.status).toBe(401);
-              expect(res.body.message).toBe('Invalid JWT token');
+              expect(res.body.message).toBe('Invalid JWT');
             } catch (e) {
               handleException(res, e);
             }

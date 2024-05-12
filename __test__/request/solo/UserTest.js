@@ -1,6 +1,7 @@
 const request = require('supertest');
 const { handleException } = require('../../utils/testErrorHandler');
 const { groupsChanges } = require('../../utils/groupsChanges');
+const verifyJwt = require('../../utils/verifyJwt');
 
 let userData = { email: 'login@gmail.com', password: 'password1' };
 
@@ -16,29 +17,37 @@ const UserTest = async (server) => {
   } = require('../apis/usersAPI');
 
   describe('Post /users/register', () => {
-    // beforeEach(async () => {
-    //   userData = { email: 'login@gmail.com', password: 'password1' };
-    // });
-
-    // one type of reqbody
     it('201: User signed up successfully.', async () => {
       let res;
       try {
         res = await registerUser(userData);
         expect(res.status).toBe(201);
-        authToken = res.body.token;
+        expect(res.body.status).toBe('success');
         expect(res.body.message).toBe('User signed up successfully.');
+        expect(res.body.token).toBeDefined();
+        authToken = res.body.token;
       } catch (e) {
         handleException(res, e);
       }
     });
-    describe('400 Bad request: Body Format Error', () => { // 不好測
+    it('Token is valid', async () => {
+      try {
+        // Verify the token
+        const isValidJwt = verifyJwt(authToken, process.env.PASSPORT_SECRET);
+        expect(isValidJwt).toBe(true);
+      } catch (e) {
+        throw e;
+      }
+    });
+    describe('400 Bad request: Body Format Error', () => {
       it('JSON Format Error', async () => {
-        // try {
+        let invalidJson = '{ "email": 123, }';
         let res;
         try {
-          res = await registerUser(123);
+          res = await registerUser(invalidJson);
           expect(res.status).toBe(400);
+          expect(res.body.status).toBe('fail');
+          expect(res.body.message).toBe('Invalid JSON format in request body');
         } catch (e) {
           handleException(res, e);
         }
@@ -50,10 +59,23 @@ const UserTest = async (server) => {
           res = await registerUser(newUserData);
 
           expect(res.status).toBe(400);
-          expect(res.body.status).toMatch('fail');
+          expect(res.body.status).toBe('fail');
           expect(res.body.message).toMatch('is required');
         } catch (e) {
           handleException(res, e);
+        }
+      });
+      it('Undefined Field', async () => {
+        let res;
+        try {
+          userData.username = 'user';
+          res = await registerUser(userData);
+          expect(res.status).toBe(400);
+          expect(res.body.status).toBe('fail');
+          expect(res.body.message).toMatch('not allowed');
+        } catch (e) {
+          const customErrorMessage = `Actual res Body: ${JSON.stringify(res.body)}\n \n ${e.message}`;
+          throw new Error(customErrorMessage);
         }
       });
       describe('Missing field', () => {
@@ -66,27 +88,15 @@ const UserTest = async (server) => {
               res = await registerUser(newUserData);
 
               expect(res.status).toBe(400);
-              expect(res.body.status).toMatch('fail');
-              expect(res.body.message).toMatch(`"${field}" is required`);
+              expect(res.body.status).toBe('fail');
+              expect(res.body.message).toBe(`"${field}" is required`);
             } catch (e) {
               handleException(res, e);
             }
           });
         });
       });
-      it('Undefined Field', async () => {
-        let res;
-        try {
-          userData.username = 'user';
-          res = await registerUser(userData);
-          expect(res.status).toBe(400);
-          expect(res.body.status).toMatch('fail');
-          expect(res.body.message).toMatch('not allowed');
-        } catch (e) {
-          const customErrorMessage = `Actual res Body: ${JSON.stringify(res.body)}\n \n ${e.message}`;
-          throw new Error(customErrorMessage); // 重新抛出异常
-        }
-      });
+
     });
     describe('400 Bad request: Field Data Format Error', () => {
       const fieldTypeRequired = 'string';
@@ -109,8 +119,8 @@ const UserTest = async (server) => {
             try {
               res = await registerUser(testData);
               expect(res.status).toBe(400);
-              expect(res.body.status).toMatch('fail');
-              expect(res.body.message).toMatch(`"${field}" must be a ${fieldTypeRequired}`);
+              expect(res.body.status).toBe('fail');
+              expect(res.body.message).toBe(`"${field}" must be a ${fieldTypeRequired}`);
             } catch (e) {
               handleException(res, e);
             }
@@ -118,17 +128,19 @@ const UserTest = async (server) => {
         });
       });
     });
-    it('409: Email has been registered.', async () => {
-      let res;
-      try {
-        res = await registerUser(userData);
+    describe('409 Conflict: Email has been registered.', () => {
+      it('409: Email has been registered.', async () => {
+        let res;
+        try {
+          res = await registerUser(userData);
 
-        expect(res.status).toBe(409);
-        expect(res.body.status).toMatch('fail');
-        expect(res.body.message).toBe('This email has already been registered');
-      } catch (e) {
-        handleException(res, e);
-      }
+          expect(res.status).toBe(409);
+          expect(res.body.status).toBe('fail');
+          expect(res.body.message).toBe('This email has already been registered');
+        } catch (e) {
+          handleException(res, e);
+        }
+      });
     });
   });
 
@@ -138,32 +150,36 @@ const UserTest = async (server) => {
       try {
         res = await loginUser(userData);
         expect(res.status).toBe(200);
+        expect(res.body.status).toBe('success');
         expect(res.body.message).toBe('User signed in successfully');
-        expect(res.body.token).toBe('User signed in successfully');
+        expect(res.body.token).toBeDefined();
         authToken = res.body.token;
       } catch (e) {
         handleException(res, e);
       }
     });
+    it('Token is valid', async () => {
+      try {
+        // Verify the token
+        const isValidJwt = verifyJwt(authToken, process.env.PASSPORT_SECRET);
+        expect(isValidJwt).toBe(true);
+      } catch (e) {
+        throw e;
+      }
+    });
 
-    describe('400 Bad request: Body Format Error', () => { // 不好測
+    describe('400 Bad request: Body Format Error', () => {
       it('JSON Format Error', async () => {
-        // try {
+        let invalidJson = '{ "email" }';
         let res;
         try {
-          res = await loginUser(123);
-          // console.log(res.body, 'Request Format Error');
+          res = await loginUser(invalidJson);
           expect(res.status).toBe(400);
+          expect(res.body.status).toBe('fail');
+          expect(res.body.message).toBe('Invalid JSON format in request body');
         } catch (e) {
           handleException(res, e);
         }
-        // } catch (e) {
-        //   console.log(e.message);
-        // }
-
-        // expect(res.status).toBe(400);
-        // expect(res.body.status).toBe('fail');
-        // expect(res.body.message).toBe('Unexpected end of JSON input');
       });
       it('No field', async () => {
         const newUserData = {};
@@ -172,7 +188,7 @@ const UserTest = async (server) => {
           res = await loginUser(newUserData);
 
           expect(res.status).toBe(400);
-          expect(res.body.status).toMatch('fail');
+          expect(res.body.status).toBe('fail');
           expect(res.body.message).toMatch('is required');
         } catch (e) {
           handleException(res, e);
@@ -188,8 +204,8 @@ const UserTest = async (server) => {
               res = await loginUser(newUserData);
 
               expect(res.status).toBe(400);
-              expect(res.body.status).toMatch('fail');
-              expect(res.body.message).toMatch(`"${field}" is required`);
+              expect(res.body.status).toBe('fail');
+              expect(res.body.message).toBe(`"${field}" is required`);
             } catch (e) {
               handleException(res, e);
             }
@@ -203,7 +219,7 @@ const UserTest = async (server) => {
           res = await loginUser(userData);
 
           expect(res.status).toBe(400);
-          expect(res.body.status).toMatch('fail');
+          expect(res.body.status).toBe('fail');
           expect(res.body.message).toMatch('not allowed');
         } catch (e) {
           handleException(res, e);
@@ -231,8 +247,8 @@ const UserTest = async (server) => {
             try {
               res = await loginUser(testData);
               expect(res.status).toBe(400);
-              expect(res.body.status).toMatch('fail');
-              expect(res.body.message).toMatch(`"${field}" must be a ${fieldTypeRequired}`);
+              expect(res.body.status).toBe('fail');
+              expect(res.body.message).toBe(`"${field}" must be a ${fieldTypeRequired}`);
             } catch (e) {
               handleException(res, e);
             }
@@ -243,7 +259,7 @@ const UserTest = async (server) => {
   });
 
   describe('Get /user', () => {
-    it('200: Change Password success', async () => {
+    it('200: Get user info', async () => {
       let res;
       try {
         res = await getUser(authToken);
@@ -253,20 +269,24 @@ const UserTest = async (server) => {
       }
     });
     describe('401: JWT problem', () => {
-      it('Missing Field', async () => {
+      it('Missing JWT', async () => {
         let res;
         try {
           res = await getUser();
           expect(res.status).toBe(401);
+          expect(res.body.status).toBe('fail');
+          expect(res.body.message).toBe('Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
       });
-      it('Undefined Field', async () => {
+      it('Invalid JWT', async () => {
         let res;
         try {
           res = await getUser(123);
           expect(res.status).toBe(401);
+          expect(res.body.status).toBe('fail');
+          expect(res.body.message).toBe('Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -276,61 +296,127 @@ const UserTest = async (server) => {
 
   // 特定使用者帳號？
   describe('Get /users', () => {
-    it('200: Change Password success', async () => {
+    it('200: Get all user info (only admin)', async () => {
+      const adminData = { email: 'admin123@gmail.com', password: 'admin123' };
+
       let res;
       try {
-        res = await getAllUsers(authToken);
+        const adminLogin = await registerUser(adminData);
+        const adminToken = adminLogin.body.token;
+
+        res = await getAllUsers(adminToken);
         expect(res.status).toBe(200);
-        console.log(res.body);
       } catch (e) {
         handleException(res, e);
       }
     });
     describe('401: JWT problem', () => {
-      it('Missing Field', async () => {
+      it('Missing JWT', async () => {
         let res;
         try {
           res = await getAllUsers();
           expect(res.status).toBe(401);
-          console.log(res.body);
+          expect(res.body.status).toBe('fail');
+          expect(res.body.message).toBe('Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
       });
-      it('Undefined Field', async () => {
+      it('Invalid JWT', async () => {
         let res;
         try {
           res = await getAllUsers(123);
           expect(res.status).toBe(401);
-          console.log(res.body);
+          expect(res.body.status).toBe('fail');
+          expect(res.body.message).toBe('Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
       });
     });
+    describe('403: Access denied', () => {
+      it('Not an admin, denied access', async () => {
+        let res;
+        try {
+          res = await getAllUsers(authToken);
+          expect(res.status).toBe(403);
+          expect(res.body.status).toBe('fail');
+          expect(res.body.message).toBe('Access denied. You are not an admin.');
+        } catch (e) {
+          handleException(res, e);
+        }
+      })
+    });
   });
 
   describe('Patch /user', () => {
-    const requestBody = { password: 'password' };
-    // two type of reqbody but maintain one
+    let authToken;
 
+    beforeAll(async () => {
+      let registerRequestBody = { email: 'test123@gmail.com', password: 'test123' };
+      let registerResponse = await registerUser(registerRequestBody);
+      authToken = registerResponse.body.token;
+    });
+
+    let requestBody = {};
     it('200: Change Password success', async () => {
       let res;
       try {
-        requestBody.password = 'password1';
+        requestBody.password = 'test1234';
         res = await patchUser(requestBody, authToken);
         expect(res.status).toBe(200);
+        expect(res.body.status).toBe('success');
+        expect(res.body.message).toBe('User password updated successfully');
+      } catch (e) {
+        handleException(res, e);
+      }
+    });
+    it('200: Can login with new password', async () => {
+      let loginRequestBody = { email: 'test123@gmail.com', password: 'test1234' };
+      let res;
+      try {
+        res = await loginUser(loginRequestBody);
+        expect(res.status).toBe(200);
+        expect(res.body.status).toBe('success');
+        expect(res.body.message).toBe('User signed in successfully');
+      } catch (e) {
+        handleException(res, e);
+      }
+    });
+    it('200: Change Email success', async () => {
+      requestBody = {};
+      let res;
+      try {
+        requestBody.email = 'test1234@gmail.com'
+        res = await patchUser(requestBody, authToken);
+        expect(res.status).toBe(200);
+        expect(res.body.status).toBe('success');
+        expect(res.body.message).toBe('User info updated successfully');
+      } catch (e) {
+        handleException(res, e);
+      }
+    });
+    it('200: Can login with new email', async () => {
+      let loginRequestBody = { email: 'test1234@gmail.com', password: 'test1234' };
+      let res;
+      try {
+        res = await loginUser(loginRequestBody);
+        expect(res.status).toBe(200);
+        expect(res.body.status).toBe('success');
+        expect(res.body.message).toBe('User signed in successfully');
       } catch (e) {
         handleException(res, e);
       }
     });
     describe('400 Bad request: Body Format Error', () => {
       it('JSON Format Error', async () => {
-        // try {
+        let invalidJson = '{ password: }';
         let res;
         try {
-          res = await patchUser(123);
+          res = await patchUser(invalidJson, authToken);
           expect(res.status).toBe(400);
+          expect(res.body.status).toBe('fail');
+          expect(res.body.message).toBe('Invalid JSON format in request body');
         } catch (e) {
           handleException(res, e);
         }
@@ -342,8 +428,8 @@ const UserTest = async (server) => {
           res = await patchUser(newUserData, authToken);
 
           expect(res.status).toBe(400);
-          expect(res.body.status).toMatch('fail');
-          expect(res.body.message).toMatch('must contain');// 目前有兩種選擇但只剩一種
+          expect(res.body.status).toBe('fail');
+          expect(res.body.message).toMatch('must contain');
         } catch (e) {
           handleException(res, e);
         }
@@ -355,7 +441,7 @@ const UserTest = async (server) => {
           res = await patchUser(requestBody, authToken);
 
           expect(res.status).toBe(400);
-          expect(res.body.status).toMatch('fail');
+          expect(res.body.status).toBe('fail');
           expect(res.body.message).toMatch('not allowed');
         } catch (e) {
           handleException(res, e);
@@ -363,7 +449,7 @@ const UserTest = async (server) => {
       });
     });
     describe('400 Bad request: Field Data Format Error', () => {
-      it('Change Password length short fail', async () => {
+      it('Password length short fail', async () => {
         let res;
         try {
           requestBody.password = 'p';
@@ -376,27 +462,29 @@ const UserTest = async (server) => {
       });
 
       const fieldTypeRequired = 'string';
-      const userDataFields = Object.keys(requestBody);
-      const testReqData = userDataFields.map((field) => ({
+      const testReqData = ['email', 'password'].map((field) => ({
         field,
         values: {
           number: 88888888,
           boolean: true,
-          // 可以添加更多的值和類型
         },
       }));
       testReqData.forEach(({ field, values }) => {
         Object.entries(values).forEach(([type, value]) => {
           it(`${field} field required ${fieldTypeRequired} (but value type: ${type})`, async () => {
             // 複製一份用戶數據以避免污染其他測試
-            const testData = { ...requestBody };
+            const testData = {
+              email: requestBody.email,
+              password: requestBody.password
+            };
             testData[field] = value;
+
             let res;
             try {
-              res = await patchUser(requestBody, authToken);
+              res = await patchUser(testData, authToken);
               expect(res.status).toBe(400);
-              expect(res.body.status).toMatch('fail');
-              expect(res.body.message).toMatch(`"${field}" must be a ${fieldTypeRequired}`);
+              expect(res.body.status).toBe('fail');
+              expect(res.body.message).toBe(`"${field}" must be a ${fieldTypeRequired}`);
             } catch (e) {
               handleException(res, e);
             }
@@ -405,26 +493,26 @@ const UserTest = async (server) => {
       });
     });
     describe('401: JWT problem', () => {
-      it('Without  JWT', async () => {
+      it('Missing JWT', async () => {
         let res;
         try {
-        // console.log(requestBody);
+          // console.log(requestBody);
           res = await patchUser(requestBody);
           expect(res.status).toBe(401);
           expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('Missing JWT token');
+          expect(res.body.message).toBe('Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
       });
-      it('Incorrect  JWT', async () => {
+      it('Invalid JWT', async () => {
         let res;
         try {
-        // console.log(requestBody);
+          // console.log(requestBody);
           res = await patchUser(requestBody, 123);
           expect(res.status).toBe(401);
           expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('Invalid JWT token');
+          expect(res.body.message).toBe('Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -447,17 +535,19 @@ const UserTest = async (server) => {
         try {
           res = await deleteUser(123);
           expect(res.status).toBe(401);
+          expect(res.body.status).toBe('fail');
+          expect(res.body.message).toBe('Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
       });
     });
-    describe('201: delete success', () => {
+    describe('204: delete success', () => {
       it('delete success and register again success', async () => {
         let res;
         try {
           res = await deleteUser(authToken); // 在前面測試已經被刪掉，要再加authToken
-          expect(res.status).toBe(200);
+          expect(res.status).toBe(204);
           res = await registerUser(userData);
           authToken = res.body.token;
           expect(res.status).toBe(201);
@@ -469,12 +559,12 @@ const UserTest = async (server) => {
         let res;
         try {
           res = await deleteUser(authToken);
-          expect(res.status).toBe(200);
+          expect(res.status).toBe(204);
           res = await loginUser(userData);
 
           expect(res.status).toBe(404);
           expect(res.body.status).toBe('fail');
-          expect(res.body.message).toBe('User not found or invalid email'); // 要跟API文件一樣還是跟程式邏輯一樣就好？
+          expect(res.body.message).toBe('User not found or invalid email');
         } catch (e) {
           handleException(res, e);
         }

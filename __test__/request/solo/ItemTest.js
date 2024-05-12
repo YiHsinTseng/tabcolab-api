@@ -37,7 +37,7 @@ const ItemTest = async (server) => {
         try {
           res = await getSearchItems(req.params.keywords);
           expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Missing JWT token');
+          expect(res.body.message).toBe('Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -47,7 +47,7 @@ const ItemTest = async (server) => {
         try {
           res = await getSearchItems(req.params.keywords, 123);
           expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Invalid JWT token');
+          expect(res.body.message).toBe('Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -389,7 +389,7 @@ const ItemTest = async (server) => {
         try {
           res = await patchItem(req.params.group_id, req.params.item_id, req.body);
           expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Missing JWT token');
+          expect(res.body.message).toBe('Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -399,7 +399,7 @@ const ItemTest = async (server) => {
         try {
           res = await patchItem(req.params.group_id, req.params.item_id, req.body, 123);
           expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Invalid JWT token');
+          expect(res.body.message).toBe('Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -430,7 +430,7 @@ const ItemTest = async (server) => {
         try {
           res = await patchItem(req.params.group_id, req.params.item_id, req.body, authToken),
 
-          expect(res.status).toBe(400);
+            expect(res.status).toBe(400);
           expect(res.body.status).toMatch('fail');
           expect(res.body.message).toMatch('is required');
         } catch (e) {
@@ -474,8 +474,8 @@ const ItemTest = async (server) => {
                   expect(res.status).toBe(400);
                   expect(res.body.status).toMatch('fail');
                   expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                // console.log(`${field} field required ${type} but ${writetype}`);
-                // console.log(res.body);
+                  // console.log(`${field} field required ${type} but ${writetype}`);
+                  // console.log(res.body);
                 } catch (e) {
                   handleException(res, e);
                 }
@@ -519,7 +519,7 @@ const ItemTest = async (server) => {
         try {
           res = await deleteItem(req.params.group_id, req.params.item_id);
           expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Missing JWT token');
+          expect(res.body.message).toBe('Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -529,7 +529,7 @@ const ItemTest = async (server) => {
         try {
           res = await deleteItem(req.params.group_id, req.params.item_id, 123);
           expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Invalid JWT token');
+          expect(res.body.message).toBe('Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }

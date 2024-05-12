@@ -5,7 +5,7 @@ const authenticateJwt = (req, res, next) => {
 
   // 檢查請求頭中是否包含 JWT
   if (!token || !token.startsWith('Bearer ')) {
-    return res.status(401).send({ status: 'fail', messages: 'Missing JWT token' });
+    return res.status(401).send({ status: 'fail', message: 'Missing JWT' });
   }
 
   passport.authenticate('jwt', { session: false }, (err, user) => {

@@ -87,7 +87,7 @@ const GroupTest = async (server) => {
         try {
           res = await getGroup();
           expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Missing JWT token');
+          expect(res.body.message).toBe('Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -97,7 +97,7 @@ const GroupTest = async (server) => {
         try {
           res = await getGroup(123);
           expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Invalid JWT token');
+          expect(res.body.message).toBe('Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -174,7 +174,7 @@ const GroupTest = async (server) => {
         // GIVEN
         let notice;
         try {
-        // 并行获取旧的和新的组数据
+          // 并行获取旧的和新的组数据
           let res;
           let oldResult;
           let newResult;
@@ -335,7 +335,7 @@ const GroupTest = async (server) => {
       it('201: create GroupTab within a new group', async () => {
         let notice;
         try {
-        // 并行获取旧的和新的组数据
+          // 并行获取旧的和新的组数据
           let res;
           let oldResult;
           let newResult;
@@ -376,8 +376,8 @@ const GroupTest = async (server) => {
           let res;
           try {
             res = await postGroup(123, authToken),
-            // console.log(res.body, 'Request Format Error');
-            expect(res.status).toBe(400);
+              // console.log(res.body, 'Request Format Error');
+              expect(res.status).toBe(400);
           } catch (e) {
             handleException(res, e);
           }
@@ -395,7 +395,7 @@ const GroupTest = async (server) => {
           try {
             res = await postGroup(newGroupTabData, authToken),
 
-            expect(res.status).toBe(400);
+              expect(res.status).toBe(400);
             expect(res.body.status).toMatch('fail');
             expect(res.body.message).toMatch('is required');
           } catch (e) {
@@ -457,8 +457,8 @@ const GroupTest = async (server) => {
                     expect(res.status).toBe(400);
                     expect(res.body.status).toMatch('fail');
                     expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                  // console.log(`${field} field required ${type} but ${writetype}`);
-                  // console.log(res.body);
+                    // console.log(`${field} field required ${type} but ${writetype}`);
+                    // console.log(res.body);
                   } catch (e) {
                     handleException(res, e);
                   }
@@ -475,7 +475,7 @@ const GroupTest = async (server) => {
           let res;
           let notice = res;
           try {
-          // 并行获取旧的和新的组数据
+            // 并行获取旧的和新的组数据
             let oldResult;
             let newResult;
 
@@ -650,8 +650,8 @@ const GroupTest = async (server) => {
                     expect(res.status).toBe(400);
                     expect(res.body.status).toMatch('fail');
                     expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                  // console.log(`${field} field required ${type} but ${writetype}`);
-                  // console.log(res.body);
+                    // console.log(`${field} field required ${type} but ${writetype}`);
+                    // console.log(res.body);
                   } catch (e) {
                     handleException(res, e);
                   }
@@ -661,7 +661,7 @@ const GroupTest = async (server) => {
           });
         });
       });
-    // });
+      // });
     });
 
     describe('Patch Group Icon', () => {
@@ -792,7 +792,7 @@ const GroupTest = async (server) => {
         try {
           res = await patchGroup(groupId, patchGroupRequest);
           expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Missing JWT token');
+          expect(res.body.message).toBe('Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -802,7 +802,7 @@ const GroupTest = async (server) => {
         try {
           res = await patchGroup(groupId, patchGroupRequest, 123);
           expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Invalid JWT token');
+          expect(res.body.message).toBe('Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -901,7 +901,7 @@ const GroupTest = async (server) => {
         try {
           res = await deleteGroup(groupIdToDelete);
           expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Missing JWT token');
+          expect(res.body.message).toBe('Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -911,7 +911,7 @@ const GroupTest = async (server) => {
         try {
           res = await deleteGroup(groupIdToDelete, 123);
           expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Invalid JWT token');
+          expect(res.body.message).toBe('Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }

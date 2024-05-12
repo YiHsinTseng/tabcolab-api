@@ -1,5 +1,4 @@
 const express = require('express');
-const session = require('express-session');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
@@ -35,7 +34,6 @@ server.get('/', (req, res) => {
 server.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use(morgan('dev'));
 // middlewares
-server.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false }));
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 
