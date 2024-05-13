@@ -1,7 +1,7 @@
-const request = require('supertest');
 const { handleException } = require('../../utils/testErrorHandler');
 const { testUserAction, testTokenValidity, registerUserWithUniqueEmail } = require('../../utils/testUserHelper');
 const { UserRequestBodyTest } = require('../../classes/UserTest');
+const { getNewToken } = require('../../utils/getNewToken');
 
 let userData = { email: 'login@gmail.com', password: 'password1' };
 
@@ -17,8 +17,9 @@ const UserTest = async (server) => {
   } = require('../apis/usersAPI');
 
   describe('Post /users/register', () => {
-    const userTest = new UserRequestBodyTest(registerUser, userData);
+    const userTest = new UserRequestBodyTest(registerUser, userData, userData);
     it('201: User signed up successfully.', async () => {
+      let res;
       try {
         res = await testUserAction(registerUser, [userData], 201, 'success', 'User signed up successfully.');
         authToken = res.body.token;
@@ -30,7 +31,6 @@ const UserTest = async (server) => {
       await testTokenValidity(authToken);
     });
     describe('400 Bad request: Body Format Error', () => {
-
       it('JSON Format Error', async () => {
         const invalidJson = '{ "email":123;}';
         await userTest.jsonFormatError(invalidJson);
@@ -44,11 +44,9 @@ const UserTest = async (server) => {
       describe('Missing field', () => {
         userTest.missingField();
       });
-
     });
     describe('400 Bad request: Field Data Format Error', () => {
       userTest.fieldDataFormatError();
-
     });
     describe('409 Conflict: Email has been registered.', () => {
       it('409: Email has been registered.', async () => {
@@ -66,7 +64,7 @@ const UserTest = async (server) => {
   });
 
   describe('Post /users/login', () => {
-    const userTest = new UserRequestBodyTest(loginUser, userData);
+    const userTest = new UserRequestBodyTest(loginUser, userData, userData);
     it('200: User signed in successfully.', async () => {
       let res;
       try {
@@ -167,18 +165,16 @@ const UserTest = async (server) => {
         } catch (e) {
           handleException(res, e);
         }
-      })
+      });
     });
   });
 
   describe('Patch /user', () => {
-    const userTest = new UserRequestBodyTest(patchUser, userData);
-
     let authToken;
-
+    const registerRequestBody = { email: 'test123@gmail.com', password: 'test123' };
     beforeAll(async () => {
-      let registerRequestBody = { email: 'test123@gmail.com', password: 'test123' };
-      let registerResponse = await registerUser(registerRequestBody);
+      const registerRequestBody = { email: 'test123@gmail.com', password: 'test123' };
+      const registerResponse = await registerUser(registerRequestBody);
       authToken = registerResponse.body.token;
     });
 
@@ -193,7 +189,7 @@ const UserTest = async (server) => {
       }
     });
     it('200: Can login with new password', async () => {
-      let loginRequestBody = { email: 'test123@gmail.com', password: 'test1234' };
+      const loginRequestBody = { email: 'test123@gmail.com', password: 'test1234' };
       let res;
       try {
         res = await testUserAction(loginUser, [loginRequestBody], 200, 'success', 'User signed in successfully');
@@ -205,14 +201,14 @@ const UserTest = async (server) => {
       requestBody = {};
       let res;
       try {
-        requestBody.email = 'test1234@gmail.com'
+        requestBody.email = 'test1234@gmail.com';
         res = await testUserAction(patchUser, [requestBody, authToken], 200, 'success', 'User info updated successfully');
       } catch (e) {
         handleException(res, e);
       }
     });
     it('200: Can login with new email', async () => {
-      let loginRequestBody = { email: 'test1234@gmail.com', password: 'test1234' };
+      const loginRequestBody = { email: 'test1234@gmail.com', password: 'test1234' };
       let res;
       try {
         res = await testUserAction(loginUser, [loginRequestBody], 200, 'success', 'User signed in successfully');
@@ -221,6 +217,9 @@ const UserTest = async (server) => {
       }
     });
     describe('400 Bad request: Body Format Error', () => {
+      const userTest = new UserRequestBodyTest(patchUser, userData, userData);
+      userTest.fieldDataFormatError();
+
       it('JSON Format Error', async () => {
         const invalidJson = '{ password: }';
         await userTest.jsonFormatError(invalidJson);
@@ -256,36 +255,6 @@ const UserTest = async (server) => {
         } finally {
           requestBody.email = originalEmail;
         }
-      });
-
-      // 測試所有字段的類型是否正確
-      const fieldTypeRequired = 'string';
-      const userDataFields = Object.keys(userData);
-      const testReqData = userDataFields.map((field) => ({
-        field,
-        values: {
-          number: 88888888,
-          boolean: true,
-        },
-      }));
-      testReqData.forEach(({ field, values }) => {
-        Object.entries(values).forEach(([type, value]) => {
-          it(`${field} field required ${fieldTypeRequired} (but value type: ${type})`, async () => {
-            // 複製一份用戶數據以避免污染其他測試
-            const testData = {
-              email: requestBody.email,
-              password: requestBody.password
-            };
-            testData[field] = value;
-
-            let res;
-            try {
-              res = await testUserAction(patchUser, [testData, authToken], 400, 'fail', `"${field}" must be a ${fieldTypeRequired}`);
-            } catch (e) {
-              handleException(res, e);
-            }
-          });
-        });
       });
     });
     describe('401: JWT problem', () => {
@@ -340,7 +309,7 @@ const UserTest = async (server) => {
       it('delete success and login again fail', async () => {
         let res;
         try {
-          res = await testUserAction(deleteUser, [authToken], 204)
+          res = await testUserAction(deleteUser, [authToken], 204);
           res = await testUserAction(loginUser, [userData], 404, 'fail', 'User not found or invalid email');
         } catch (e) {
           handleException(res, e);

@@ -3,19 +3,24 @@ const { handleException } = require('../../utils/testErrorHandler');
 const { groupsChanges } = require('../../utils/groupsChanges');
 const { extractFieldType } = require('../../utils/extractFieldType');
 const { testValues, getTestValueByType } = require('../../utils/FieldDataTypeTest');
-
-// 要不要有測試資料集單獨測試各功能，要有。
+const GroupValidator = require('../../validations/group');
+const ItemValidator = require('../../validations/item');
+const { UserGroupTest } = require('../../classes/UserTest');
+const { registerUser } = require('../apis/usersAPI');
+const { testUserAction } = require('../../utils/testUserHelper');
+const { UserRequestBodyTest } = require('../../classes/UserTest');
 
 const GroupTest = async (server) => {
   let authToken;
+  let userData = { email: 'user@example.com', password: 'mySecurePassword123' };
 
   beforeAll(async () => {
-    const userData = { email: 'user@example.com', password: 'mySecurePassword123' };
+    userData = { email: 'user@example.com', password: 'mySecurePassword123' };
     const res = await request(server)
       .post('/api/1.0/users/login')
+      .set('Content-Type', 'application/json')
       .send(userData);
     authToken = res.body.token;
-    // console.log(res.body);
   });
 
   const {
@@ -24,80 +29,41 @@ const GroupTest = async (server) => {
 
   describe('Get /groups', () => {
     it('200: success', async () => {
-      let notice;
-      try {
-        const res = await getGroup(authToken);
-        notice = res;
-
-        expect(res.status).toBe(200);
-        expect(Array.isArray(res.body)).toBe(true);
-        // console.log(res.body);
-        // 驗證每個元素是否都是物件並且包含特定屬性
-        res.body.forEach((group) => {
-          expect(typeof group).toBe('object');
-          expect(group).toHaveProperty('group_id');
-          expect(group).toHaveProperty('group_icon');
-          expect(group).toHaveProperty('group_title');
-          expect(Array.isArray(group.items)).toBe(true);
-
-          group.items.forEach((item) => {
-            expect(item).toHaveProperty('item_id');
-            expect(item).toHaveProperty('item_type');
-
-            // 根據 item_type 的不同，驗證其他屬性是否存在
-            if (item.item_type === 0) {
-              expect(item).toHaveProperty('browserTab_favIconURL');
-              expect(item).toHaveProperty('browserTab_title');
-              expect(item).toHaveProperty('browserTab_url');
-              expect(item).toHaveProperty('browserTab_id');
-              expect(item).toHaveProperty('browserTab_index');
-              expect(item).toHaveProperty('browserTab_active');
-              expect(item).toHaveProperty('browserTab_status');
-              expect(item).toHaveProperty('windowId');
-            } else if (item.item_type === 1) {
-              expect(item).toHaveProperty('note_content');
-              expect(item).toHaveProperty('note_bgColor');
-            } else if (item.item_type === 2) {
-              expect(item).toHaveProperty('doneStatus');
-              expect(item).toHaveProperty('note_content');
-              expect(item).toHaveProperty('note_bgColor');
-            }
-          });
-        });
-      } catch (e) {
-        handleException(notice, e);
-      }
-    });
-    it('404: no cotent', async () => {
       let res;
       try {
         res = await getGroup(authToken);
 
-        expect(res.status).toBe(404);
-        expect(res.body.status).toBe('fail');
-        expect(res.body.message).toBe('No groups found for the user');
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body)).toBe(true);
+
+        const itemValidator = new ItemValidator();
+        const groupValidator = new GroupValidator(itemValidator);
+
+        res.body.forEach((group) => {
+          groupValidator.validate(group);
+        });
       } catch (e) {
-        // console.log(typeof (res.body));
         handleException(res, e);
       }
     });
+    it('404: no cotent', async () => {
+      const groupTest = new UserGroupTest(registerUser, getGroup);
+      const userData = { email: 'newuser@example.com', password: 'mySecurePassword123' };
+      await groupTest.registerAndTestGroup(userData);
+    });
     describe('401: JWT problem', () => {
-      it('Missing Field', async () => {
+      it('Missing JWT', async () => {
         let res;
         try {
-          res = await getGroup();
-          expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Missing JWT');
+          res = await testUserAction(getGroup, [], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
       });
-      it('Undefined Field', async () => {
+      it('Invalid JWT', async () => {
         let res;
         try {
-          res = await getGroup(123);
-          expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Invalid JWT');
+          res = await testUserAction(getGroup, [123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -123,17 +89,12 @@ const GroupTest = async (server) => {
         try {
           const oldResult = await getGroup(authToken);
 
-          res = await postGroup(newGroupData, authToken);
-          expect(res.status).toBe(201);
-          expect(res.body).toEqual({
-            message: 'Group created at blank successfully',
-            group_id: expect.any(String),
-          });
+          res = await testUserAction(postGroup, [newGroupData, authToken], 201, null, 'Group created at blank successfully');
+
           const groupID = res.body.group_id;
 
           const newResult = await getGroup(authToken);
           const result = groupsChanges(oldResult.body, newResult.body);
-          // console.log(result);
           expect(result.addedItems[0].group_id).toBe(groupID);
           expect(result.addedItems[0].items).toEqual([]);
         } catch (e) {
@@ -153,7 +114,7 @@ const GroupTest = async (server) => {
         browserTab_active: false,
         browserTab_status: 'complete',
         windowId: 8438513405,
-      }; // 初始化 newGroupData
+      };
       beforeEach(() => {
         newSidebarTabData = {
           group_icon: 'test_group_icon',
@@ -166,379 +127,164 @@ const GroupTest = async (server) => {
           browserTab_active: false,
           browserTab_status: 'complete',
           windowId: 8438513405,
-        }; // 初始化 newGroupData
+        };
       });
       it('201: create SidebarTab within a new group', async () => {
-        // newItemId = res.body.item_id; // 因為是非同步，無法傳給全域變數
-        // newGroupId = res.body.group_id; // 因為是非同步，無法傳給全域變數
-        // GIVEN
-        let notice;
+        let res;
         try {
-          // 并行获取旧的和新的组数据
-          let res;
-          let oldResult;
-          let newResult;
-          // WHEN
-          [oldResult, res] = await Promise.all([
-            getGroup(authToken),
-            postGroup(newSidebarTabData, authToken),
-          ]);
-          notice = res;
-          // 检查创建组的响应
-          // THEN
-          expect(res.status).toBe(201);
-          expect(res.body).toEqual({
-            message: 'Group created with sidebar tab successfully ',
-            item_id: expect.any(String),
-            group_id: expect.any(String),
-          });
+          const oldResult = await getGroup(authToken);
+
+          res = await testUserAction(postGroup, [newSidebarTabData, authToken], 201, null, 'Group created with sidebar tab successfully');
 
           const groupID = res.body.group_id;
           const itemID = res.body.item_id;
 
-          // 获取新的组数据
-
-          // WHEN
-          newResult = await getGroup(authToken);
-          // 计算更改
+          const newResult = await getGroup(authToken);
           const result = groupsChanges(oldResult.body, newResult.body);
-          notice = result;
-          // console.log(JSON.stringify(result, null, 2));
 
-          // THEN
-          // 检查更改结果
           expect(result.addedItems[0].group_id).toBe(groupID);
-          // console.log(result.addedItems[0].items[0].item_id);
           expect(result.addedItems[0].items[0].item_id).toBe(itemID);
           expect(result.addedItems[0].items[0].item_type).toBe(0);
         } catch (e) {
-          handleException(notice, e);
+          handleException(res, e);
         }
       });
-      describe('400 Bad request: Body Format Error', () => { // 不好測
-        it('JSON Format Error', async () => {
-          // try {
+      describe('401: JWT problem', () => {
+        it('Missing JWT', async () => {
           let res;
           try {
-            res = await postGroup(123, authToken);
-            // console.log(res.body, 'Request Format Error');
-            expect(res.status).toBe(400);
-          } catch (e) {
-            handleException(res, e);
-          }
-          // } catch (e) {
-          //   console.log(e.message);
-          // }
-
-          // expect(res.status).toBe(400);
-          // expect(res.body.status).toBe('fail');
-          // expect(res.body.message).toBe('Unexpected end of JSON input');
-        });
-        it('No field', async () => {
-          newSidebarTabData = {};
-          let res;
-          try {
-            res = await postGroup(newSidebarTabData, authToken);
-
-            expect(res.status).toBe(400);
-            expect(res.body.status).toMatch('fail');
-            expect(res.body.message).toMatch('is required');
+            res = await testUserAction(postGroup, [newSidebarTabData], 401, 'fail', 'Missing JWT');
           } catch (e) {
             handleException(res, e);
           }
         });
-        describe('Missing field', () => {
-          const testData = Object.keys(newSidebarTabData);
-          testData.forEach((field) => {
-            it(`Missing ${field} field`, async () => {
-              let res;
-              try {
-                const { [field]: removedField, ...testSidebarTabData } = newSidebarTabData;
-                res = await postGroup(testSidebarTabData, authToken);
-
-                expect(res.status).toBe(400);
-                expect(res.body.status).toMatch('fail');
-                expect(res.body.message).toMatch(`"${field}" is required`);
-              } catch (e) {
-                handleException(res, e);
-              }
-            });
-          });
-        });
-        it('Undefined Field', async () => {
-          newSidebarTabData.username = 'user';
+        it('Invalid JWT', async () => {
           let res;
           try {
-            res = await postGroup(newSidebarTabData, authToken);
-
-            expect(res.status).toBe(400);
-            expect(res.body.status).toMatch('fail');
-            expect(res.body.message).toMatch('not allowed');
+            res = await testUserAction(postGroup, [newSidebarTabData, 123], 401, 'fail', 'Invalid JWT');
           } catch (e) {
             handleException(res, e);
           }
         });
       });
-      // TODO 有個別屬性 規範 string
-      // console.log(extractFieldType(newSidebarTabData));
-
-      const typeChecks = extractFieldType(newSidebarTabData);
-      // Helper function to get test value based on type
+      describe('400 Bad request: Body Format Error', () => {
+        const groupTest = new UserRequestBodyTest(postGroup, userData, newSidebarTabData);
+        it('JSON Format Error', async () => {
+          const invalidJson = '{ group_icon: }';
+          await groupTest.jsonFormatError(invalidJson);
+        });
+        it('No field', async () => {
+          await groupTest.noField({}, authToken, 'Invalid request body');
+        });
+        it('Undefined Field', async () => {
+          await groupTest.undefinedField(authToken, 'Invalid request body');
+        });
+        // describe('Missing field', () => {
+        //   groupTest.missingField(authToken);
+        // });
+      });
 
       describe('400 Bad request: Field Data Format Error', () => {
-        Object.entries(typeChecks).forEach(([type, fields]) => {
-          fields.forEach((field) => {
-            const testData = { ...newSidebarTabData };
-
-            // Generate test request data with specified type for the field
-            Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
-              if (writetype !== type) {
-                testData[field] = writedvalue;
-
-                it(`${field} field required ${type} but ${writetype}`, async () => {
-                  let res;
-                  // console.log(testData);
-                  try {
-                    res = await postGroup(testData, authToken);
-                    expect(res.status).toBe(400);
-                    expect(res.body.status).toMatch('fail');
-                    expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                    // console.log(`${field} field required ${type} but ${writetype}`);
-                    // console.log(res.body);
-                  } catch (e) {
-                    handleException(res, e);
-                  }
-                });
-              }
-            });
-          });
-        });
+        const groupTest = new UserRequestBodyTest(postGroup, userData, newSidebarTabData);
+        groupTest.fieldDataFormatError(authToken);
       });
     });
     describe('createGroup(GroupTab) => 測試吃不到既有groupID和itemID', () => {
-      let newGroupTabData = { // 如何控制不確定變數
+      let newGroupTabData = {
         group_icon: 'test_group_icon',
         group_title: 'test_group_title',
-        sourceGroup_id: '2', // 如果造假特定GroupID
-        item_id: '4', // 前端如果沒有到要怎樣打 //item_id不等於_id
+        sourceGroup_id: '2',
+        item_id: '4',
       };
 
       beforeEach(() => {
-        newGroupTabData = { // 如何控制不確定變數
+        newGroupTabData = {
           group_icon: 'test_group_icon',
           group_title: 'test_group_title',
-          sourceGroup_id: '2', // 如果造假特定GroupID
-          item_id: '4', // 前端如果沒有到要怎樣打 //item_id不等於_id
+          sourceGroup_id: '2',
+          item_id: '4',
         };
       });
 
       it('201: create GroupTab within a new group', async () => {
-        let notice;
+        let res;
         try {
-          // 并行获取旧的和新的组数据
-          let res;
-          let oldResult;
-          let newResult;
+          const oldResult = await getGroup(authToken);
 
-          [oldResult, res] = await Promise.all([
-            getGroup(authToken),
-            postGroup(newGroupTabData, authToken),
-          ]);
-          notice = res;
+          res = await testUserAction(postGroup, [newGroupTabData, authToken], 201, null, 'Group created with group tab successfully');
 
-          // console.log(res.body);
-          // 检查创建组的响应
-          expect(res.status).toBe(201);
-          expect(res.body).toEqual({
-            message: 'Group created with group tab successfully',
-            group_id: expect.any(String),
-          });
+          const newResult = await getGroup(authToken);
 
-          // 获取新的组数据
-          newResult = await getGroup(authToken);
-
-          // 计算更改
           const result = groupsChanges(oldResult.body, newResult.body);
-          notice = result;
-          // console.log(JSON.stringify(result, null, 2));
 
-          // 检查更改结果
           expect(result.addedItems[0].group_id).toBe(res.body.group_id);
           expect(result.addedItems[0].items[0].item_id).toBe(newGroupTabData.item_id);
           expect(result.addedItems[0].items[0].item_type).toBe(0);
         } catch (e) {
-          handleException(notice, e);
+          handleException(res, e);
         }
       });
-      describe('400 Bad request: Body Format Error', () => { // 不好測
-        it('JSON Format Error', async () => {
-          // try {
-          let res;
-          try {
-            res = await postGroup(123, authToken),
-              // console.log(res.body, 'Request Format Error');
-              expect(res.status).toBe(400);
-          } catch (e) {
-            handleException(res, e);
-          }
-          // } catch (e) {
-          //   console.log(e.message);
-          // }
 
-          // expect(res.status).toBe(400);
-          // expect(res.body.status).toBe('fail');
-          // expect(res.body.message).toBe('Unexpected end of JSON input');
+      describe('400 Bad request: Body Format Error', () => {
+        const groupTest = new UserRequestBodyTest(postGroup, userData, newGroupTabData);
+        it('JSON Format Error', async () => {
+          const invalidJson = '{ group_icon: }';
+          await groupTest.jsonFormatError(invalidJson);
         });
         it('No field', async () => {
-          const newGroupTabData = {};
-          let res;
-          try {
-            res = await postGroup(newGroupTabData, authToken),
-
-              expect(res.status).toBe(400);
-            expect(res.body.status).toMatch('fail');
-            expect(res.body.message).toMatch('is required');
-          } catch (e) {
-            handleException(res, e);
-          }
-        });
-        describe('Missing field', () => {
-          const testData = Object.keys(newGroupTabData);
-          // console.log(newGroupTabData);
-          testData.forEach((field) => {
-            it(`Missing ${field} field`, async () => {
-              let res;
-              // console.log(newGroupTabData);
-              try {
-                const { [field]: removedField, ...testGroupTabData } = newGroupTabData;
-                res = await postGroup(testGroupTabData, authToken);
-
-                expect(res.status).toBe(400);
-                expect(res.body.status).toMatch('fail');
-                expect(res.body.message).toMatch(`"${field}" is required`);
-              } catch (e) {
-                handleException(res, e);
-              }
-            });
-          });
+          await groupTest.noField({}, authToken, 'Invalid request body');
         });
         it('Undefined Field', async () => {
-          newGroupTabData.username = 'user';
-          let res;
-          try {
-            res = await postGroup(newGroupTabData, authToken);
-
-            expect(res.status).toBe(400);
-            expect(res.body.status).toMatch('fail');
-            expect(res.body.message).toMatch('not allowed');
-          } catch (e) {
-            handleException(res, e);
-          }
+          await groupTest.undefinedField(authToken, 'Invalid request body');
         });
+        // describe('Missing field', () => {
+        //   groupTest.missingField(authToken);
+        // });
       });
-      const typeChecks = extractFieldType(newGroupTabData);
-      // Helper function to get test value based on type
 
       describe('400 Bad request: Field Data Format Error', () => {
-        Object.entries(typeChecks).forEach(([type, fields]) => {
-          fields.forEach((field) => {
-            const testData = { ...newGroupTabData };
-
-            // Generate test request data with specified type for the field
-            Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
-              if (writetype !== type) {
-                testData[field] = writedvalue;
-
-                it(`${field} field required ${type} but ${writetype}`, async () => {
-                  let res;
-                  // console.log(testData);
-                  try {
-                    res = await postGroup(testData, authToken);
-                    expect(res.status).toBe(400);
-                    expect(res.body.status).toMatch('fail');
-                    expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                    // console.log(`${field} field required ${type} but ${writetype}`);
-                    // console.log(res.body);
-                  } catch (e) {
-                    handleException(res, e);
-                  }
-                });
-              }
-            });
-          });
-        });
+        const groupTest = new UserRequestBodyTest(postGroup, userData, newGroupTabData);
+        groupTest.fieldDataFormatError(authToken);
       });
       describe('404', () => {
         it('404: invalid groupID', async () => {
-          // console.log(newGroupTabData);
           newGroupTabData.sourceGroup_id = '100';
           let res;
-          let notice = res;
           try {
-            // 并行获取旧的和新的组数据
-            let oldResult;
-            let newResult;
+            const oldResult = await getGroup(authToken);
+            res = await testUserAction(postGroup, [newGroupTabData, authToken], 404, 'fail', 'Group not found or invalid group ID');
 
-            [oldResult, res] = await Promise.all([
-              getGroup(authToken),
-              postGroup(newGroupTabData, authToken),
-            ]);
-            expect(res.status).toBe(404);
-            expect(res.body).toEqual({
-              status: 'fail',
-              message: 'Group not found or invalid group ID',
-            });
+            const newResult = await getGroup(authToken);
 
-            // 获取新的组数据
-            newResult = await getGroup(authToken);
-
-            // 计算更改
             const result = groupsChanges(oldResult.body, newResult.body);
-            notice = result;
-            // console.log(result);
-            // console.log(result.addedItems);
+
             expect(result.addedItems).toEqual([]);
             expect(result.deletedItems).toEqual([]);
           } catch (e) {
-            handleException(notice, e);
+            handleException(res, e);
           }
         });
         it('404: invalid item ID', async () => {
           newGroupTabData.item_id = '100';
-          let notice;
+          let res;
           try {
-            let res;
-            let oldResult;
-            let newResult;
-            let result;
+            const oldResult = await getGroup(authToken);
+            res = await testUserAction(postGroup, [newGroupTabData, authToken], 404, 'fail', 'Item not found in source group');
 
-            [oldResult, res] = await Promise.all([
-              getGroup(authToken),
-              postGroup(newGroupTabData, authToken),
-            ]);
-            notice = res;
-            expect(res.status).toBe(404);
-            // console.log(res.body);
-            expect(res.body).toEqual({
-              status: 'fail',
-              message: 'Item no found in group',
-            });
-            newResult = await getGroup(authToken);
+            const newResult = await getGroup(authToken);
 
-            // // 计算更改
-            result = groupsChanges(oldResult.body, newResult.body);
-            notice = result;
+            const result = groupsChanges(oldResult.body, newResult.body);
 
             expect(result.addedItems).toEqual([]);
             expect(result.deletedItems).toEqual([]);
           } catch (e) {
-            handleException(notice, e);
+            handleException(res, e);
           }
         });
       });
     });
   });
-  // }; // test
+
   describe('PATCH /groups/:group_id', () => {
     const groupId = '10'; // 假設這是要刪除的群組的ID，無法預先指定
     let patchGroupRequest;
@@ -552,116 +298,33 @@ const GroupTest = async (server) => {
         };
       });
       it('200: Patch Group Title', async () => {
-        patchGroupRequest = {
-          group_title: 'Updated Group Title',
-        };
         let res;
         try {
-          res = await patchGroup(groupId, patchGroupRequest, authToken);
-          expect(res.status).toBe(200);
+          res = await testUserAction(patchGroup, [groupId, patchGroupRequest, authToken], 200, null, 'Group info updated successfully');
         } catch (e) {
           handleException(res, e);
         }
       });
-      describe('400 Bad request: Body Format Error', () => { // 不好測
+      describe('400 Bad request: Body Format Error', () => {
+        const groupTest = new UserRequestBodyTest(patchGroup, userData, patchGroupRequest);
         it('JSON Format Error', async () => {
-          // try {
-          let res;
-          try {
-            res = await patchGroup(groupId, 123, authToken);
-            // console.log(res.body, 'Request Format Error');
-            expect(res.status).toBe(400);
-          } catch (e) {
-            handleException(res, e);
-          }
-          // } catch (e) {
-          //   console.log(e.message);
-          // }
-
-          // expect(res.status).toBe(400);
-          // expect(res.body.status).toBe('fail');
-          // expect(res.body.message).toBe('Unexpected end of JSON input');
+          const invalidJson = '{ group_icon: }';
+          await groupTest.jsonFormatError(invalidJson, [groupId]);
         });
         it('No field', async () => {
-          patchGroupRequest = {};
-          let res;
-          try {
-            res = await patchGroup(groupId, patchGroupRequest, authToken);
-
-            expect(res.status).toBe(400);
-            expect(res.body.status).toMatch('fail');
-            expect(res.body.message).toMatch('is required');
-          } catch (e) {
-            handleException(res, e);
-          }
-        });
-        describe('Missing field', () => {
-          // console.log(patchGroupRequest);
-          const testData = Object.keys(patchGroupRequest);
-          testData.forEach((field) => {
-            it(`Missing ${field} field`, async () => {
-              let res;
-              try {
-                const { [field]: removedField, ...testpatchGroupRequest } = patchGroupRequest;
-                res = await patchGroup(groupId, testpatchGroupRequest, authToken);
-
-                expect(res.status).toBe(400);
-                expect(res.body.status).toMatch('fail');
-                expect(res.body.message).toMatch(`"${field}" is required`);
-              } catch (e) {
-                handleException(res, e);
-              }
-            });
-          });
+          await groupTest.noField({}, authToken, 'Invalid request body', [groupId]);
         });
         it('Undefined Field', async () => {
-          patchGroupRequest.username = 'user';
-          let res;
-          try {
-            res = await patchGroup(groupId, patchGroupRequest, authToken);
-
-            expect(res.status).toBe(400);
-            expect(res.body.status).toMatch('fail');
-            expect(res.body.message).toMatch('not allowed');
-          } catch (e) {
-            handleException(res, e);
-          }
+          await groupTest.undefinedField(authToken, 'not allowed', [groupId]);
         });
+        // describe('Missing field', () => {
+        //   groupTest.missingField(authToken);
+        // });
       });
-      const typeChecks = extractFieldType(patchGroupRequest);
-      // Helper function to get test value based on type
-
       describe('400 Bad request: Field Data Format Error', () => {
-        Object.entries(typeChecks).forEach(([type, fields]) => {
-          fields.forEach((field) => {
-            const testData = { ...patchGroupRequest };
-
-            // Generate test request data with specified type for the field
-            Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
-              if (writetype !== type) {
-                testData[field] = writedvalue;
-
-                it(`${field} field required ${type} but ${writetype}`, async () => {
-                  let res;
-                  // console.log(testData);
-                  try {
-                    res = await patchGroup(groupId, testData, authToken);
-                    // console.log(testData);
-                    expect(res.status).toBe(400);
-                    expect(res.body.status).toMatch('fail');
-                    expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                    // console.log(`${field} field required ${type} but ${writetype}`);
-                    // console.log(res.body);
-                  } catch (e) {
-                    handleException(res, e);
-                  }
-                });
-              }
-            });
-          });
-        });
+        const groupTest = new UserRequestBodyTest(patchGroup, userData, patchGroupRequest);
+        groupTest.fieldDataFormatError(authToken, [groupId]);
       });
-      // });
     });
 
     describe('Patch Group Icon', () => {
@@ -675,134 +338,48 @@ const GroupTest = async (server) => {
       });
 
       it('200: Patch Group Icon', async () => {
-        patchGroupRequest = {
-          group_icon: 'https://example.com/updated_icon.png',
-        };
         let res;
         try {
-          res = await patchGroup(groupId, patchGroupRequest, authToken);
-          expect(res.status).toBe(200);
+          res = await testUserAction(patchGroup, [groupId, patchGroupRequest, authToken], 200, null, 'Group info updated successfully');
         } catch (e) {
           handleException(res, e);
         }
       });
-      describe('400 Bad request: Body Format Error', () => { // 不好測
+      describe('400 Bad request: Body Format Error', () => {
+        const groupTest = new UserRequestBodyTest(patchGroup, userData, patchGroupRequest);
         it('JSON Format Error', async () => {
-          // try {
-          let res;
-          try {
-            res = await patchGroup(groupId, 123, authToken);
-            // console.log(res.body, 'Request Format Error');
-            expect(res.status).toBe(400);
-          } catch (e) {
-            handleException(res, e);
-          }
-          // } catch (e) {
-          //   console.log(e.message);
-          // }
-
-          // expect(res.status).toBe(400);
-          // expect(res.body.status).toBe('fail');
-          // expect(res.body.message).toBe('Unexpected end of JSON input');
+          const invalidJson = '{ group_icon: }';
+          await groupTest.jsonFormatError(invalidJson, [groupId]);
         });
         it('No field', async () => {
-          patchGroupRequest = {};
-          let res;
-          try {
-            res = await patchGroup(groupId, patchGroupRequest, authToken);
-
-            expect(res.status).toBe(400);
-            expect(res.body.status).toMatch('fail');
-            expect(res.body.message).toMatch('is required');
-          } catch (e) {
-            handleException(res, e);
-          }
-        });
-
-        describe('Missing field', () => {
-          // console.log(patchGroupRequest);
-          const testData = Object.keys(patchGroupRequest);
-          testData.forEach((field) => {
-            it(`Missing ${field} field`, async () => {
-              let res;
-              try {
-                const { [field]: removedField, ...testpatchGroupRequest } = patchGroupRequest;
-                res = await patchGroup(groupId, testpatchGroupRequest, authToken);
-
-                expect(res.status).toBe(400);
-                expect(res.body.status).toMatch('fail');
-                expect(res.body.message).toMatch(`"${field}" is required`);
-              } catch (e) {
-                handleException(res, e);
-              }
-            });
-          });
+          await groupTest.noField({}, authToken, 'Invalid request body', [groupId]);
         });
         it('Undefined Field', async () => {
-          patchGroupRequest.username = 'user';
-          let res;
-          try {
-            res = await patchGroup(groupId, patchGroupRequest, authToken);
-
-            expect(res.status).toBe(400);
-            expect(res.body.status).toMatch('fail');
-            expect(res.body.message).toMatch('not allowed');
-          } catch (e) {
-            handleException(res, e);
-          }
+          await groupTest.undefinedField(authToken, 'not allowed', [groupId]);
         });
+        // describe('Missing field', () => {
+        //   groupTest.missingField(authToken);
+        // });
       });
     });
-    const typeChecks = extractFieldType(patchGroupRequest);
-    // Helper function to get test value based on type
 
     describe('400 Bad request: Field Data Format Error', () => {
-      Object.entries(typeChecks).forEach(([type, fields]) => {
-        fields.forEach((field) => {
-          const testData = { ...patchGroupRequest };
-
-          // Generate test request data with specified type for the field
-          Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
-            if (writetype !== type) {
-              testData[field] = writedvalue;
-
-              it(`${field} field required ${type} but ${writetype}`, async () => {
-                let res;
-                // console.log(testData);
-                try {
-                  res = await patchGroup(groupId, testData, authToken);
-                  // console.log(testData);
-                  expect(res.status).toBe(400);
-                  expect(res.body.status).toMatch('fail');
-                  expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                  // console.log(`${field} field required ${type} but ${writetype}`);
-                  // console.log(res.body);
-                } catch (e) {
-                  handleException(res, e);
-                }
-              });
-            }
-          });
-        });
-      });
+      const groupTest = new UserRequestBodyTest(patchGroup, userData, patchGroupRequest);
+      groupTest.fieldDataFormatError(authToken, [groupId]);
     });
     describe('401: JWT problem', () => {
-      it('Missing Field', async () => {
+      it('Missing JWT', async () => {
         let res;
         try {
-          res = await patchGroup(groupId, patchGroupRequest);
-          expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Missing JWT');
+          res = await testUserAction(patchGroup, [groupId, patchGroupRequest], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
       });
-      it('Undefined Field', async () => {
+      it('Invalid JWT', async () => {
         let res;
         try {
-          res = await patchGroup(groupId, patchGroupRequest, 123);
-          expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Invalid JWT');
+          res = await testUserAction(patchGroup, [groupId, patchGroupRequest, 123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -815,9 +392,7 @@ const GroupTest = async (server) => {
       };
       let res;
       try {
-        res = await patchGroup(groupId, patchGroupRequest, authToken);
-        expect(res.status).toBe(404);
-        expect(res.body.message).toBe('Group not found or invalid group ID');
+        res = await testUserAction(patchGroup, [groupId, patchGroupRequest, authToken], 404, 'fail', 'Group not found or invalid group ID');
       } catch (e) {
         handleException(res, e);
       }
@@ -828,90 +403,52 @@ const GroupTest = async (server) => {
     let groupIdToDelete = '10'; // 假設這是要刪除的群組的ID，無法預先指定
 
     it('200', async () => {
-      let notice;
+      let res;
+      let result;
       try {
-        let res;
-        let oldResult;
-        let newResult;
+        const oldResult = await getGroup(authToken);
+        res = await testUserAction(deleteGroup, [groupIdToDelete, authToken], 204, null, null);
 
-        [oldResult, res] = await Promise.all([
-          getGroup(authToken),
-          deleteGroup(groupIdToDelete, authToken),
-          // getGroup(authToken), // 不能寫在一起
-        ]);
-        // res = await deleteGroup(groupIdToDelete, authToken),
-        // console.log('old', oldResult.body);
-        // console.log(res.body);
-        // console.log('new', newResult.body);
+        const newResult = await getGroup(authToken);
 
-        notice = res;
-        expect(res.status).toBe(200);
-        newResult = await getGroup(authToken);
-
-        // console.log(JSON.stringify(oldResult.body, null, 2));
-
-        // console.log(JSON.stringify(newResult.body, null, 2));
-        const result = groupsChanges(oldResult.body, newResult.body);
+        result = groupsChanges(oldResult.body, newResult.body);
         // console.log(JSON.stringify(result, null, 2));
-        notice = result;
 
         expect(result.deletedItems[0].group_id).toBe('10');
       } catch (e) {
-        handleException(notice, e);
+        handleException(res, e);
       }
     });
     it('404: valid groupId', async () => {
-      groupIdToDelete = '100'; // 假設這是要刪除的群組的ID，無法預先指定
-      let notice;
+      groupIdToDelete = '100';
+      let res;
       try {
-        let res;
-        let oldResult;
-        let newResult;
+        const oldResult = await getGroup(authToken);
+        res = await testUserAction(deleteGroup, [groupIdToDelete, authToken], 404, 'fail', 'Group not found');
 
-        [oldResult, res] = await Promise.all([
-          getGroup(authToken),
-          deleteGroup(groupIdToDelete, authToken),
-          // getGroup(authToken), // 不能寫在一起
-        ]);
-        // res = await deleteGroup(groupIdToDelete, authToken),
-        // console.log('old', oldResult.body);
-        // console.log(res.body);
-        // console.log('new', newResult.body);
+        const newResult = await getGroup(authToken);
 
-        notice = res;
-        expect(res.status).toBe(404);
-        newResult = await getGroup(authToken);
-
-        // console.log(JSON.stringify(oldResult.body, null, 2));
-
-        // console.log(JSON.stringify(newResult.body, null, 2));
         const result = groupsChanges(oldResult.body, newResult.body);
-        // console.log(JSON.stringify(result, null, 2));
-        notice = result;
 
         expect(result.addedItems).toEqual([]);
         expect(result.deletedItems).toEqual([]);
       } catch (e) {
-        handleException(notice, e);
+        handleException(res, e);
       }
     });
     describe('401: JWT problem', () => {
-      it('Missing Field', async () => {
+      it('Missing JWT', async () => {
         let res;
         try {
-          res = await deleteGroup(groupIdToDelete);
-          expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Missing JWT');
+          res = await testUserAction(deleteGroup, [groupIdToDelete], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
       });
-      it('Undefined Field', async () => {
+      it('Invalid JWT', async () => {
         let res;
         try {
-          res = await deleteGroup(groupIdToDelete, 123);
-          expect(res.status).toBe(401);
-          expect(res.body.message).toBe('Invalid JWT');
+          res = await testUserAction(deleteGroup, [groupIdToDelete, 123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }

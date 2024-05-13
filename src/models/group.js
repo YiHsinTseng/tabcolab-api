@@ -150,13 +150,13 @@ UserGroupSchema.methods.createGroupatBlank = async function createGroupatBlank(u
 
 UserGroupSchema.methods.createGroupwithSidebarTab = async function createGroupwithSidebarTab(user_id) {
   await this.createGroup(user_id);
-  return { success: true, message: 'Group created with sidebar tab successfully ' };
+  return { success: true, message: 'Group created with sidebar tab successfully' };
 };
 
 UserGroupSchema.methods.createGroupwithGroupTab = async function createGroupwithGroupTab(user_id, sourceGroup_id, item_id) {
   await this.createGroup(user_id);
   await this.model('UserGroup').deleteGroupItem(user_id, sourceGroup_id, item_id);
-  return { success: true, message: 'Group created with group tab successfully ' };
+  return { success: true, message: 'Group created with group tab successfully' };
 };
 
 UserGroupSchema.statics.updateGroupInfo = async function updateGroupInfo(user_id, group) {

@@ -2,17 +2,21 @@ const request = require('supertest');
 const server = require('../../../server');
 
 async function registerUser(userData) {
-  return await request(server)
+  const requestObject = request(server)
     .post('/api/1.0/users/register')
     .set('Content-Type', 'application/json')
     .send(userData);
+  const response = await requestObject;
+  return response;
 }
 
 async function loginUser(userData) {
-  return await request(server)
+  const requestObject = request(server)
     .post('/api/1.0/users/login')
     .set('Content-Type', 'application/json')
     .send(userData);
+  const response = await requestObject;
+  return response;
 }
 async function getUser(authToken) {
   const requestObject = request(server)

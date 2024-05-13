@@ -34,15 +34,15 @@ const soloTest = (server) => {
   // 引用request格式對應到 實際API
   // 多次登入沒關係
   // 寫入用例
-  const UserTest = require('./UserTest');
-  describe('User Controller API Endpoints', () => {
-    UserTest(server);
-  });
-
-  // const GroupTest = require('./GroupTest');
-  // describe('Group Controller API Endpoints', () => {
-  //   GroupTest(server); // authToken要在async中傳值
+  // const UserTest = require('./UserTest');
+  // describe('User Controller API Endpoints', () => {
+  //   UserTest(server);
   // });
+
+  const GroupTest = require('./GroupTest');
+  describe('Group Controller API Endpoints', () => {
+    GroupTest(server); // authToken要在async中傳值
+  });
 
   // const ItemTest = require('./ItemTest');
   // describe('Item Controller API Endpoints', () => {

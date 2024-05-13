@@ -12,6 +12,7 @@ async function getGroup(authToken) {
 async function postGroup(newGroupData, authToken) {
   const requestObject = request(server)
     .post('/api/1.0/groups')
+    .set('Content-Type', 'application/json')
     .send(newGroupData);
   if (authToken) {
     requestObject.set('Authorization', `Bearer ${authToken}`);
@@ -22,6 +23,7 @@ async function postGroup(newGroupData, authToken) {
 async function patchGroup(groupId, patchGroupRequest, authToken) {
   const requestObject = request(server)
     .patch(`/api/1.0/groups/${groupId}`)
+    .set('Content-Type', 'application/json')
     .send(patchGroupRequest);
   if (authToken) {
     requestObject.set('Authorization', `Bearer ${authToken}`);

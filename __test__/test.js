@@ -20,27 +20,6 @@ async function clearDatabase() {
   }
 }
 
-// 將 JSON 資料加載到資料庫中的函式
-async function loadJSONToMongoDB() {
-  try {
-    const jsonData = await new Promise((resolve, reject) => {
-      // 讀取 JSON 檔案
-      fs.readFile('./__test__/request/db.json', 'utf8', (err, data) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(JSON.parse(data));
-      });
-    });
-
-    // 呼叫函式將資料存入資料庫
-    await saveJSONToMongoDB(jsonData);
-  } catch (error) {
-    console.error('Error loading JSON to MongoDB:', error);
-  }
-}
-
 // 將 JSON 資料存入資料庫的函式
 async function saveJSONToMongoDB(jsonData) {
   try {
@@ -74,6 +53,27 @@ async function saveJSONToMongoDB(jsonData) {
 
   // console.log('start');
   // console.log(await User.findOne({ email: 'user@example.com' }));
+}
+
+// 將 JSON 資料加載到資料庫中的函式
+async function loadJSONToMongoDB() {
+  try {
+    const jsonData = await new Promise((resolve, reject) => {
+      // 讀取 JSON 檔案
+      fs.readFile('./__test__/request/db.json', 'utf8', (err, data) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(JSON.parse(data));
+      });
+    });
+
+    // 呼叫函式將資料存入資料庫
+    await saveJSONToMongoDB(jsonData);
+  } catch (error) {
+    console.error('Error loading JSON to MongoDB:', error);
+  }
 }
 
 // 在所有測試之前先清空資料庫，然後加載 JSON 資料到資料庫中

@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const { UserGroup, Group } = require('../models/group');
 
 const { Tab } = require('../models/item');
@@ -61,6 +62,11 @@ const createGroup = async (req, res, next) => {
       && Object.values(browserTabData).every((value) => value !== undefined)
       && keys.every((key) => validKeysForSidebarTab.includes(key))
     ) {
+      // Check if all required keys are present in req.body
+      const missingKeys = validKeysForSidebarTab.filter((key) => !(key in req.body));
+      if (missingKeys.length > 0) {
+        return errorResponse(res, 400, `"${missingKeys[0]}" is required`);
+      }
       const newTab = new Tab(browserTabData);
 
       newGroup = new Group({ group_icon, group_title, items: [newTab] });
@@ -77,6 +83,10 @@ const createGroup = async (req, res, next) => {
       && item_id
       && keys.every((key) => validKeysForGroupTab.includes(key))
     ) {
+      const missingKeys = validKeysForGroupTab.filter((key) => !(key in req.body));
+      if (missingKeys.length > 0) {
+        return errorResponse(res, 400, `"${missingKeys[0]}" is required`);
+      }
       const { sourceGroupItem } = await UserGroup.findGroupItem(user_id, sourceGroup_id, item_id);
       newGroup = new Group({ group_icon, group_title, items: [sourceGroupItem] });
       newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
@@ -101,6 +111,13 @@ const updateGroup = async (req, res, next) => {
 
     const groupToUpdate = await UserGroup.findGroupById(user_id, group_id);
 
+    // Check that no extra fields in req.body
+    const allowedFields = ['group_icon', 'group_title', 'group_pos'];
+    for (const key in req.body) {
+      if (!allowedFields.includes(key)) {
+        return errorResponse(res, 400, `${key} is not allowed in request body`);
+      }
+    }
     const { group_icon, group_title, group_pos } = req.body;
 
     // Check that only one of group_icon, group_title, or group_pos is present
@@ -139,7 +156,7 @@ const deleteGroup = async (req, res, next) => {
 
     const result = await UserGroup.deleteGroup(user_id, group_id);
     if (result.success) {
-      return res.status(200).json({ status: 'success', message: result.message });
+      return res.status(204).header('X-Message', 'Group removed successfully').send();
     }
     return errorResponse(res, 400, 'Group failed to delete');
   } catch (error) {
