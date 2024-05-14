@@ -29,7 +29,7 @@ class UserRequestBodyTest {
     }
   }
 
-  async missingField(authToken = null) {
+  async missingField(authToken = null, additionalParams = []) {
     const testData = Object.keys(this.requestData);
     for (const field of testData) {
       it(`Missing ${field} field`, async () => {
@@ -38,7 +38,9 @@ class UserRequestBodyTest {
         let res;
         try {
           const { [field]: removedField, ...newRequestData } = this.requestData;
-          res = await testUserAction(this.userAction, [newRequestData, Token], 400, 'fail', `"${field}" is required`);
+          const params = [...additionalParams, newRequestData, Token];
+          res = await testUserAction(this.userAction, params, 400, 'fail', `"${field}" is required`);
+          console.log(res.body);
         } catch (e) {
           handleException(res, e);
         }
@@ -59,13 +61,15 @@ class UserRequestBodyTest {
     }
   }
 
-  async fieldDataFormatError(authToken = null, additionalParams = []) {
+  async fieldDataFormatError(authToken = null, additionalParams = [], expectedMessage = null) {
     const fieldTypesRequired = {
       browserTab_id: 'number',
       browserTab_index: 'number',
       browserTab_active: 'boolean',
       windowId: 'number',
       targetItem_position: 'number',
+      item_type: 'number',
+      doneStatus: 'boolean',
     };
     const testValues = {
       string: {
@@ -98,7 +102,8 @@ class UserRequestBodyTest {
           let res;
           try {
             const params = [...additionalParams, testData, Token];
-            res = await testUserAction(this.userAction, params, 400, 'fail', `"${field}" must be a ${fieldTypeRequired}`);
+            const errorMessage = expectedMessage || `"${field}" must be a ${fieldTypeRequired}`;
+            res = await testUserAction(this.userAction, params, 400, 'fail', errorMessage);
           } catch (e) {
             handleException(res, e);
           }

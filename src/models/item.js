@@ -157,7 +157,7 @@ TabSchema.methods.addTab = async function addTab(user_id, group_id, targetItem_p
   const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
-    throw new AppError(404, 'Group not found');
+    throw new AppError(404, 'Group not found or invalid group ID');
   }
   // 確保 targetItem_position 在有效範圍內
   if (targetItem_position >= 0 && targetItem_position <= group.items.length) {
@@ -176,7 +176,7 @@ TabSchema.statics.updateTab = async function updateTab(user_id, group_id, item_i
   const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
-    throw new AppError(404, 'Group not found');
+    throw new AppError(404, 'Group not found or invalid group ID');
   }
 
   const tab = group.items.find((item) => item._id === item_id && item.item_type === 0);
@@ -214,7 +214,7 @@ NoteSchema.methods.addNoteToGroup = async function addNoteToGroup(group_id, user
   const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
-    throw new AppError(404, 'Group not found');
+    throw new AppError(404, 'Group not found or invalid group ID');
   }
   group.items.push(this);
 
@@ -226,7 +226,7 @@ NoteSchema.statics.updateNoteContent = async function updateNoteContent(user_id,
   const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
-    throw new AppError(404, 'Group not found');
+    throw new AppError(404, 'Group not found or invalid group ID');
   }
 
   const noteIndex = group.items.findIndex((item) => item._id === item_id && item.item_type === 1);
@@ -245,7 +245,7 @@ NoteSchema.statics.convertToTodo = async function convertToTodo(user_id, group_i
   const group = user_groups.groups.find((group) => group._id === group_id);
 
   if (!group) {
-    throw new AppError(404, 'Group not found');
+    throw new AppError(404, 'Group not found or invalid group ID');
   }
 
   const noteIndex = group.items.findIndex((item) => item._id === item_id && item.item_type === 1);
@@ -285,7 +285,7 @@ TodoSchema.statics.updateTodo = async function updateTodo(user_id, group_id, ite
   const group = userGroup.groups.find((group) => group._id === group_id);
 
   if (!group) {
-    throw new AppError(404, 'Group not found');
+    throw new AppError(404, 'Group not found or invalid group ID');
   }
 
   const todoIndex = group.items.findIndex((item) => item._id === item_id && item.item_type === 2);

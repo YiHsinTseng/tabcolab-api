@@ -44,15 +44,15 @@ const soloTest = (server) => {
   //   GroupTest(server); // authToken要在async中傳值
   // });
 
-  const ItemTest = require('./ItemTest');
-  describe('Item Controller API Endpoints', () => {
-    ItemTest(server);
-  });
-
-  // const SpecItemTest = require('./SpecItemTest');
-  // describe('SpecItem Controller API Endpoints', () => {
-  //   SpecItemTest(server);
+  // const ItemTest = require('./ItemTest');
+  // describe('Item Controller API Endpoints', () => {
+  //   ItemTest(server);
   // });
+
+  const SpecItemTest = require('./SpecItemTest');
+  describe('SpecItem Controller API Endpoints', () => {
+    SpecItemTest(server);
+  });
 };
 
 module.exports = soloTest;

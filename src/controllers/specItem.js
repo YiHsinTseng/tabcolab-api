@@ -5,6 +5,22 @@ const addTab = async (req, res, next) => {
   try {
     const { group_id } = req.params;
     const { user_id } = req.user;
+
+    const allowedFields = ['targetItem_position', 'browserTab_favIconURL', 'browserTab_title', 'browserTab_url', 'browserTab_id', 'browserTab_index', 'browserTab_active', 'browserTab_status', 'windowId'];
+    const bodyKeys = Object.keys(req.body);
+
+    // Check if all required keys are present in req.body and no extra fields in req.body
+    const missingKeys = allowedFields.filter((key) => !bodyKeys.includes(key));
+    const extraKeys = bodyKeys.filter((key) => !allowedFields.includes(key));
+
+    if (missingKeys.length > 0) {
+      return errorResponse(res, 400, `"${missingKeys[0]}" is required`);
+    }
+
+    if (extraKeys.length > 0) {
+      return errorResponse(res, 400, `${extraKeys[0]} is not allowed in request body`);
+    }
+
     const {
       targetItem_position,
       ...browserTabReq
@@ -53,6 +69,22 @@ const addNote = async (req, res, next) => {
   try {
     const { group_id } = req.params;
     const { user_id } = req.user;
+
+    const allowedFields = ['note_content', 'note_bgColor'];
+    const bodyKeys = Object.keys(req.body);
+
+    // Check if all required keys are present in req.body and no extra fields in req.body
+    const missingKeys = allowedFields.filter((key) => !bodyKeys.includes(key));
+    const extraKeys = bodyKeys.filter((key) => !allowedFields.includes(key));
+
+    if (missingKeys.length > 0) {
+      return errorResponse(res, 400, `"${missingKeys[0]}" is required`);
+    }
+
+    if (extraKeys.length > 0) {
+      return errorResponse(res, 400, `${extraKeys[0]} is not allowed in request body`);
+    }
+
     const { note_content, note_bgColor } = req.body;
 
     if (Object.keys(req.body).length > 2) {
@@ -64,7 +96,7 @@ const addNote = async (req, res, next) => {
     }
 
     if (note_content === undefined && note_bgColor === undefined && Object.keys(req.body).length === 2) {
-      return errorResponse(res, 404, 'Invalid Request Bodies');
+      return errorResponse(res, 404, 'Invalid request body');
     }
 
     if (group_id && note_content !== undefined && note_bgColor) {
@@ -73,7 +105,7 @@ const addNote = async (req, res, next) => {
       await newNote.addNoteToGroup(group_id, user_id);
       return res.status(201).json({ status: 'success', message: 'Note added to group successfully', item_id: newNote.item_id });
     }
-    return errorResponse(res, 400, 'Invalid Request body');
+    return errorResponse(res, 400, 'Invalid request body');
   } catch (error) {
     next(error);
   }
@@ -86,13 +118,13 @@ const updateNote = async (req, res, next) => {
     const { item_type, note_content } = req.body;
 
     if (Object.keys(req.body).length === 0) {
-      return errorResponse(res, 404, 'Invalid request body');
+      return errorResponse(res, 400, '"item_type" or "note_content" is required');
     }
     if (Object.keys(req.body).length > 1) {
-      return errorResponse(res, 404, 'Unexpected Additional Parameters');
+      return errorResponse(res, 400, 'Unexpected Additional Parameters');
     }
     if (note_content === undefined && item_type !== 2) {
-      return errorResponse(res, 404, 'Invaild Request Bodies, detail: Only change Note to Todo, item_type must be 2');
+      return errorResponse(res, 400, 'Invaild Request Bodies, detail: Only change Note to Todo, item_type must be 2');
     }
     // modify note content
     if (group_id && note_content !== undefined) {
@@ -116,16 +148,19 @@ const updateTodo = async (req, res, next) => {
     const { user_id } = req.user;
     const { item_type, doneStatus, note_content } = req.body;
 
+    if (Object.keys(req.body).length === 0) {
+      return errorResponse(res, 400, '"item_type" or "doneStatus" or "note_content" is required');
+    }
     if (Object.keys(req.body).length > 1) {
-      return errorResponse(res, 404, 'Unexpected Additional Parameters');
+      return errorResponse(res, 400, 'Unexpected Additional Parameters');
     }
 
     if (item_type === undefined && doneStatus === undefined && note_content === undefined) {
-      return errorResponse(res, 404, 'Invalid request body');
+      return errorResponse(res, 400, 'Invalid request body');
     }
 
     if (item_type !== 1 && doneStatus === undefined && note_content === undefined) {
-      return errorResponse(res, 404, 'Invalid Request Bodies, detail: Only change Todo to Note, item_type must be 1');
+      return errorResponse(res, 400, 'Invalid Request Bodies, detail: Only change Todo to Note, item_type must be 1');
     }
 
     if (note_content !== undefined) {

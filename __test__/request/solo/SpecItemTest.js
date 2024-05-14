@@ -4,17 +4,18 @@ const { groupsChanges, ArraysChanges } = require('../../utils/groupsChanges');
 const { getGroup } = require('./GroupTest');
 const { extractFieldType } = require('../../utils/extractFieldType');
 const { testValues, getTestValueByType } = require('../../utils/FieldDataTypeTest');
+const { testUserAction } = require('../../utils/testUserHelper');
+const { UserRequestBodyTest } = require('../../classes/UserTest');
 
-const ItemTest = async (server) => {
+const SpecItemTest = async (server) => {
   let authToken;
-
+  let userData = { email: 'user@example.com', password: 'mySecurePassword123' };
   beforeAll(async () => {
-    const userData = { email: 'user@example.com', password: 'mySecurePassword123' };
+    userData = { email: 'user@example.com', password: 'mySecurePassword123' };
     const res = await request(server)
       .post('/api/1.0/users/login')
       .send(userData);
     authToken = res.body.token;
-    // console.log(res.body);
   });
 
   const {
@@ -22,29 +23,10 @@ const ItemTest = async (server) => {
   } = require('../apis/specItemAPI');
 
   let req = { params: {}, body: {} };
-  // let res;
 
   beforeEach(() => {
     req = { params: {}, body: {} };
   });
-
-  // const testSharedScenarios = (action) => {
-  //     test('returns 404 if request parameters are invalid', () => {
-  //       action(req, res);
-  //       expect(res.status).toHaveBeenCalledWith(404);
-  //       expect(res.json).toHaveBeenCalledWith({ error: "Invalid request parameters" });
-  //     });
-
-  //     test('returns 500 if internal server error occurs', () => {
-  //       jest.spyOn(Item, action.name).mockImplementation(() => { throw new Error("Internal server error") });
-  //       try {
-  //         action(req, res);
-  //         expect(res.status).toHaveBeenCalledWith(500);
-  //     } catch (error) {
-  //         expect(error.message).toBe("Internal server error");
-  //     }
-  //     });
-  //   };
 
   describe('Tab API Endpoints', () => {
     beforeEach(async () => {
@@ -78,142 +60,62 @@ const ItemTest = async (server) => {
         };
       });
       describe('401: JWT problem', () => {
-        test('Missing JWT', async () => {
+        it('Missing JWT', async () => {
           let res;
           try {
-            res = await postTab(req.params.group_id, newTabData);
-            expect(res.status).toBe(401);
-            expect(res.body.message).toBe('Missing JWT');
+            res = await testUserAction(postTab, [req.params.group_id, newTabData], 401, 'fail', 'Missing JWT');
           } catch (e) {
             handleException(res, e);
           }
         });
-        test('Invaild JWT', async () => {
+        it('Invalid JWT', async () => {
           let res;
           try {
-            res = await postTab(req.params.group_id, req.params.group_id, newTabData, 123);
-            expect(res.status).toBe(401);
-            expect(res.body.message).toBe('Invalid JWT');
+            res = await testUserAction(postTab, [req.params.group_id, newTabData, 123], 401, 'fail', 'Invalid JWT');
           } catch (e) {
             handleException(res, e);
           }
         });
       });
-      describe('400 Bad request: Body Format Error', () => { // 不好測
+      describe('400 Bad request: Body Format Error', () => {
+        const specItemTest = new UserRequestBodyTest(postTab, userData, newTabData);
         it('JSON Format Error', async () => {
-          // try {
-          let res;
-          try {
-            res = await postTab(req.params.group_id, 123, authToken);
-            // console.log(res.body, 'Request Format Error');
-            expect(res.status).toBe(400);
-          } catch (e) {
-            handleException(res, e);
-          }
-          // } catch (e) {
-          //   console.log(e.message);
-          // }
-
-          // expect(res.status).toBe(400);
-          // expect(res.body.status).toBe('fail');
-          // expect(res.body.message).toBe('Unexpected end of JSON input');
+          const invalidJson = '{ browserTab_favIconURL: }';
+          await specItemTest.jsonFormatError(invalidJson, [req.params.group_id]);
         });
         it('No field', async () => {
-          newTabData = {};
-          let res;
-          try {
-            res = await postTab(req.params.group_id, newTabData, authToken);
-
-            expect(res.status).toBe(400);
-            expect(res.body.status).toMatch('fail');
-            expect(res.body.message).toMatch('is required');
-          } catch (e) {
-            handleException(res, e);
-          }
-        });
-        describe('Missing field', () => {
-          const testData = Object.keys(newTabData);
-          // console.log(newGroupTabData);
-          testData.forEach((field) => {
-            it(`Missing ${field} field`, async () => {
-              let res;
-              // console.log(newGroupTabData);
-              try {
-                const { [field]: removedField, ...testTabData } = newTabData;
-                res = await postTab(req.params.group_id, testTabData, authToken);
-
-                expect(res.status).toBe(400);
-                expect(res.body.status).toMatch('fail');
-                expect(res.body.message).toMatch(`"${field}" is required`);
-              } catch (e) {
-                handleException(res, e);
-              }
-            });
-          });
+          await specItemTest.noField({}, authToken, 'is required', [req.params.group_id]);
         });
         it('Undefined Field', async () => {
-          newTabData.username = 'user';
-          let res;
-          try {
-            res = await postTab(req.params.group_id, newTabData, authToken);
-
-            expect(res.status).toBe(400);
-            expect(res.body.status).toMatch('fail');
-            expect(res.body.message).toMatch('not allowed');
-          } catch (e) {
-            handleException(res, e);
-          }
+          await specItemTest.undefinedField(authToken, 'not allowed', [req.params.group_id]);
+        });
+        describe('Missing field', () => {
+          specItemTest.missingField(authToken, [req.params.group_id]);
         });
       });
-      const typeChecks = extractFieldType(newTabData);
-      // Helper function to get test value based on type
-
       describe('400 Bad request: Field Data Format Error', () => {
-        Object.entries(typeChecks).forEach(([type, fields]) => {
-          fields.forEach((field) => {
-            const testData = { ...newTabData };
-
-            // Generate test request data with specified type for the field
-            Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
-              if (writetype !== type) {
-                testData[field] = writedvalue;
-
-                it(`${field} field required ${type} but ${writetype}`, async () => {
-                  let res;
-                  // console.log(testData);
-                  try {
-                    res = await postTab(req.params.group_id, testData, authToken);
-                    expect(res.status).toBe(400);
-                    expect(res.body.status).toMatch('fail');
-                    expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                    // console.log(`${field} field required ${type} but ${writetype}`);
-                    // console.log(res.body);
-                  } catch (e) {
-                    handleException(res, e);
-                  }
-                });
-              }
-            });
-          });
-        });
+        const specItemTest = new UserRequestBodyTest(postTab, userData, newTabData);
+        specItemTest.fieldDataFormatError(authToken, [req.params.group_id]);
       });
-      test('addTab: should respond with 201 and return item_id when valid data is provided', async () => {
-        const res = await postTab(req.params.group_id, newTabData, authToken);
-        //   console.log(res.status,res.body)
-        expect(res.status).toBe(201);
-        expect(res.body).toHaveProperty('message', 'New tab added to group successfully');
-        expect(res.body).toHaveProperty('item_id');
+      it('addTab: should respond with 201 and return item_id when valid data is provided', async () => {
+        let res;
+        try {
+          res = await testUserAction(postTab, [req.params.group_id, newTabData, authToken], 201, 'success', 'New tab added to group successfully');
+          expect(res.body).toHaveProperty('item_id');
+        } catch (e) {
+          handleException(res, e);
+        }
       });
 
       test('addTab: should respond with 404 when invalid group_id', async () => {
         req.params.group_id = '100';
-        const res = await postTab(req.params.group_id, newTabData, authToken);
-
-        expect(res.status).toBe(404);
-        expect(res.body.message).toBe('Group not found or invalid group ID');
+        let res;
+        try {
+          res = await testUserAction(postTab, [req.params.group_id, newTabData, authToken], 404, 'fail', 'Group not found or invalid group ID');
+        } catch (e) {
+          handleException(res, e);
+        }
       });
-
-      // Add more test cases as needed
     });
 
     //   // Test case for updateTab endpoint
@@ -262,7 +164,6 @@ const ItemTest = async (server) => {
       beforeEach(async () => {
         req.params.group_id = '1';
       });
-      // Test case for addNote endpoint
 
       describe('Post /groups/:group_id/notes', () => {
         let newNoteData = {
@@ -279,155 +180,65 @@ const ItemTest = async (server) => {
             note_bgColor: '#ffffff',
           };
         });
-
         describe('401: JWT problem', () => {
-          test('Missing JWT', async () => {
+          it('Missing JWT', async () => {
             let res;
             try {
-              res = await postNote(req.params.group_id, newNoteData);
-              expect(res.status).toBe(401);
-              expect(res.body.message).toBe('Missing JWT');
+              res = await testUserAction(postNote, [req.params.group_id, newNoteData], 401, 'fail', 'Missing JWT');
             } catch (e) {
               handleException(res, e);
             }
           });
-          test('Invaild JWT', async () => {
+          it('Invalid JWT', async () => {
             let res;
             try {
-              res = await postNote(req.params.group_id, newNoteData, 123);
-              expect(res.status).toBe(401);
-              expect(res.body.message).toBe('Invalid JWT');
+              res = await testUserAction(postNote, [req.params.group_id, newNoteData, 123], 401, 'fail', 'Invalid JWT');
             } catch (e) {
               handleException(res, e);
             }
           });
         });
-
-        test('postNote: should respond with status 404 if group is not found', async () => {
-          let notice;
-          try {
-            req.params.group_id = '9';
-            const res = await postNote(req.params.group_id, newNoteData, authToken);
-            notice = res;
-            expect(res.status).toBe(404);
-            expect(res.body.message).toEqual('Group not found');
-          } catch (e) {
-            handleException(notice, e);
-          }
-        });
-        const typeChecks = extractFieldType(newNoteData);
-        // Helper function to get test value based on type
-
-        describe('400 Bad request: Field Data Format Error', () => {
-          Object.entries(typeChecks).forEach(([type, fields]) => {
-            fields.forEach((field) => {
-              const testData = { ...newNoteData };
-
-              // Generate test request data with specified type for the field
-              Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
-                if (writetype !== type) {
-                  testData[field] = writedvalue;
-
-                  it(`${field} field required ${type} but ${writetype}`, async () => {
-                    let res;
-                    // console.log(testData);
-                    try {
-                      res = await postNote(req.params.group_id, testData, authToken);
-                      expect(res.status).toBe(400);
-                      expect(res.body.status).toMatch('fail');
-                      expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                      // console.log(`${field} field required ${type} but ${writetype}`);
-                      // console.log(res.body);
-                    } catch (e) {
-                      handleException(res, e);
-                    }
-                  });
-                }
-              });
-            });
-          });
-        });
-        test('addNote: should add a note to group successfully', async () => {
-          let notice;
-          try {
-            const res = await postNote(req.params.group_id, newNoteData, authToken);
-            notice = res;
-            expect(res.status).toBe(201);
-            expect(typeof res.body.item_id).toBe('string');
-            expect(res.body.message).toEqual('Note added to group successfully');
-          } catch (e) {
-            handleException(notice, e);
-          }
-        });
-
-        describe('400 Bad request: Body Format Error', () => { // 不好測
+        describe('400 Bad request: Body Format Error', () => {
+          const specItemTest = new UserRequestBodyTest(postNote, userData, newNoteData);
           it('JSON Format Error', async () => {
-            // try {
-            let res;
-            try {
-              res = await postNote(req.params.group_id, 123, authToken);
-              // console.log(res.body, 'Request Format Error');
-              expect(res.status).toBe(400);
-            } catch (e) {
-              handleException(res, e);
-            }
-            // } catch (e) {
-            //   console.log(e.message);
-            // }
-
-            // expect(res.status).toBe(400);
-            // expect(res.body.status).toBe('fail');
-            // expect(res.body.message).toBe('Unexpected end of JSON input');
+            const invalidJson = '{ note_content: }';
+            await specItemTest.jsonFormatError(invalidJson, [req.params.group_id]);
           });
           it('No field', async () => {
-            newNoteData = {};
-            let res;
-            try {
-              res = await postNote(req.params.group_id, newNoteData, authToken);
-
-              expect(res.status).toBe(400);
-              expect(res.body.status).toMatch('fail');
-              expect(res.body.message).toMatch('is required');
-            } catch (e) {
-              handleException(res, e);
-            }
-          });
-          describe('Missing field', () => {
-            const testData = Object.keys(newNoteData);
-            // console.log(newGroupTabData);
-            testData.forEach((field) => {
-              it(`Missing ${field} field`, async () => {
-                let res;
-                // console.log(newGroupTabData);
-                try {
-                  const { [field]: removedField, ...testNoteData } = newNoteData;
-                  res = await postNote(testNoteData, authToken);
-
-                  expect(res.status).toBe(400);
-                  expect(res.body.status).toMatch('fail');
-                  expect(res.body.message).toMatch(`"${field}" is required`);
-                } catch (e) {
-                  handleException(res, e);
-                }
-              });
-            });
+            await specItemTest.noField({}, authToken, 'is required', [req.params.group_id]);
           });
           it('Undefined Field', async () => {
-            newNoteData.username = 'user';
-            let res;
-            try {
-              res = await postNote(req.params.group_id, newNoteData, authToken);
-
-              expect(res.status).toBe(400);
-              expect(res.body.status).toMatch('fail');
-              expect(res.body.message).toMatch('not allowed');
-            } catch (e) {
-              handleException(res, e);
-            }
+            await specItemTest.undefinedField(authToken, 'not allowed', [req.params.group_id]);
+          });
+          describe('Missing field', () => {
+            specItemTest.missingField(authToken, [req.params.group_id]);
           });
         });
+        describe('400 Bad request: Field Data Format Error', () => {
+          const specItemTest = new UserRequestBodyTest(postNote, userData, newNoteData);
+          specItemTest.fieldDataFormatError(authToken, [req.params.group_id]);
+        });
+        it('postNote: should respond with status 404 if group is not found', async () => {
+          req.params.group_id = '9';
+          let res;
+          try {
+            res = await testUserAction(postNote, [req.params.group_id, newNoteData, authToken], 404, 'fail', 'Group not found or invalid group ID');
+          } catch (e) {
+            handleException(res, e);
+          }
+        });
+
+        it('addNote: should add a note to group successfully', async () => {
+          let res;
+          try {
+            res = await testUserAction(postNote, [req.params.group_id, newNoteData, authToken], 201, 'success', 'Note added to group successfully');
+            expect(res.body).toHaveProperty('item_id');
+          } catch (e) {
+            handleException(res, e);
+          }
+        });
       });
-      // NOTE - 無效操作要放在前面
+
       describe('Patch /groups/:group_id/notes/:item_id', () => {
         let patchNoteRequest;
         beforeEach(async () => {
@@ -435,30 +246,24 @@ const ItemTest = async (server) => {
           req.params.item_id = '2';
         });
         describe('404', () => {
-          test('updateNote: should respond with status 404 if group is not found', async () => {
-            let notice;
+          it('updateNote: should respond with status 404 if group is not found', async () => {
+            req.params.group_id = '9';
+            patchNoteRequest = { item_type: 2 };
+            let res;
             try {
-              req.params.group_id = '9';
-              patchNoteRequest = { item_type: 1 };
-              const res = await patchNote(req.params.group_id, req.params.item_id, patchNoteRequest, authToken);
-              notice = res;
-              expect(res.status).toBe(404);
-              expect(res.body.message).toEqual('Group not found');
+              res = await testUserAction(patchNote, [req.params.group_id, req.params.item_id, patchNoteRequest, authToken], 404, 'fail', 'Group not found or invalid group ID');
             } catch (e) {
-              handleException(notice, e);
+              handleException(res, e);
             }
           });
-          test('updateNote: should respond with status 404 if todo is not found in group', async () => {
+          it('updateNote: should respond with status 404 if note is not found in group', async () => {
             req.params.item_id = '100';
             patchNoteRequest = { note_content: '404' };
-            let notice;
+            let res;
             try {
-              const res = await patchNote(req.params.group_id, req.params.item_id, patchNoteRequest, authToken);
-              notice = res;
-              expect(res.status).toBe(404);
-              expect(res.body.message).toEqual('Note not found in group');
+              res = await testUserAction(patchNote, [req.params.group_id, req.params.item_id, patchNoteRequest, authToken], 404, 'fail', 'Note not found in group');
             } catch (e) {
-              handleException(notice, e);
+              handleException(res, e);
             }
           });
         });
@@ -472,47 +277,17 @@ const ItemTest = async (server) => {
             };
           });
 
-          const typeChecks = extractFieldType(patchNoteRequest);
-          // Helper function to get test value based on type
-
           describe('400 Bad request: Field Data Format Error', () => {
-            Object.entries(typeChecks).forEach(([type, fields]) => {
-              fields.forEach((field) => {
-                const testData = { ...patchNoteRequest };
-
-                // Generate test request data with specified type for the field
-                Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
-                  if (writetype !== type) {
-                    testData[field] = writedvalue;
-
-                    it(`${field} field required ${type} but ${writetype}`, async () => {
-                      let res;
-                      // console.log(testData);
-                      try {
-                        res = await patchNote(req.params.group_id, req.params.item_id, testData, authToken);
-                        expect(res.status).toBe(400);
-                        expect(res.body.status).toMatch('fail');
-                        expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                        // console.log(`${field} field required ${type} but ${writetype}`);
-                        // console.log(res.body);
-                      } catch (e) {
-                        handleException(res, e);
-                      }
-                    });
-                  }
-                });
-              });
-            });
+            const specItemTest = new UserRequestBodyTest(patchNote, userData, patchNoteRequest);
+            specItemTest.fieldDataFormatError(authToken, [req.params.group_id, req.params.item_id]);
           });
-          test('updateNote: should change note content successfully', async () => {
-            let notice;
+
+          it('updateNote: should change note content successfully', async () => {
+            let res;
             try {
-              const res = await patchNote(req.params.group_id, req.params.item_id, patchNoteRequest, authToken);
-              notice = res;
-              expect(res.status).toBe(200);
-              expect(res.body.message).toEqual('Note content changed successfully');
+              res = await testUserAction(patchNote, [req.params.group_id, req.params.item_id, patchNoteRequest, authToken], 200, 'success', 'Note content changed successfully');
             } catch (e) {
-              handleException(notice, e);
+              handleException(res, e);
             }
           });
         });
@@ -527,94 +302,33 @@ const ItemTest = async (server) => {
             };
           });
           describe('400 Bad request: Field Data Format Error', () => {
-            const typeChecks = extractFieldType(patchNoteRequest);
-
-            Object.entries(typeChecks).forEach(([type, fields]) => {
-              fields.forEach((field) => {
-                const testData = { ...patchNoteRequest };
-
-                // Generate test request data with specified type for the field
-                Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
-                  if (writetype !== type) {
-                    testData[field] = writedvalue;
-
-                    it(`${field} field required ${type} but ${writetype}`, async () => {
-                      let res;
-                      // console.log(testData);
-                      try {
-                        res = await patchNote(req.params.group_id, req.params.item_id, testData, authToken);
-                        expect(res.status).toBe(400);
-                        expect(res.body.status).toMatch('fail');
-                        expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                        // console.log(`${field} field required ${type} but ${writetype}`);
-                        // console.log(res.body);
-                      } catch (e) {
-                        handleException(res, e);
-                      }
-                    });
-                  }
-                });
-              });
-            });
+            const specItemTest = new UserRequestBodyTest(patchNote, userData, patchNoteRequest);
+            specItemTest.fieldDataFormatError(authToken, [req.params.group_id, req.params.item_id], '"item_type" must be one of [0, 1, 2]');
           });
-          test('updateNote: should change note to todo successfully', async () => {
-            let notice;
+          it('updateNote: should change note to todo successfully', async () => {
+            let res;
             try {
-              const res = await patchNote(req.params.group_id, req.params.item_id, patchNoteRequest, authToken);
-              notice = res;
-              expect(res.status).toBe(200);
-              expect(res.body.message).toEqual('Note changed to todo successfully');
+              res = await testUserAction(patchNote, [req.params.group_id, req.params.item_id, patchNoteRequest, authToken], 200, 'success', 'Note changed to todo successfully');
             } catch (e) {
-              handleException(notice, e);
+              handleException(res, e);
             }
           });
         });
-        describe('400 Bad request: Body Format Error', () => { // 不好測
+        describe('400 Bad request: Body Format Error', () => {
+          const specItemTest = new UserRequestBodyTest(patchNote, userData, patchNoteRequest);
           it('JSON Format Error', async () => {
-            // try {
-            let res;
-            try {
-              res = await patchNote(req.params.group_id, req.params.item_id, 123, authToken);
-              // console.log(res.body, 'Request Format Error');
-              expect(res.status).toBe(400);
-            } catch (e) {
-              handleException(res, e);
-            }
-            // } catch (e) {
-            //   console.log(e.message);
-            // }
-
-            // expect(res.status).toBe(400);
-            // expect(res.body.status).toBe('fail');
-            // expect(res.body.message).toBe('Unexpected end of JSON input');
+            const invalidJson = '{ item_type: }';
+            await specItemTest.jsonFormatError(invalidJson, [req.params.group_id, req.params.item_id]);
           });
           it('No field', async () => {
-            patchNoteRequest = {};
-            let res;
-            try {
-              res = await patchNote(req.params.group_id, req.params.item_id, patchNoteRequest, authToken);
-
-              expect(res.status).toBe(400);
-              expect(res.body.status).toMatch('fail');
-              expect(res.body.message).toMatch('is required');
-            } catch (e) {
-              handleException(res, e);
-            }
+            await specItemTest.noField({}, authToken, 'is required', [req.params.group_id, req.params.item_id]);
           });
-
           it('Undefined Field', async () => {
-            patchNoteRequest.username = 'user';
-            let res;
-            try {
-              res = await patchNote(req.params.group_id, req.params.item_id, patchNoteRequest, authToken);
-
-              expect(res.status).toBe(400);
-              expect(res.body.status).toMatch('fail');
-              expect(res.body.message).toMatch('not allowed');
-            } catch (e) {
-              handleException(res, e);
-            }
+            await specItemTest.undefinedField(authToken, 'Unexpected Additional Parameters', [req.params.group_id, req.params.item_id]);
           });
+          // describe('Missing field', () => {
+          //   specItemTest.missingField(authToken, [req.params.group_id, req.params.item_id]);
+          // });
         });
       });
     });
@@ -625,54 +339,45 @@ const ItemTest = async (server) => {
           req.params.group_id = '1';
           req.params.item_id = '3';
         });
-
         describe('401: JWT problem', () => {
-          test('Missing JWT', async () => {
+          patchTodoRequest = { item_type: 1 };
+          it('Missing JWT', async () => {
             let res;
             try {
-              res = await patchTodo(req.params.group_id, req.params.item_id, patchTodoRequest);
-              expect(res.status).toBe(401);
-              expect(res.body.message).toBe('Missing JWT');
+              res = await testUserAction(postNote, [req.params.group_id, patchTodoRequest], 401, 'fail', 'Missing JWT');
             } catch (e) {
               handleException(res, e);
             }
           });
-          test('Invaild JWT', async () => {
+          it('Invalid JWT', async () => {
             let res;
             try {
-              res = await patchTodo(req.params.group_id, req.params.item_id, patchTodoRequest, 123);
-              expect(res.status).toBe(401);
-              expect(res.body.message).toBe('Invalid JWT');
+              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, 123], 401, 'fail', 'Invalid JWT');
             } catch (e) {
               handleException(res, e);
             }
           });
         });
+
         describe('404', () => {
-          test('updateTodo: should respond with status 404 if group is not found', async () => {
-            let notice;
+          it('updateTodo: should respond with status 404 if group is not found', async () => {
+            req.params.group_id = '9';
+            patchTodoRequest = { item_type: 1 };
+            let res;
             try {
-              req.params.group_id = '9';
-              patchTodoRequest = { item_type: 1 };
-              const res = await patchTodo(req.params.group_id, req.params.item_id, patchTodoRequest, authToken);
-              notice = res;
-              expect(res.status).toBe(404);
-              expect(res.body.message).toEqual('Group not found');
+              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 404, 'fail', 'Group not found or invalid group ID');
             } catch (e) {
-              handleException(notice, e);
+              handleException(res, e);
             }
           });
-          test('updateTodo: should respond with status 404 if todo is not found in group', async () => {
+          it('updateTodo: should respond with status 404 if todo is not found in group', async () => {
             req.params.item_id = '100';
             patchTodoRequest = { item_type: 1 };
-            let notice;
+            let res;
             try {
-              const res = await patchTodo(req.params.group_id, req.params.item_id, patchTodoRequest, authToken);
-              notice = res;
-              expect(res.status).toBe(404);
-              expect(res.body.message).toEqual('Todo not found in group');
+              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 404, 'fail', 'Todo not found in group');
             } catch (e) {
-              handleException(notice, e);
+              handleException(res, e);
             }
           });
         });
@@ -686,44 +391,17 @@ const ItemTest = async (server) => {
             req.params.item_id = '2';
             patchTodoRequest = { doneStatus: true };
           });
-
-          const typeChecks = extractFieldType(patchTodoRequest);
-          // Helper function to get test value based on type
-
           describe('400 Bad request: Field Data Format Error', () => {
-            Object.entries(typeChecks).forEach(([type, fields]) => {
-              fields.forEach((field) => {
-                const testData = { ...patchTodoRequest };
-
-                // Generate test request data with specified type for the field
-                Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
-                  if (writetype !== type) {
-                    testData[field] = writedvalue;
-
-                    it(`${field} field required ${type} but ${writetype}`, async () => {
-                      let res;
-                      // console.log(testData);
-                      try {
-                        res = await patchTodo(req.params.group_id, req.params.item_id, testData, authToken);
-                        expect(res.status).toBe(400);
-                        expect(res.body.status).toMatch('fail');
-                        expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                        // console.log(`${field} field required ${type} but ${writetype}`);
-                        // console.log(res.body);
-                      } catch (e) {
-                        handleException(res, e);
-                      }
-                    });
-                  }
-                });
-              });
-            });
+            const specItemTest = new UserRequestBodyTest(patchTodo, userData, patchTodoRequest);
+            specItemTest.fieldDataFormatError(authToken, [req.params.group_id, req.params.item_id]);
           });
-          test('updateTodo(StatusUpdate): should update todo status successfully', async () => {
-            const res = await patchTodo(req.params.group_id, req.params.item_id, patchTodoRequest, authToken);
-
-            expect(res.status).toBe(200);
-            expect(res.body.message).toEqual('Todo status updated successfully');
+          it('updateTodo(StatusUpdate): should update todo status successfully', async () => {
+            let res;
+            try {
+              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 200, 'success', 'Todo status updated successfully');
+            } catch (e) {
+              handleException(res, e);
+            }
           });
         });
         describe('PATCH Item Type to Note', () => {
@@ -731,54 +409,29 @@ const ItemTest = async (server) => {
           beforeEach(async () => {
             patchTodoRequest = { item_type: 1 };
           });
-          const typeChecks = extractFieldType(patchTodoRequest);
-          // Helper function to get test value based on type
 
           describe('400 Bad request: Field Data Format Error', () => {
-            Object.entries(typeChecks).forEach(([type, fields]) => {
-              fields.forEach((field) => {
-                const testData = { ...patchTodoRequest };
-
-                // Generate test request data with specified type for the field
-                Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
-                  if (writetype !== type) {
-                    testData[field] = writedvalue;
-
-                    it(`${field} field required ${type} but ${writetype}`, async () => {
-                      let res;
-                      // console.log(testData);
-                      try {
-                        res = await patchTodo(req.params.group_id, req.params.item_id, testData, authToken);
-                        expect(res.status).toBe(400);
-                        expect(res.body.status).toMatch('fail');
-                        expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                        // console.log(`${field} field required ${type} but ${writetype}`);
-                        // console.log(res.body);
-                      } catch (e) {
-                        handleException(res, e);
-                      }
-                    });
-                  }
-                });
-              });
-            });
+            const specItemTest = new UserRequestBodyTest(patchTodo, userData, patchTodoRequest);
+            specItemTest.fieldDataFormatError(authToken, [req.params.group_id, req.params.item_id], '"item_type" must be one of [0, 1, 2]');
           });
-          test('updateTodo(ChangetoNote): should change todo to note successfully', async () => {
-            const res = await patchTodo(req.params.group_id, req.params.item_id, patchTodoRequest, authToken);
-
-            expect(res.status).toBe(200);
-            expect(res.body.message).toEqual(
-              'Todo changed to Note successfully',
-            );
+          it('updateTodo(ChangetoNote): should change todo to note successfully', async () => {
+            let res;
+            try {
+              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 200, 'success', 'Todo changed to Note successfully');
+            } catch (e) {
+              handleException(res, e);
+            }
           });
           test('updateTodo(ChangetoNote): should update todo status agian successfully', async () => {
             req.params.group_id = '1';
             req.params.item_id = '2';
             patchTodoRequest = { doneStatus: false };
-            const res = await patchTodo(req.params.group_id, req.params.item_id, patchTodoRequest, authToken);
-
-            expect(res.status).toBe(200);
-            expect(res.body.message).toEqual('Todo status updated successfully');
+            let res;
+            try {
+              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 200, 'success', 'Todo status updated successfully');
+            } catch (e) {
+              handleException(res, e);
+            }
           });
         });
         describe('PATCH Note Content', () => {
@@ -790,91 +443,37 @@ const ItemTest = async (server) => {
             req.params.item_id = '2';
             patchTodoRequest = { note_content: 'changed_note_content' };
           });
-          const typeChecks = extractFieldType(patchTodoRequest);
-          // Helper function to get test value based on type
-
           describe('400 Bad request: Field Data Format Error', () => {
-            Object.entries(typeChecks).forEach(([type, fields]) => {
-              fields.forEach((field) => {
-                const testData = { ...patchTodoRequest };
-
-                // Generate test request data with specified type for the field
-                Object.entries(getTestValueByType(type)).forEach(([writetype, writedvalue]) => {
-                  if (writetype !== type) {
-                    testData[field] = writedvalue;
-
-                    it(`${field} field required ${type} but ${writetype}`, async () => {
-                      let res;
-                      // console.log(testData);
-                      try {
-                        res = await patchTodo(req.params.group_id, req.params.item_id, testData, authToken);
-                        expect(res.status).toBe(400);
-                        expect(res.body.status).toMatch('fail');
-                        expect(res.body.message).toMatch(`"${field}" must be a ${type}`);
-                        // console.log(`${field} field required ${type} but ${writetype}`);
-                        // console.log(res.body);
-                      } catch (e) {
-                        handleException(res, e);
-                      }
-                    });
-                  }
-                });
-              });
-            });
+            const specItemTest = new UserRequestBodyTest(patchTodo, userData, patchTodoRequest);
+            specItemTest.fieldDataFormatError(authToken, [req.params.group_id, req.params.item_id]);
           });
-          test('updateTodo(ChangeContent): should update note content successfully', async () => {
-            const res = await patchTodo(req.params.group_id, req.params.item_id, patchTodoRequest, authToken);
-            expect(res.status).toBe(200);
-            expect(res.body.message).toEqual('Todo content changed successfully');
-          });
-        });
-        describe('400 Bad request: Body Format Error', () => { // 不好測
-          it('JSON Format Error', async () => {
-            // try {
+
+          it('updateTodo(ChangeContent): should update note content successfully', async () => {
             let res;
             try {
-              res = await patchTodo(req.params.group_id, req.params.item_id, 123, authToken);
-              // console.log(res.body, 'Request Format Error');
-              expect(res.status).toBe(400);
+              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 200, 'success', 'Todo content changed successfully');
             } catch (e) {
               handleException(res, e);
             }
-            // } catch (e) {
-            //   console.log(e.message);
-            // }
-
-            // expect(res.status).toBe(400);
-            // expect(res.body.status).toBe('fail');
-            // expect(res.body.message).toBe('Unexpected end of JSON input');
+          });
+        });
+        describe('400 Bad request: Body Format Error', () => {
+          const specItemTest = new UserRequestBodyTest(patchTodo, userData, patchTodoRequest);
+          it('JSON Format Error', async () => {
+            const invalidJson = '{ note_content: }';
+            await specItemTest.jsonFormatError(invalidJson, [req.params.group_id, req.params.item_id]);
           });
           it('No field', async () => {
-            patchTodoRequest = {};
-            let res;
-            try {
-              res = await patchTodo(req.params.group_id, req.params.item_id, patchTodoRequest, authToken);
-
-              expect(res.status).toBe(400);
-              expect(res.body.status).toMatch('fail');
-              expect(res.body.message).toMatch('is required');
-            } catch (e) {
-              handleException(res, e);
-            }
+            await specItemTest.noField({}, authToken, '"item_type" or "doneStatus" or "note_content" is required', [req.params.group_id, req.params.item_id]);
           });
-
           it('Undefined Field', async () => {
-            patchTodoRequest.username = 'user';
-            let res;
-            try {
-              res = await patchTodo(req.params.group_id, req.params.item_id, patchTodoRequest, authToken);
-
-              expect(res.status).toBe(400);
-              expect(res.body.status).toMatch('fail');
-              expect(res.body.message).toMatch('not allowed');
-            } catch (e) {
-              handleException(res, e);
-            }
+            await specItemTest.undefinedField(authToken, 'Unexpected Additional Parameters', [req.params.group_id, req.params.item_id]);
           });
+          // describe('Missing field', () => {
+          //   specItemTest.missingField(authToken, [req.params.group_id, req.params.item_id]);
+          // });
         });
+
         // test('updateTodo: should respond with status 400 if request body is invalid', async () => {
         //   patchTodoRequest = { };
         //   let notice;
@@ -892,4 +491,4 @@ const ItemTest = async (server) => {
   });
 };
 
-module.exports = ItemTest;
+module.exports = SpecItemTest;
