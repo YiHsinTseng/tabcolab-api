@@ -4,6 +4,7 @@ const AppError = require('../utils/appError');
 const groupSchema = Joi.object({
   group_id: Joi.string().optional(),
   sourceGroup_id: Joi.string().optional(),
+  targetGroup_id: Joi.string().optional(),
   group_icon: Joi.string().optional(),
   group_title: Joi.string().optional(),
   items: Joi.array().optional(),

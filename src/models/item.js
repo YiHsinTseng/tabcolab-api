@@ -34,6 +34,8 @@ ItemSchema.statics.searchItemsInGroups = async function searchItemsInGroups(keyw
 
   const keywords = [...new Set(keyword.split(/\s{1}/))]; // NOTE 接受單一空格就代表空字串
 
+  if (keywords.length === 0) return [];
+
   const regexes = keywords.map((currentKeyword) => new RegExp(`${currentKeyword}`, 'i'));
 
   const matchingItems = [];
@@ -74,10 +76,14 @@ ItemSchema.statics.searchItemsInGroups = async function searchItemsInGroups(keyw
 ItemSchema.statics.moveItem = async function moveItem(sourceGroupId, targetGroupId, itemId, newPosition, user_id) {
   const userGroup = await UserGroup.findOne({ _id: user_id }).exec();
   const sourceGroup = userGroup.groups.find((group) => group._id === sourceGroupId);
-  let targetGroup = userGroup.groups.find((group) => group._id === targetGroupId);
+  const targetGroup = userGroup.groups.find((group) => group._id === targetGroupId);
 
   if (!sourceGroup) {
-    return { success: false, error: 'Source group not found' };
+    throw new AppError(404, 'Source group not found');
+  }
+
+  if (!targetGroup) {
+    throw new AppError(404, 'Target group not found');
   }
 
   const itemToMove = sourceGroup.items.find((item) => item._id === itemId);
@@ -86,9 +92,9 @@ ItemSchema.statics.moveItem = async function moveItem(sourceGroupId, targetGroup
     return { success: false, error: 'Item not found in source group' };
   }
 
-  if (!targetGroup) {
-    targetGroup = sourceGroup;
-  }
+  // if (!targetGroup) {
+  //   targetGroup = sourceGroup;
+  // }
 
   const sourceIndex = sourceGroup.items.indexOf(itemToMove);
   sourceGroup.items.splice(sourceIndex, 1);

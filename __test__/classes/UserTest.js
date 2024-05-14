@@ -65,6 +65,7 @@ class UserRequestBodyTest {
       browserTab_index: 'number',
       browserTab_active: 'boolean',
       windowId: 'number',
+      targetItem_position: 'number',
     };
     const testValues = {
       string: {

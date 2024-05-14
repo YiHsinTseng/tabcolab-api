@@ -3,6 +3,7 @@ const AppError = require('../utils/appError');
 
 const itemSchema = Joi.object({
   item_id: Joi.string().optional(),
+  targetItem_position: Joi.number().optional(),
   item_type: Joi.number().valid(0, 1, 2).optional(),
   browserTab_favIconURL: Joi.string().optional(),
   browserTab_title: Joi.string().optional(),

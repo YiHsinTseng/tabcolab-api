@@ -13,6 +13,7 @@ async function getSearchItems(keywords, authToken) {
 async function patchItem(groupId, itemId, patchItemRequest, authToken) {
   const requestObject = request(server)
     .patch(`/api/1.0/groups/${groupId}/items/${itemId}`)
+    .set('Content-Type', 'application/json')
     .send(patchItemRequest);
   if (authToken) {
     requestObject.set('Authorization', `Bearer ${authToken}`);

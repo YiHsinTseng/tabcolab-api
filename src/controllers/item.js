@@ -6,9 +6,10 @@ const searchItemsInGroups = async (req, res, next) => {
     const { keyword, itemTypes } = req.query;
     const { user_id } = req.user;
 
-    if (keyword === undefined) {
+    if (keyword === undefined || keyword === '' || keyword.trim() === '') {
       return errorResponse(res, 400, 'Invalid Query Parameters');
     }
+
     const itemTypeOptions = itemTypes ? itemTypes.split(',').map(Number) : [0, 1, 2];
     const searchResults = await Item.searchItemsInGroups(keyword, itemTypeOptions, user_id);
 
@@ -21,13 +22,20 @@ const searchItemsInGroups = async (req, res, next) => {
 const moveItem = async (req, res, next) => {
   try {
     const { group_id, item_id } = req.params;
+
+    // Check that no extra fields in req.body
+    const allowedFields = ['targetGroup_id', 'targetItem_position'];
+    for (const key in req.body) {
+      if (!allowedFields.includes(key)) {
+        return errorResponse(res, 400, `${key} is not allowed in request body`);
+      }
+    }
+
     const { targetGroup_id, targetItem_position } = req.body;
     const { user_id } = req.user;
 
-    if (!targetGroup_id && targetItem_position === undefined) {
-      return errorResponse(res, 400, 'Request Bodies Required');
-    } if (targetGroup_id && targetItem_position === undefined) {
-      return errorResponse(res, 400, 'Invalid Request Bodies');
+    if (targetGroup_id === undefined || targetItem_position === undefined) {
+      return errorResponse(res, 400, 'Invalid request body');
     }
 
     const moveResult = await Item.moveItem(group_id, targetGroup_id, item_id, targetItem_position, user_id);

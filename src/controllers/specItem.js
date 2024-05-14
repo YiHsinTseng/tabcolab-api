@@ -86,7 +86,7 @@ const updateNote = async (req, res, next) => {
     const { item_type, note_content } = req.body;
 
     if (Object.keys(req.body).length === 0) {
-      return errorResponse(res, 404, 'Request Bodies Required');
+      return errorResponse(res, 404, 'Invalid request body');
     }
     if (Object.keys(req.body).length > 1) {
       return errorResponse(res, 404, 'Unexpected Additional Parameters');
@@ -121,7 +121,7 @@ const updateTodo = async (req, res, next) => {
     }
 
     if (item_type === undefined && doneStatus === undefined && note_content === undefined) {
-      return errorResponse(res, 404, 'Request Bodies Required');
+      return errorResponse(res, 404, 'Invalid request body');
     }
 
     if (item_type !== 1 && doneStatus === undefined && note_content === undefined) {

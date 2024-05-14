@@ -1,8 +1,6 @@
 const request = require('supertest');
 const { handleException } = require('../../utils/testErrorHandler');
 const { groupsChanges } = require('../../utils/groupsChanges');
-const { extractFieldType } = require('../../utils/extractFieldType');
-const { testValues, getTestValueByType } = require('../../utils/FieldDataTypeTest');
 const GroupValidator = require('../../validations/group');
 const ItemValidator = require('../../validations/item');
 const { UserGroupTest } = require('../../classes/UserTest');
