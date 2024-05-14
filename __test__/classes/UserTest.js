@@ -40,7 +40,6 @@ class UserRequestBodyTest {
           const { [field]: removedField, ...newRequestData } = this.requestData;
           const params = [...additionalParams, newRequestData, Token];
           res = await testUserAction(this.userAction, params, 400, 'fail', `"${field}" is required`);
-          console.log(res.body);
         } catch (e) {
           handleException(res, e);
         }

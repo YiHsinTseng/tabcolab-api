@@ -6,7 +6,6 @@ const getNewToken = async (userData) => {
     .post('/api/1.0/users/login')
     .set('Content-Type', 'application/json')
     .send(userData);
-  console.log(response.body);
   return response.body.token;
 };
 

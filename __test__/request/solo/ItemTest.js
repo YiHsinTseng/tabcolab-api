@@ -7,10 +7,6 @@ const { testValues, getTestValueByType } = require('../../utils/FieldDataTypeTes
 const { testUserAction } = require('../../utils/testUserHelper');
 const { UserRequestBodyTest } = require('../../classes/UserTest');
 
-jest.mock('../../validations/uuid', () => ({
-  checkUUIDv4Format: jest.fn().mockImplementation((value) => true),
-}));
-
 const ItemTest = async (server) => {
   let authToken;
   let userData = { email: 'user@example.com', password: 'mySecurePassword123' };
@@ -449,7 +445,7 @@ const ItemTest = async (server) => {
   describe('Delete /groups/:group_id/items/:item_id', () => {
     beforeEach(() => {
       req.params.group_id = '2';
-      req.params.item_id = '4';
+      req.params.item_id = '5';
     });
     describe('401: JWT problem', () => {
       it('Missing JWT', async () => {
