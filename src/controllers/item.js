@@ -6,7 +6,7 @@ const searchItemsInGroups = async (req, res, next) => {
     const { keyword, itemTypes } = req.query;
     const { user_id } = req.user;
 
-    if (keyword === undefined || keyword === '' || keyword.trim() === '') {
+    if (keyword === undefined || keyword === '') {
       return errorResponse(res, 400, 'Invalid Query Parameters');
     }
 

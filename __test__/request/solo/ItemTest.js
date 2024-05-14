@@ -69,302 +69,314 @@ const ItemTest = async (server) => {
           }
         });
       });
-      //   describe('one keyword', () => {
-      //     test('onekeyword within a group', async () => {
-      //       req.params.keywords = 'Tab';
-      //       let notice;
+      describe('one keyword', () => {
+        test('onekeyword within a groups', async () => {
+          req.params.keywords = '123';
+          let res;
+          try {
+            // 并行获取旧的和新的组数据
 
-      //       try {
-      //         // 并行获取旧的和新的组数据
-      //         let res;
-      //         let oldResult;
+            res = await getSearchItems(req.params.keywords, authToken);
+            // console.log(res.body);// 重構後無法顯示
+            expect(res.body[0].browserTab_title).toEqual('123');
+            expect(res.body[1].browserTab_title).toEqual('123');
+          } catch (e) {
+            handleException(res, e);
+          }
+        });
+        test('onekeyword is acceptable in any case within a groups', async () => {
+          req.params.keywords = 'LowercasE';
+          let notice;
 
-      //         [oldResult, res] = await Promise.all([
-      //           getSearchItems('tab', authToken),
-      //           getSearchItems(req.params.keywords, authToken),
-      //         ]);
+          try {
+            // 并行获取旧的和新的组数据
+            let res;
+            let oldResult;
 
-      //         notice = res;
-      //         const result = ArraysChanges(oldResult.body, res.body);
-      //         notice = result;
+            [oldResult, res] = await Promise.all([
+              getSearchItems('lowercase', authToken),
+              getSearchItems(req.params.keywords, authToken),
+            ]);
 
-      //         expect(result.addedItems).toEqual([]);
-      //         expect(result.deletedItems).toEqual([]);
-      //       } catch (e) {
-      //         handleException(notice, e);
-      //       }
-      //     });
-      //     test('onekeyword in different groups', async () => {
-      //       req.params.keywords = 'tab';
-      //       let notice;
-      //       try {
-      //         // 并行获取旧的和新的组数据
-      //         let res;
-      //         let oldResult;
+            notice = res;
+            const result = ArraysChanges(oldResult.body, res.body);
+            notice = result;
 
-      //         [oldResult, res] = await Promise.all([
-      //           getSearchItems(' ', authToken),
-      //           getSearchItems(req.params.keywords, authToken),
-      //         ]);
+            expect(result.addedItems).toEqual([]);
+            expect(result.deletedItems).toEqual([]);
+          } catch (e) {
+            handleException(notice, e);
+          }
+        });
 
-      //         notice = res;
-      //         const result = ArraysChanges(oldResult.body, res.body);
-      //         notice = result;
-      //         expect(result.addedItems).toEqual([]);
-      //         expect(result.deletedItems).toEqual([]);
-      //         throw new Error('Incomplete !!!');
-      //       } catch (e) {
-      //         handleException(notice, e);
-      //       }
-      //     });
-      //     test('onekeyword not in groups', async () => {
-      //       req.params.keywords = 'xxxxxx';
-      //       let notice;
-      //       try {
-      //         const res = await getSearchItems(req.params.keywords, authToken);
-      //         notice = res;
-      //         expect(res.body).toEqual([]);
-      //         // throw new Error('Incompelte !!!');
-      //       } catch (e) {
-      //         handleException(notice, e);
-      //       }
-      //     });
-      //   });
-      // });
-      // describe('single blank', () => {
-      //   describe('no keyword', () => {
-      //     test('no keyword return All', async () => {
-      //       req.params.keywords = ' ';
-      //       let notice;
-      //       try {
-      //         // 并行获取旧的和新的组数据
-      //         let res;
-      //         let oldResult;
+        test('onekeyword in different groups', async () => {
+          req.params.keywords = 'Browser';
+          let res;
+          try {
+            res = await getSearchItems(req.params.keywords, authToken);
+            // console.log(res.body);// 重構後無法顯示
+            expect(res.body[0].browserTab_title).toEqual('Browser');
+            expect(res.body[1].browserTab_title).toEqual('Browser');
+          } catch (e) {
+            handleException(res, e);
+          }
+        });
 
-      //         [oldResult, res] = await Promise.all([
-      //           getSearchItems(' ', authToken),
-      //           getSearchItems(req.params.keywords, authToken),
-      //         ]);
+        test('onekeyword not in groups', async () => {
+          req.params.keywords = 'xxxxxx';
+          let notice;
+          try {
+            const res = await getSearchItems(req.params.keywords, authToken);
+            notice = res;
+            expect(res.body).toEqual([]);
+          } catch (e) {
+            handleException(notice, e);
+          }
+        });
+      });
 
-      //         notice = res;
-      //         throw new Error('Incomplete !!!');
+      describe('single blank', () => {
+        describe('no keyword', () => {
+          test('no keyword return All', async () => {
+            req.params.keywords = ' ';
+            let notice;
+            try {
+              let res;
+              let oldResult;
 
-      //         const result = ArraysChanges(oldResult.body, res.body);
-      //         notice = result;
+              [oldResult, res] = await Promise.all([
+                getSearchItems('  ', authToken),
+                getSearchItems(req.params.keywords, authToken),
+              ]);
 
-      //         expect(result.addedItems).toEqual([]);
-      //         expect(result.deletedItems).toEqual([]);
-      //       } catch (e) {
-      //         handleException(notice, e);
-      //       }
-      //     });
-      //   });
-      //   describe('one keyword', () => {
-      //     test('unusal case: blank prefix', async () => {
-      //       req.params.keywords = ' Test';
-      //       let notice;
-      //       try {
-      //         // 并行获取旧的和新的组数据
-      //         let res;
-      //         let oldResult;
+              notice = res;
 
-      //         [oldResult, res] = await Promise.all([
-      //           getSearchItems(' ', authToken),
-      //           getSearchItems(req.params.keywords, authToken),
-      //         ]);
+              const result = ArraysChanges(oldResult.body, res.body);
+              notice = result;
 
-      //         notice = res;
-      //         const result = ArraysChanges(oldResult.body, res.body);
-      //         notice = result;
+              expect(result.addedItems).toEqual([]);
+              expect(result.deletedItems).toEqual([]);
+            } catch (e) {
+              handleException(notice, e);
+            }
+          });
+        });
+        describe('one keyword', () => {
+          test('unusal case: blank prefix', async () => {
+            req.params.keywords = ' 123';
+            let notice;
+            try {
+              // 并行获取旧的和新的组数据
+              let res;
+              let oldResult;
 
-      //         expect(result.addedItems).toEqual([]);
-      //         expect(result.deletedItems).toEqual([]);
-      //       } catch (e) {
-      //         handleException(notice, e);
-      //       }
-      //     });
-      //     test('unusal case: blank suffix', async () => {
-      //       req.params.keywords = 'Test ';
-      //       let notice;
-      //       try {
-      //         // 并行获取旧的和新的组数据
-      //         let res;
-      //         let oldResult;
+              [oldResult, res] = await Promise.all([
+                getSearchItems(' ', authToken),
+                getSearchItems(req.params.keywords, authToken),
+              ]);
 
-      //         [oldResult, res] = await Promise.all([
-      //           getSearchItems(' ', authToken),
-      //           getSearchItems(req.params.keywords, authToken),
-      //         ]);
+              notice = res;
+              const result = ArraysChanges(oldResult.body, res.body);
+              notice = result;
 
-      //         notice = res;
-      //         const result = ArraysChanges(oldResult.body, res.body);
-      //         notice = result;
+              expect(result.addedItems).toEqual([]);
+              expect(result.deletedItems).toEqual([]);
+            } catch (e) {
+              handleException(notice, e);
+            }
+          });
+          test('unusal case: blank suffix', async () => {
+            req.params.keywords = '123 ';
+            let notice;
+            try {
+              // 并行获取旧的和新的组数据
+              let res;
+              let oldResult;
 
-      //         expect(result.addedItems).toEqual([]);
-      //         expect(result.deletedItems).toEqual([]);
-      //       } catch (e) {
-      //         handleException(notice, e);
-      //       }
-      //     });
-      //   });
-      //   describe('two keyword', () => {
-      //     test('split to two keyword', async () => {
-      //       req.params.keywords = 'Test Title';
-      //       let notice;
-      //       try {
-      //         const res = await getSearchItems(req.params.keywords, authToken);
-      //         notice = res;
-      //         throw new Error('Incompelte !!!');
-      //       } catch (e) {
-      //         handleException(notice, e);
-      //       }
-      //     });
-      //   });
+              [oldResult, res] = await Promise.all([
+                getSearchItems(' ', authToken),
+                getSearchItems(req.params.keywords, authToken),
+              ]);
+
+              notice = res;
+              const result = ArraysChanges(oldResult.body, res.body);
+              notice = result;
+
+              expect(result.addedItems).toEqual([]);
+              expect(result.deletedItems).toEqual([]);
+            } catch (e) {
+              handleException(notice, e);
+            }
+          });
+        });
+        describe('two keyword', () => {
+          test('split to two keyword', async () => {
+            req.params.keywords = 'Test Title';
+            let res;
+            try {
+              res = await getSearchItems(req.params.keywords, authToken);
+
+              res.body.forEach((item) => {
+                const browserTabTitle = item.browserTab_title.toLowerCase();
+                if (browserTabTitle.includes('test')) {
+                  expect(browserTabTitle).toMatch('test');
+                } else if (browserTabTitle.includes('title')) {
+                  expect(browserTabTitle).toMatch('title');
+                } else {
+                  throw new Error('Fail');
+                }
+              });
+            } catch (e) {
+              handleException(res, e);
+            }
+          });
+        });
+      });
     });
-    //   describe('two blank', () => {
-    //     describe('onekeyword', () => {
-    //       test('unusal case: blank prefix*2', async () => {
-    //         req.params.keywords = '  Test';
-    //         let notice;
-    //         try {
-    //           // 并行获取旧的和新的组数据
-    //           let res;
-    //           let oldResult;
+    describe('two blank', () => {
+      describe('onekeyword', () => {
+        test('unusal case: blank prefix*2', async () => {
+          req.params.keywords = '  123';
+          let notice;
+          try {
+            // 并行获取旧的和新的组数据
+            let res;
+            let oldResult;
 
-    //           [oldResult, res] = await Promise.all([
-    //             getSearchItems(' ', authToken),
-    //             getSearchItems(req.params.keywords, authToken),
-    //           ]);
+            [oldResult, res] = await Promise.all([
+              getSearchItems(' ', authToken),
+              getSearchItems(req.params.keywords, authToken),
+            ]);
 
-    //           notice = res;
-    //           const result = ArraysChanges(oldResult.body, res.body);
-    //           notice = result;
+            notice = res;
+            const result = ArraysChanges(oldResult.body, res.body);
+            notice = result;
 
-    //           expect(result.addedItems).toEqual([]);
-    //           expect(result.deletedItems).toEqual([]);
-    //         } catch (e) {
-    //           handleException(notice, e);
-    //         }
-    //       });
-    //       test('unusal case: blank prefix and suffix', async () => {
-    //         req.params.keywords = ' Test ';
-    //         let notice;
-    //         try {
-    //           // 并行获取旧的和新的组数据
-    //           let res;
-    //           let oldResult;
+            expect(result.addedItems).toEqual([]);
+            expect(result.deletedItems).toEqual([]);
+          } catch (e) {
+            handleException(notice, e);
+          }
+        });
+        test('unusal case: blank prefix and suffix', async () => {
+          req.params.keywords = ' 123 ';
+          let notice;
+          try {
+            // 并行获取旧的和新的组数据
+            let res;
+            let oldResult;
 
-    //           [oldResult, res] = await Promise.all([
-    //             getSearchItems(' ', authToken),
-    //             getSearchItems(req.params.keywords, authToken),
-    //           ]);
+            [oldResult, res] = await Promise.all([
+              getSearchItems(' ', authToken),
+              getSearchItems(req.params.keywords, authToken),
+            ]);
 
-    //           notice = res;
-    //           const result = ArraysChanges(oldResult.body, res.body);
-    //           notice = result;
+            notice = res;
+            const result = ArraysChanges(oldResult.body, res.body);
+            notice = result;
 
-    //           expect(result.addedItems).toEqual([]);
-    //           expect(result.deletedItems).toEqual([]);
-    //         } catch (e) {
-    //           handleException(notice, e);
-    //         }
-    //       });
-    //       test('unusal case: blank suffix*2', async () => {
-    //         req.params.keywords = 'Test  ';
-    //         let notice;
-    //         try {
-    //           // 并行获取旧的和新的组数据
-    //           let res;
-    //           let oldResult;
+            expect(result.addedItems).toEqual([]);
+            expect(result.deletedItems).toEqual([]);
+          } catch (e) {
+            handleException(notice, e);
+          }
+        });
+        test('unusal case: blank suffix*2', async () => {
+          req.params.keywords = '123  ';
+          let notice;
+          try {
+            // 并行获取旧的和新的组数据
+            let res;
+            let oldResult;
 
-    //           [oldResult, res] = await Promise.all([
-    //             getSearchItems(' ', authToken),
-    //             getSearchItems(req.params.keywords, authToken),
-    //           ]);
+            [oldResult, res] = await Promise.all([
+              getSearchItems(' ', authToken),
+              getSearchItems(req.params.keywords, authToken),
+            ]);
 
-    //           notice = res;
-    //           const result = ArraysChanges(oldResult.body, res.body);
-    //           notice = result;
+            notice = res;
+            const result = ArraysChanges(oldResult.body, res.body);
+            notice = result;
 
-    //           expect(result.addedItems).toEqual([]);
-    //           expect(result.deletedItems).toEqual([]);
-    //         } catch (e) {
-    //           handleException(notice, e);
-    //         }
-    //       });
-    //     });
-    //     describe('twokeyword', () => {
-    //       test('unusal case: blank prefix', async () => {
-    //         req.params.keywords = ' Test Title';
-    //         let notice;
-    //         try {
-    //           // 并行获取旧的和新的组数据
-    //           let res;
-    //           let oldResult;
+            expect(result.addedItems).toEqual([]);
+            expect(result.deletedItems).toEqual([]);
+          } catch (e) {
+            handleException(notice, e);
+          }
+        });
+      });
+      describe('twokeyword', () => {
+        test('unusal case: blank prefix', async () => {
+          req.params.keywords = ' Test Title';
+          let notice;
+          try {
+            // 并行获取旧的和新的组数据
+            let res;
+            let oldResult;
 
-    //           [oldResult, res] = await Promise.all([
-    //             getSearchItems(' ', authToken),
-    //             getSearchItems(req.params.keywords, authToken),
-    //           ]);
+            [oldResult, res] = await Promise.all([
+              getSearchItems(' ', authToken),
+              getSearchItems(req.params.keywords, authToken),
+            ]);
 
-    //           notice = res;
-    //           const result = ArraysChanges(oldResult.body, res.body);
-    //           notice = result;
+            notice = res;
+            const result = ArraysChanges(oldResult.body, res.body);
+            notice = result;
 
-    //           expect(result.addedItems).toEqual([]);
-    //           expect(result.deletedItems).toEqual([]);
-    //         } catch (e) {
-    //           handleException(notice, e);
-    //         }
-    //       });
-    //       test('unusal case: blank *2 between', async () => {
-    //         req.params.keywords = 'Test  Title';
-    //         let notice;
-    //         try {
-    //           // 并行获取旧的和新的组数据
-    //           let res;
-    //           let oldResult;
+            expect(result.addedItems).toEqual([]);
+            expect(result.deletedItems).toEqual([]);
+          } catch (e) {
+            handleException(notice, e);
+          }
+        });
+        test('unusal case: blank *2 between', async () => {
+          req.params.keywords = 'Test  Title';
+          let notice;
+          try {
+            // 并行获取旧的和新的组数据
+            let res;
+            let oldResult;
 
-    //           [oldResult, res] = await Promise.all([
-    //             getSearchItems(' ', authToken),
-    //             getSearchItems(req.params.keywords, authToken),
-    //           ]);
+            [oldResult, res] = await Promise.all([
+              getSearchItems(' ', authToken),
+              getSearchItems(req.params.keywords, authToken),
+            ]);
 
-    //           notice = res;
-    //           const result = ArraysChanges(oldResult.body, res.body);
-    //           notice = result;
+            notice = res;
+            const result = ArraysChanges(oldResult.body, res.body);
+            notice = result;
 
-    //           expect(result.addedItems).toEqual([]);
-    //           expect(result.deletedItems).toEqual([]);
-    //         } catch (e) {
-    //           handleException(notice, e);
-    //         }
-    //       });
-    //       test('unusal case: blank suffix', async () => {
-    //         req.params.keywords = 'Test Title ';
-    //         let notice;
-    //         try {
-    //           // 并行获取旧的和新的组数据
-    //           let res;
-    //           let oldResult;
+            expect(result.addedItems).toEqual([]);
+            expect(result.deletedItems).toEqual([]);
+          } catch (e) {
+            handleException(notice, e);
+          }
+        });
+        test('unusal case: blank suffix', async () => {
+          req.params.keywords = 'Test Title ';
+          let notice;
+          try {
+            // 并行获取旧的和新的组数据
+            let res;
+            let oldResult;
 
-    //           [oldResult, res] = await Promise.all([
-    //             getSearchItems(' ', authToken),
-    //             getSearchItems(req.params.keywords, authToken),
-    //           ]);
+            [oldResult, res] = await Promise.all([
+              getSearchItems(' ', authToken),
+              getSearchItems(req.params.keywords, authToken),
+            ]);
 
-    //           notice = res;
-    //           const result = ArraysChanges(oldResult.body, res.body);
-    //           notice = result;
+            notice = res;
+            const result = ArraysChanges(oldResult.body, res.body);
+            notice = result;
 
-    //           expect(result.addedItems).toEqual([]);
-    //           expect(result.deletedItems).toEqual([]);
-    //         } catch (e) {
-    //           handleException(notice, e);
-    //         }
-    //       });
-    //     });
-    //   });
+            expect(result.addedItems).toEqual([]);
+            expect(result.deletedItems).toEqual([]);
+          } catch (e) {
+            handleException(notice, e);
+          }
+        });
+      });
+    });
   });
 
   describe('Patch /groups/:group_id/items/:item_id', () => {
@@ -457,15 +469,6 @@ const ItemTest = async (server) => {
         }
       });
     });
-    it('deleteItem: deletes item from group', async () => {
-      let res;
-      try {
-        res = await testUserAction(deleteItem, [req.params.group_id, req.params.item_id, authToken], 204, null);
-      } catch (e) {
-        handleException(res, e);
-      }
-    });
-
     it('deleteItem: returns 404 if group not found', async () => {
       req.params.group_id = '3'; // Non-existent group
       let res;
@@ -473,6 +476,16 @@ const ItemTest = async (server) => {
         res = await testUserAction(deleteItem, [req.params.group_id, req.params.item_id, authToken], 404, 'fail', 'Group or item not found');
       } catch (e) {
         handleException(res, e);
+      }
+    });
+    it('deleteItem: deletes item from group', async () => {
+      let res;
+      req.params.group_id = '11';
+      req.params.item_id = '11';
+      try {
+        res = await testUserAction(deleteItem, [req.params.group_id, req.params.item_id, authToken], 204, null);
+      } catch (e) {
+        return handleException(res, e);
       }
     });
   });

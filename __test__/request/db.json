@@ -27,7 +27,7 @@
               "_id": "2",
               "item_id": "2",
               "item_type": 1,
-              "note_content": "",
+              "note_content": "Note content2",
               "note_bgColor": "#ffffff"
             },
             {
@@ -70,8 +70,21 @@
               "item_id": "6",
               "item_type": 2,
               "doneStatus": false,
-              "note_content": "",
+              "note_content": "todo",
               "note_bgColor": "#ffffff"
+            },
+            {
+              "_id": "7",
+              "item_id": "7",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "Browser",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 1017,
+              "browserTab_index": 9,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513407
             }
           ]
         },
@@ -80,6 +93,86 @@
           "group_icon": "group_icon_url",
           "group_title": "Group 10",
           "items": []
+        },
+        {
+          "group_id": "11",
+          "group_icon": "group_icon_url",
+          "group_title": "Group 11",
+          "items": [
+            {
+              "_id": "11",
+              "item_id": "11",
+              "item_type": 2,
+              "doneStatus": false,
+              "note_content": "",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "_id": "12",
+              "item_id": "12",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "123",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 8910,
+              "browserTab_index": 8,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513408
+            },
+            {
+              "_id": "13",
+              "item_id": "13",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "123",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 10112,
+              "browserTab_index": 9,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513403
+            },
+            {
+              "_id": "14",
+              "item_id": "14",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "Browser",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 10114,
+              "browserTab_index": 9,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513404
+            },
+            {
+              "_id": "15",
+              "item_id": "15",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "LowerCase",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 10114,
+              "browserTab_index": 9,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513404
+            },
+            {
+              "_id": "16",
+              "item_id": "16",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "lowercase",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 10114,
+              "browserTab_index": 9,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513404
+            }
+          ]
         }
       ]
     }
