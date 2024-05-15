@@ -1,11 +1,8 @@
 const request = require('supertest');
 const { handleException } = require('../../utils/testErrorHandler');
-const { groupsChanges, ArraysChanges } = require('../../utils/groupsChanges');
-const { getGroup } = require('./GroupTest');
-const { extractFieldType } = require('../../utils/extractFieldType');
-const { testValues, getTestValueByType } = require('../../utils/FieldDataTypeTest');
-const { testUserAction } = require('../../utils/testUserHelper');
-const { UserRequestBodyTest } = require('../../classes/UserTest');
+const { ArraysChanges } = require('../../utils/groupsChanges');
+const { validateApiResponse } = require('../../utils/apiTestHelper');
+const { BadRequestBodyTest } = require('../../classes/BadRequestBodyTest');
 
 const ItemTest = async (server) => {
   let authToken;
@@ -36,7 +33,7 @@ const ItemTest = async (server) => {
       it('Missing JWT', async () => {
         let res;
         try {
-          res = await testUserAction(getSearchItems, [req.params.keywords], 401, 'fail', 'Missing JWT');
+          res = await validateApiResponse(getSearchItems, [req.params.keywords], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -44,7 +41,7 @@ const ItemTest = async (server) => {
       it('Invalid JWT', async () => {
         let res;
         try {
-          res = await testUserAction(getSearchItems, [req.params.keywords, 123], 401, 'fail', 'Invalid JWT');
+          res = await validateApiResponse(getSearchItems, [req.params.keywords, 123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -388,7 +385,7 @@ const ItemTest = async (server) => {
       it('Missing JWT', async () => {
         let res;
         try {
-          res = await testUserAction(patchItem, [req.params.group_id, req.params.item_id, moveItemRequest], 401, 'fail', 'Missing JWT');
+          res = await validateApiResponse(patchItem, [req.params.group_id, req.params.item_id, moveItemRequest], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -396,14 +393,14 @@ const ItemTest = async (server) => {
       it('Invalid JWT', async () => {
         let res;
         try {
-          res = await testUserAction(patchItem, [req.params.group_id, req.params.item_id, moveItemRequest, 123], 401, 'fail', 'Invalid JWT');
+          res = await validateApiResponse(patchItem, [req.params.group_id, req.params.item_id, moveItemRequest, 123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
       });
     });
     describe('400 Bad request: Body Format Error', () => {
-      const itemTest = new UserRequestBodyTest(patchItem, userData, moveItemRequest);
+      const itemTest = new BadRequestBodyTest(patchItem, userData, moveItemRequest);
       it('JSON Format Error', async () => {
         const invalidJson = '{ targetItem_position: }';
         await itemTest.jsonFormatError(invalidJson, [req.params.group_id, req.params.item_id]);
@@ -419,14 +416,14 @@ const ItemTest = async (server) => {
       // });
     });
     describe('400 Bad request: Field Data Format Error', () => {
-      const itemTest = new UserRequestBodyTest(patchItem, userData, moveItemRequest);
+      const itemTest = new BadRequestBodyTest(patchItem, userData, moveItemRequest);
       itemTest.fieldDataFormatError(authToken, [req.params.group_id, req.params.item_id]);
     });
     it('moveItem: returns 404 if source group not found', async () => {
       let res;
       try {
         req.params.group_id = '100'; // Non-existent group
-        res = await testUserAction(patchItem, [req.params.group_id, req.params.item_id, moveItemRequest, authToken], 404, 'fail', 'Source group not found');
+        res = await validateApiResponse(patchItem, [req.params.group_id, req.params.item_id, moveItemRequest, authToken], 404, 'fail', 'Source group not found');
       } catch (e) {
         handleException(res, e);
       }
@@ -435,7 +432,7 @@ const ItemTest = async (server) => {
     it('moveItem(toGroup): moves item from one group to another', async () => {
       let res;
       try {
-        res = await testUserAction(patchItem, [req.params.group_id, req.params.item_id, moveItemRequest, authToken], 200, 'success', 'Item moved successfully');
+        res = await validateApiResponse(patchItem, [req.params.group_id, req.params.item_id, moveItemRequest, authToken], 200, 'success', 'Item moved successfully');
       } catch (e) {
         handleException(res, e);
       }
@@ -451,7 +448,7 @@ const ItemTest = async (server) => {
       it('Missing JWT', async () => {
         let res;
         try {
-          res = await testUserAction(deleteItem, [req.params.group_id, req.params.item_id], 401, 'fail', 'Missing JWT');
+          res = await validateApiResponse(deleteItem, [req.params.group_id, req.params.item_id], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -459,7 +456,7 @@ const ItemTest = async (server) => {
       it('Invalid JWT', async () => {
         let res;
         try {
-          res = await testUserAction(deleteItem, [req.params.group_id, req.params.item_id, 123], 401, 'fail', 'Invalid JWT');
+          res = await validateApiResponse(deleteItem, [req.params.group_id, req.params.item_id, 123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -469,7 +466,7 @@ const ItemTest = async (server) => {
       req.params.group_id = '3'; // Non-existent group
       let res;
       try {
-        res = await testUserAction(deleteItem, [req.params.group_id, req.params.item_id, authToken], 404, 'fail', 'Group or item not found');
+        res = await validateApiResponse(deleteItem, [req.params.group_id, req.params.item_id, authToken], 404, 'fail', 'Group or item not found');
       } catch (e) {
         handleException(res, e);
       }
@@ -479,7 +476,7 @@ const ItemTest = async (server) => {
       req.params.group_id = '11';
       req.params.item_id = '11';
       try {
-        res = await testUserAction(deleteItem, [req.params.group_id, req.params.item_id, authToken], 204, null);
+        res = await validateApiResponse(deleteItem, [req.params.group_id, req.params.item_id, authToken], 204, null);
       } catch (e) {
         return handleException(res, e);
       }

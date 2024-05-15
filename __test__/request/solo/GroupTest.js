@@ -5,8 +5,8 @@ const GroupValidator = require('../../validations/group');
 const ItemValidator = require('../../validations/item');
 const { UserGroupTest } = require('../../classes/UserTest');
 const { registerUser } = require('../apis/usersAPI');
-const { testUserAction } = require('../../utils/testUserHelper');
-const { UserRequestBodyTest } = require('../../classes/UserTest');
+const { validateApiResponse } = require('../../utils/apiTestHelper');
+const { BadRequestBodyTest } = require('../../classes/BadRequestBodyTest');
 
 const GroupTest = async (server) => {
   let authToken;
@@ -53,7 +53,7 @@ const GroupTest = async (server) => {
       it('Missing JWT', async () => {
         let res;
         try {
-          res = await testUserAction(getGroup, [], 401, 'fail', 'Missing JWT');
+          res = await validateApiResponse(getGroup, [], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -61,7 +61,7 @@ const GroupTest = async (server) => {
       it('Invalid JWT', async () => {
         let res;
         try {
-          res = await testUserAction(getGroup, [123], 401, 'fail', 'Invalid JWT');
+          res = await validateApiResponse(getGroup, [123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -87,7 +87,7 @@ const GroupTest = async (server) => {
         try {
           const oldResult = await getGroup(authToken);
 
-          res = await testUserAction(postGroup, [newGroupData, authToken], 201, null, 'Group created at blank successfully');
+          res = await validateApiResponse(postGroup, [newGroupData, authToken], 201, null, 'Group created at blank successfully');
 
           const groupID = res.body.group_id;
 
@@ -132,7 +132,7 @@ const GroupTest = async (server) => {
         try {
           const oldResult = await getGroup(authToken);
 
-          res = await testUserAction(postGroup, [newSidebarTabData, authToken], 201, null, 'Group created with sidebar tab successfully');
+          res = await validateApiResponse(postGroup, [newSidebarTabData, authToken], 201, null, 'Group created with sidebar tab successfully');
 
           const groupID = res.body.group_id;
           const itemID = res.body.item_id;
@@ -151,7 +151,7 @@ const GroupTest = async (server) => {
         it('Missing JWT', async () => {
           let res;
           try {
-            res = await testUserAction(postGroup, [newSidebarTabData], 401, 'fail', 'Missing JWT');
+            res = await validateApiResponse(postGroup, [newSidebarTabData], 401, 'fail', 'Missing JWT');
           } catch (e) {
             handleException(res, e);
           }
@@ -159,14 +159,14 @@ const GroupTest = async (server) => {
         it('Invalid JWT', async () => {
           let res;
           try {
-            res = await testUserAction(postGroup, [newSidebarTabData, 123], 401, 'fail', 'Invalid JWT');
+            res = await validateApiResponse(postGroup, [newSidebarTabData, 123], 401, 'fail', 'Invalid JWT');
           } catch (e) {
             handleException(res, e);
           }
         });
       });
       describe('400 Bad request: Body Format Error', () => {
-        const groupTest = new UserRequestBodyTest(postGroup, userData, newSidebarTabData);
+        const groupTest = new BadRequestBodyTest(postGroup, userData, newSidebarTabData);
         it('JSON Format Error', async () => {
           const invalidJson = '{ group_icon: }';
           await groupTest.jsonFormatError(invalidJson);
@@ -183,7 +183,7 @@ const GroupTest = async (server) => {
       });
 
       describe('400 Bad request: Field Data Format Error', () => {
-        const groupTest = new UserRequestBodyTest(postGroup, userData, newSidebarTabData);
+        const groupTest = new BadRequestBodyTest(postGroup, userData, newSidebarTabData);
         groupTest.fieldDataFormatError(authToken);
       });
     });
@@ -209,7 +209,7 @@ const GroupTest = async (server) => {
         try {
           const oldResult = await getGroup(authToken);
 
-          res = await testUserAction(postGroup, [newGroupTabData, authToken], 201, null, 'Group created with group tab successfully');
+          res = await validateApiResponse(postGroup, [newGroupTabData, authToken], 201, null, 'Group created with group tab successfully');
 
           const newResult = await getGroup(authToken);
 
@@ -224,7 +224,7 @@ const GroupTest = async (server) => {
       });
 
       describe('400 Bad request: Body Format Error', () => {
-        const groupTest = new UserRequestBodyTest(postGroup, userData, newGroupTabData);
+        const groupTest = new BadRequestBodyTest(postGroup, userData, newGroupTabData);
         it('JSON Format Error', async () => {
           const invalidJson = '{ group_icon: }';
           await groupTest.jsonFormatError(invalidJson);
@@ -241,7 +241,7 @@ const GroupTest = async (server) => {
       });
 
       describe('400 Bad request: Field Data Format Error', () => {
-        const groupTest = new UserRequestBodyTest(postGroup, userData, newGroupTabData);
+        const groupTest = new BadRequestBodyTest(postGroup, userData, newGroupTabData);
         groupTest.fieldDataFormatError(authToken);
       });
       describe('404', () => {
@@ -250,7 +250,7 @@ const GroupTest = async (server) => {
           let res;
           try {
             const oldResult = await getGroup(authToken);
-            res = await testUserAction(postGroup, [newGroupTabData, authToken], 404, 'fail', 'Group not found or invalid group ID');
+            res = await validateApiResponse(postGroup, [newGroupTabData, authToken], 404, 'fail', 'Group not found or invalid group ID');
 
             const newResult = await getGroup(authToken);
 
@@ -267,7 +267,7 @@ const GroupTest = async (server) => {
           let res;
           try {
             const oldResult = await getGroup(authToken);
-            res = await testUserAction(postGroup, [newGroupTabData, authToken], 404, 'fail', 'Item not found in source group');
+            res = await validateApiResponse(postGroup, [newGroupTabData, authToken], 404, 'fail', 'Item not found in source group');
 
             const newResult = await getGroup(authToken);
 
@@ -298,13 +298,13 @@ const GroupTest = async (server) => {
       it('200: Patch Group Title', async () => {
         let res;
         try {
-          res = await testUserAction(patchGroup, [groupId, patchGroupRequest, authToken], 200, null, 'Group info updated successfully');
+          res = await validateApiResponse(patchGroup, [groupId, patchGroupRequest, authToken], 200, null, 'Group info updated successfully');
         } catch (e) {
           handleException(res, e);
         }
       });
       describe('400 Bad request: Body Format Error', () => {
-        const groupTest = new UserRequestBodyTest(patchGroup, userData, patchGroupRequest);
+        const groupTest = new BadRequestBodyTest(patchGroup, userData, patchGroupRequest);
         it('JSON Format Error', async () => {
           const invalidJson = '{ group_icon: }';
           await groupTest.jsonFormatError(invalidJson, [groupId]);
@@ -320,7 +320,7 @@ const GroupTest = async (server) => {
         // });
       });
       describe('400 Bad request: Field Data Format Error', () => {
-        const groupTest = new UserRequestBodyTest(patchGroup, userData, patchGroupRequest);
+        const groupTest = new BadRequestBodyTest(patchGroup, userData, patchGroupRequest);
         groupTest.fieldDataFormatError(authToken, [groupId]);
       });
     });
@@ -338,13 +338,13 @@ const GroupTest = async (server) => {
       it('200: Patch Group Icon', async () => {
         let res;
         try {
-          res = await testUserAction(patchGroup, [groupId, patchGroupRequest, authToken], 200, null, 'Group info updated successfully');
+          res = await validateApiResponse(patchGroup, [groupId, patchGroupRequest, authToken], 200, null, 'Group info updated successfully');
         } catch (e) {
           handleException(res, e);
         }
       });
       describe('400 Bad request: Body Format Error', () => {
-        const groupTest = new UserRequestBodyTest(patchGroup, userData, patchGroupRequest);
+        const groupTest = new BadRequestBodyTest(patchGroup, userData, patchGroupRequest);
         it('JSON Format Error', async () => {
           const invalidJson = '{ group_icon: }';
           await groupTest.jsonFormatError(invalidJson, [groupId]);
@@ -362,14 +362,14 @@ const GroupTest = async (server) => {
     });
 
     describe('400 Bad request: Field Data Format Error', () => {
-      const groupTest = new UserRequestBodyTest(patchGroup, userData, patchGroupRequest);
+      const groupTest = new BadRequestBodyTest(patchGroup, userData, patchGroupRequest);
       groupTest.fieldDataFormatError(authToken, [groupId]);
     });
     describe('401: JWT problem', () => {
       it('Missing JWT', async () => {
         let res;
         try {
-          res = await testUserAction(patchGroup, [groupId, patchGroupRequest], 401, 'fail', 'Missing JWT');
+          res = await validateApiResponse(patchGroup, [groupId, patchGroupRequest], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -377,7 +377,7 @@ const GroupTest = async (server) => {
       it('Invalid JWT', async () => {
         let res;
         try {
-          res = await testUserAction(patchGroup, [groupId, patchGroupRequest, 123], 401, 'fail', 'Invalid JWT');
+          res = await validateApiResponse(patchGroup, [groupId, patchGroupRequest, 123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -390,7 +390,7 @@ const GroupTest = async (server) => {
       };
       let res;
       try {
-        res = await testUserAction(patchGroup, [groupId, patchGroupRequest, authToken], 404, 'fail', 'Group not found or invalid group ID');
+        res = await validateApiResponse(patchGroup, [groupId, patchGroupRequest, authToken], 404, 'fail', 'Group not found or invalid group ID');
       } catch (e) {
         handleException(res, e);
       }
@@ -405,7 +405,7 @@ const GroupTest = async (server) => {
       let result;
       try {
         const oldResult = await getGroup(authToken);
-        res = await testUserAction(deleteGroup, [groupIdToDelete, authToken], 204, null, null);
+        res = await validateApiResponse(deleteGroup, [groupIdToDelete, authToken], 204, null, null);
 
         const newResult = await getGroup(authToken);
 
@@ -422,7 +422,7 @@ const GroupTest = async (server) => {
       let res;
       try {
         const oldResult = await getGroup(authToken);
-        res = await testUserAction(deleteGroup, [groupIdToDelete, authToken], 404, 'fail', 'Group not found');
+        res = await validateApiResponse(deleteGroup, [groupIdToDelete, authToken], 404, 'fail', 'Group not found');
 
         const newResult = await getGroup(authToken);
 
@@ -438,7 +438,7 @@ const GroupTest = async (server) => {
       it('Missing JWT', async () => {
         let res;
         try {
-          res = await testUserAction(deleteGroup, [groupIdToDelete], 401, 'fail', 'Missing JWT');
+          res = await validateApiResponse(deleteGroup, [groupIdToDelete], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -446,7 +446,7 @@ const GroupTest = async (server) => {
       it('Invalid JWT', async () => {
         let res;
         try {
-          res = await testUserAction(deleteGroup, [groupIdToDelete, 123], 401, 'fail', 'Invalid JWT');
+          res = await validateApiResponse(deleteGroup, [groupIdToDelete, 123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }

@@ -1,11 +1,7 @@
 const request = require('supertest');
 const { handleException } = require('../../utils/testErrorHandler');
-const { groupsChanges, ArraysChanges } = require('../../utils/groupsChanges');
-const { getGroup } = require('./GroupTest');
-const { extractFieldType } = require('../../utils/extractFieldType');
-const { testValues, getTestValueByType } = require('../../utils/FieldDataTypeTest');
-const { testUserAction } = require('../../utils/testUserHelper');
-const { UserRequestBodyTest } = require('../../classes/UserTest');
+const { validateApiResponse } = require('../../utils/apiTestHelper');
+const { BadRequestBodyTest } = require('../../classes/BadRequestBodyTest');
 
 const SpecItemTest = async (server) => {
   let authToken;
@@ -63,7 +59,7 @@ const SpecItemTest = async (server) => {
         it('Missing JWT', async () => {
           let res;
           try {
-            res = await testUserAction(postTab, [req.params.group_id, newTabData], 401, 'fail', 'Missing JWT');
+            res = await validateApiResponse(postTab, [req.params.group_id, newTabData], 401, 'fail', 'Missing JWT');
           } catch (e) {
             handleException(res, e);
           }
@@ -71,14 +67,14 @@ const SpecItemTest = async (server) => {
         it('Invalid JWT', async () => {
           let res;
           try {
-            res = await testUserAction(postTab, [req.params.group_id, newTabData, 123], 401, 'fail', 'Invalid JWT');
+            res = await validateApiResponse(postTab, [req.params.group_id, newTabData, 123], 401, 'fail', 'Invalid JWT');
           } catch (e) {
             handleException(res, e);
           }
         });
       });
       describe('400 Bad request: Body Format Error', () => {
-        const specItemTest = new UserRequestBodyTest(postTab, userData, newTabData);
+        const specItemTest = new BadRequestBodyTest(postTab, userData, newTabData);
         it('JSON Format Error', async () => {
           const invalidJson = '{ browserTab_favIconURL: }';
           await specItemTest.jsonFormatError(invalidJson, [req.params.group_id]);
@@ -94,13 +90,13 @@ const SpecItemTest = async (server) => {
         });
       });
       describe('400 Bad request: Field Data Format Error', () => {
-        const specItemTest = new UserRequestBodyTest(postTab, userData, newTabData);
+        const specItemTest = new BadRequestBodyTest(postTab, userData, newTabData);
         specItemTest.fieldDataFormatError(authToken, [req.params.group_id]);
       });
       it('addTab: should respond with 201 and return item_id when valid data is provided', async () => {
         let res;
         try {
-          res = await testUserAction(postTab, [req.params.group_id, newTabData, authToken], 201, 'success', 'New tab added to group successfully');
+          res = await validateApiResponse(postTab, [req.params.group_id, newTabData, authToken], 201, 'success', 'New tab added to group successfully');
           expect(res.body).toHaveProperty('item_id');
         } catch (e) {
           handleException(res, e);
@@ -111,7 +107,7 @@ const SpecItemTest = async (server) => {
         req.params.group_id = '100';
         let res;
         try {
-          res = await testUserAction(postTab, [req.params.group_id, newTabData, authToken], 404, 'fail', 'Group not found or invalid group ID');
+          res = await validateApiResponse(postTab, [req.params.group_id, newTabData, authToken], 404, 'fail', 'Group not found or invalid group ID');
         } catch (e) {
           handleException(res, e);
         }
@@ -184,7 +180,7 @@ const SpecItemTest = async (server) => {
           it('Missing JWT', async () => {
             let res;
             try {
-              res = await testUserAction(postNote, [req.params.group_id, newNoteData], 401, 'fail', 'Missing JWT');
+              res = await validateApiResponse(postNote, [req.params.group_id, newNoteData], 401, 'fail', 'Missing JWT');
             } catch (e) {
               handleException(res, e);
             }
@@ -192,14 +188,14 @@ const SpecItemTest = async (server) => {
           it('Invalid JWT', async () => {
             let res;
             try {
-              res = await testUserAction(postNote, [req.params.group_id, newNoteData, 123], 401, 'fail', 'Invalid JWT');
+              res = await validateApiResponse(postNote, [req.params.group_id, newNoteData, 123], 401, 'fail', 'Invalid JWT');
             } catch (e) {
               handleException(res, e);
             }
           });
         });
         describe('400 Bad request: Body Format Error', () => {
-          const specItemTest = new UserRequestBodyTest(postNote, userData, newNoteData);
+          const specItemTest = new BadRequestBodyTest(postNote, userData, newNoteData);
           it('JSON Format Error', async () => {
             const invalidJson = '{ note_content: }';
             await specItemTest.jsonFormatError(invalidJson, [req.params.group_id]);
@@ -215,14 +211,14 @@ const SpecItemTest = async (server) => {
           });
         });
         describe('400 Bad request: Field Data Format Error', () => {
-          const specItemTest = new UserRequestBodyTest(postNote, userData, newNoteData);
+          const specItemTest = new BadRequestBodyTest(postNote, userData, newNoteData);
           specItemTest.fieldDataFormatError(authToken, [req.params.group_id]);
         });
         it('postNote: should respond with status 404 if group is not found', async () => {
           req.params.group_id = '9';
           let res;
           try {
-            res = await testUserAction(postNote, [req.params.group_id, newNoteData, authToken], 404, 'fail', 'Group not found or invalid group ID');
+            res = await validateApiResponse(postNote, [req.params.group_id, newNoteData, authToken], 404, 'fail', 'Group not found or invalid group ID');
           } catch (e) {
             handleException(res, e);
           }
@@ -231,7 +227,7 @@ const SpecItemTest = async (server) => {
         it('addNote: should add a note to group successfully', async () => {
           let res;
           try {
-            res = await testUserAction(postNote, [req.params.group_id, newNoteData, authToken], 201, 'success', 'Note added to group successfully');
+            res = await validateApiResponse(postNote, [req.params.group_id, newNoteData, authToken], 201, 'success', 'Note added to group successfully');
             expect(res.body).toHaveProperty('item_id');
           } catch (e) {
             handleException(res, e);
@@ -251,7 +247,7 @@ const SpecItemTest = async (server) => {
             patchNoteRequest = { item_type: 2 };
             let res;
             try {
-              res = await testUserAction(patchNote, [req.params.group_id, req.params.item_id, patchNoteRequest, authToken], 404, 'fail', 'Group not found or invalid group ID');
+              res = await validateApiResponse(patchNote, [req.params.group_id, req.params.item_id, patchNoteRequest, authToken], 404, 'fail', 'Group not found or invalid group ID');
             } catch (e) {
               handleException(res, e);
             }
@@ -261,7 +257,7 @@ const SpecItemTest = async (server) => {
             patchNoteRequest = { note_content: '404' };
             let res;
             try {
-              res = await testUserAction(patchNote, [req.params.group_id, req.params.item_id, patchNoteRequest, authToken], 404, 'fail', 'Note not found in group');
+              res = await validateApiResponse(patchNote, [req.params.group_id, req.params.item_id, patchNoteRequest, authToken], 404, 'fail', 'Note not found in group');
             } catch (e) {
               handleException(res, e);
             }
@@ -278,14 +274,14 @@ const SpecItemTest = async (server) => {
           });
 
           describe('400 Bad request: Field Data Format Error', () => {
-            const specItemTest = new UserRequestBodyTest(patchNote, userData, patchNoteRequest);
+            const specItemTest = new BadRequestBodyTest(patchNote, userData, patchNoteRequest);
             specItemTest.fieldDataFormatError(authToken, [req.params.group_id, req.params.item_id]);
           });
 
           it('updateNote: should change note content successfully', async () => {
             let res;
             try {
-              res = await testUserAction(patchNote, [req.params.group_id, req.params.item_id, patchNoteRequest, authToken], 200, 'success', 'Note content changed successfully');
+              res = await validateApiResponse(patchNote, [req.params.group_id, req.params.item_id, patchNoteRequest, authToken], 200, 'success', 'Note content changed successfully');
             } catch (e) {
               handleException(res, e);
             }
@@ -302,20 +298,20 @@ const SpecItemTest = async (server) => {
             };
           });
           describe('400 Bad request: Field Data Format Error', () => {
-            const specItemTest = new UserRequestBodyTest(patchNote, userData, patchNoteRequest);
+            const specItemTest = new BadRequestBodyTest(patchNote, userData, patchNoteRequest);
             specItemTest.fieldDataFormatError(authToken, [req.params.group_id, req.params.item_id], '"item_type" must be one of [0, 1, 2]');
           });
           it('updateNote: should change note to todo successfully', async () => {
             let res;
             try {
-              res = await testUserAction(patchNote, [req.params.group_id, req.params.item_id, patchNoteRequest, authToken], 200, 'success', 'Note changed to todo successfully');
+              res = await validateApiResponse(patchNote, [req.params.group_id, req.params.item_id, patchNoteRequest, authToken], 200, 'success', 'Note changed to todo successfully');
             } catch (e) {
               handleException(res, e);
             }
           });
         });
         describe('400 Bad request: Body Format Error', () => {
-          const specItemTest = new UserRequestBodyTest(patchNote, userData, patchNoteRequest);
+          const specItemTest = new BadRequestBodyTest(patchNote, userData, patchNoteRequest);
           it('JSON Format Error', async () => {
             const invalidJson = '{ item_type: }';
             await specItemTest.jsonFormatError(invalidJson, [req.params.group_id, req.params.item_id]);
@@ -344,7 +340,7 @@ const SpecItemTest = async (server) => {
           it('Missing JWT', async () => {
             let res;
             try {
-              res = await testUserAction(postNote, [req.params.group_id, patchTodoRequest], 401, 'fail', 'Missing JWT');
+              res = await validateApiResponse(postNote, [req.params.group_id, patchTodoRequest], 401, 'fail', 'Missing JWT');
             } catch (e) {
               handleException(res, e);
             }
@@ -352,7 +348,7 @@ const SpecItemTest = async (server) => {
           it('Invalid JWT', async () => {
             let res;
             try {
-              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, 123], 401, 'fail', 'Invalid JWT');
+              res = await validateApiResponse(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, 123], 401, 'fail', 'Invalid JWT');
             } catch (e) {
               handleException(res, e);
             }
@@ -365,7 +361,7 @@ const SpecItemTest = async (server) => {
             patchTodoRequest = { item_type: 1 };
             let res;
             try {
-              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 404, 'fail', 'Group not found or invalid group ID');
+              res = await validateApiResponse(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 404, 'fail', 'Group not found or invalid group ID');
             } catch (e) {
               handleException(res, e);
             }
@@ -375,7 +371,7 @@ const SpecItemTest = async (server) => {
             patchTodoRequest = { item_type: 1 };
             let res;
             try {
-              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 404, 'fail', 'Todo not found in group');
+              res = await validateApiResponse(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 404, 'fail', 'Todo not found in group');
             } catch (e) {
               handleException(res, e);
             }
@@ -392,13 +388,13 @@ const SpecItemTest = async (server) => {
             patchTodoRequest = { doneStatus: true };
           });
           describe('400 Bad request: Field Data Format Error', () => {
-            const specItemTest = new UserRequestBodyTest(patchTodo, userData, patchTodoRequest);
+            const specItemTest = new BadRequestBodyTest(patchTodo, userData, patchTodoRequest);
             specItemTest.fieldDataFormatError(authToken, [req.params.group_id, req.params.item_id]);
           });
           it('updateTodo(StatusUpdate): should update todo status successfully', async () => {
             let res;
             try {
-              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 200, 'success', 'Todo status updated successfully');
+              res = await validateApiResponse(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 200, 'success', 'Todo status updated successfully');
             } catch (e) {
               handleException(res, e);
             }
@@ -411,13 +407,13 @@ const SpecItemTest = async (server) => {
           });
 
           describe('400 Bad request: Field Data Format Error', () => {
-            const specItemTest = new UserRequestBodyTest(patchTodo, userData, patchTodoRequest);
+            const specItemTest = new BadRequestBodyTest(patchTodo, userData, patchTodoRequest);
             specItemTest.fieldDataFormatError(authToken, [req.params.group_id, req.params.item_id], '"item_type" must be one of [0, 1, 2]');
           });
           it('updateTodo(ChangetoNote): should change todo to note successfully', async () => {
             let res;
             try {
-              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 200, 'success', 'Todo changed to Note successfully');
+              res = await validateApiResponse(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 200, 'success', 'Todo changed to Note successfully');
             } catch (e) {
               handleException(res, e);
             }
@@ -428,7 +424,7 @@ const SpecItemTest = async (server) => {
             patchTodoRequest = { doneStatus: false };
             let res;
             try {
-              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 200, 'success', 'Todo status updated successfully');
+              res = await validateApiResponse(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 200, 'success', 'Todo status updated successfully');
             } catch (e) {
               handleException(res, e);
             }
@@ -444,21 +440,21 @@ const SpecItemTest = async (server) => {
             patchTodoRequest = { note_content: 'changed_note_content' };
           });
           describe('400 Bad request: Field Data Format Error', () => {
-            const specItemTest = new UserRequestBodyTest(patchTodo, userData, patchTodoRequest);
+            const specItemTest = new BadRequestBodyTest(patchTodo, userData, patchTodoRequest);
             specItemTest.fieldDataFormatError(authToken, [req.params.group_id, req.params.item_id]);
           });
 
           it('updateTodo(ChangeContent): should update note content successfully', async () => {
             let res;
             try {
-              res = await testUserAction(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 200, 'success', 'Todo content changed successfully');
+              res = await validateApiResponse(patchTodo, [req.params.group_id, req.params.item_id, patchTodoRequest, authToken], 200, 'success', 'Todo content changed successfully');
             } catch (e) {
               handleException(res, e);
             }
           });
         });
         describe('400 Bad request: Body Format Error', () => {
-          const specItemTest = new UserRequestBodyTest(patchTodo, userData, patchTodoRequest);
+          const specItemTest = new BadRequestBodyTest(patchTodo, userData, patchTodoRequest);
           it('JSON Format Error', async () => {
             const invalidJson = '{ note_content: }';
             await specItemTest.jsonFormatError(invalidJson, [req.params.group_id, req.params.item_id]);

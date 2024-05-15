@@ -1,7 +1,7 @@
 const { checkUUIDv4Format } = require('../validations/uuid');
 
 // Helper function to handle common test logic
-async function testUserAction(action, args, expectedStatus, expectedBodyStatus, expectedMessage, messageCheck = 'toBe') {
+async function validateApiResponse(action, args, expectedStatus, expectedBodyStatus, expectedMessage, messageCheck = 'toBe') {
   let res;
   let authToken = null;
 
@@ -47,9 +47,9 @@ async function registerUserWithUniqueEmail(userData, registerUser) {
   const uniqueUserData = { ...userData, email: uniqueEmail };
 
   // 執行註冊操作
-  await testUserAction(registerUser, [uniqueUserData], 201, 'success');
+  await validateApiResponse(registerUser, [uniqueUserData], 201, 'success');
 
   return uniqueUserData;
 }
 
-module.exports = { testUserAction, testTokenValidity, registerUserWithUniqueEmail };
+module.exports = { validateApiResponse, testTokenValidity, registerUserWithUniqueEmail };

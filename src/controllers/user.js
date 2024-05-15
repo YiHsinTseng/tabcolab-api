@@ -19,7 +19,6 @@ const register = async (req, res, next) => {
     if (result.success) {
       return res.status(201).json({ status: 'success', message: result.message, token });
     }
-
     return errorResponse(res, 400, 'Failed to register');
   } catch (error) {
     next(error);

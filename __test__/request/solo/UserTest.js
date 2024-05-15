@@ -1,6 +1,6 @@
 const { handleException } = require('../../utils/testErrorHandler');
-const { testUserAction, testTokenValidity, registerUserWithUniqueEmail } = require('../../utils/testUserHelper');
-const { UserRequestBodyTest } = require('../../classes/UserTest');
+const { validateApiResponse, testTokenValidity, registerUserWithUniqueEmail } = require('../../utils/apiTestHelper');
+const { BadRequestBodyTest } = require('../../classes/BadRequestBodyTest');
 const { getNewToken } = require('../../utils/getNewToken');
 
 let userData = { email: 'login@gmail.com', password: 'password1' };
@@ -17,11 +17,11 @@ const UserTest = async (server) => {
   } = require('../apis/usersAPI');
 
   describe('Post /users/register', () => {
-    const userTest = new UserRequestBodyTest(registerUser, userData, userData);
+    const userTest = new BadRequestBodyTest(registerUser, userData, userData);
     it('201: User signed up successfully.', async () => {
       let res;
       try {
-        res = await testUserAction(registerUser, [userData], 201, 'success', 'User signed up successfully.');
+        res = await validateApiResponse(registerUser, [userData], 201, 'success', 'User signed up successfully.');
         authToken = res.body.token;
       } catch (e) {
         handleException(res, e);
@@ -55,7 +55,7 @@ const UserTest = async (server) => {
           const uniqueUserData = await registerUserWithUniqueEmail(userData, registerUser);
 
           // 再次使用相同的電子郵件地址嘗試註冊，預期會收到一個 409 錯誤
-          res = await testUserAction(registerUser, [uniqueUserData], 409, 'fail', 'This email has already been registered');
+          res = await validateApiResponse(registerUser, [uniqueUserData], 409, 'fail', 'This email has already been registered');
         } catch (e) {
           handleException(res, e);
         }
@@ -64,11 +64,11 @@ const UserTest = async (server) => {
   });
 
   describe('Post /users/login', () => {
-    const userTest = new UserRequestBodyTest(loginUser, userData, userData);
+    const userTest = new BadRequestBodyTest(loginUser, userData, userData);
     it('200: User signed in successfully.', async () => {
       let res;
       try {
-        res = await testUserAction(loginUser, [userData], 200, 'success', 'User signed in successfully');
+        res = await validateApiResponse(loginUser, [userData], 200, 'success', 'User signed in successfully');
         authToken = res.body.token;
       } catch (e) {
         handleException(res, e);
@@ -102,7 +102,7 @@ const UserTest = async (server) => {
     it('200: Get user info', async () => {
       let res;
       try {
-        res = await testUserAction(getUser, [authToken], 200);
+        res = await validateApiResponse(getUser, [authToken], 200);
       } catch (e) {
         handleException(res, e);
       }
@@ -111,7 +111,7 @@ const UserTest = async (server) => {
       it('Missing JWT', async () => {
         let res;
         try {
-          res = await testUserAction(getUser, [], 401, 'fail', 'Missing JWT');
+          res = await validateApiResponse(getUser, [], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -119,7 +119,7 @@ const UserTest = async (server) => {
       it('Invalid JWT', async () => {
         let res;
         try {
-          res = await testUserAction(getUser, [123], 401, 'fail', 'Invalid JWT');
+          res = await validateApiResponse(getUser, [123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -134,7 +134,7 @@ const UserTest = async (server) => {
       try {
         const adminLogin = await registerUser(adminData);
         const adminToken = adminLogin.body.token;
-        res = await testUserAction(getAllUsers, [adminToken], 200);
+        res = await validateApiResponse(getAllUsers, [adminToken], 200);
       } catch (e) {
         handleException(res, e);
       }
@@ -143,7 +143,7 @@ const UserTest = async (server) => {
       it('Missing JWT', async () => {
         let res;
         try {
-          res = await testUserAction(getAllUsers, [], 401, 'fail', 'Missing JWT');
+          res = await validateApiResponse(getAllUsers, [], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -151,7 +151,7 @@ const UserTest = async (server) => {
       it('Invalid JWT', async () => {
         let res;
         try {
-          res = await testUserAction(getAllUsers, [123], 401, 'fail', 'Invalid JWT');
+          res = await validateApiResponse(getAllUsers, [123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -161,7 +161,7 @@ const UserTest = async (server) => {
       it('Not an admin, denied access', async () => {
         let res;
         try {
-          res = await testUserAction(getAllUsers, [authToken], 403, 'fail', 'Access denied. You are not an admin.');
+          res = await validateApiResponse(getAllUsers, [authToken], 403, 'fail', 'Access denied. You are not an admin.');
         } catch (e) {
           handleException(res, e);
         }
@@ -183,7 +183,7 @@ const UserTest = async (server) => {
       let res;
       try {
         requestBody.password = 'test1234';
-        res = await testUserAction(patchUser, [requestBody, authToken], 200, 'success', 'User password updated successfully');
+        res = await validateApiResponse(patchUser, [requestBody, authToken], 200, 'success', 'User password updated successfully');
       } catch (e) {
         handleException(res, e);
       }
@@ -192,7 +192,7 @@ const UserTest = async (server) => {
       const loginRequestBody = { email: 'test123@gmail.com', password: 'test1234' };
       let res;
       try {
-        res = await testUserAction(loginUser, [loginRequestBody], 200, 'success', 'User signed in successfully');
+        res = await validateApiResponse(loginUser, [loginRequestBody], 200, 'success', 'User signed in successfully');
       } catch (e) {
         handleException(res, e);
       }
@@ -202,7 +202,7 @@ const UserTest = async (server) => {
       let res;
       try {
         requestBody.email = 'test1234@gmail.com';
-        res = await testUserAction(patchUser, [requestBody, authToken], 200, 'success', 'User info updated successfully');
+        res = await validateApiResponse(patchUser, [requestBody, authToken], 200, 'success', 'User info updated successfully');
       } catch (e) {
         handleException(res, e);
       }
@@ -211,13 +211,13 @@ const UserTest = async (server) => {
       const loginRequestBody = { email: 'test1234@gmail.com', password: 'test1234' };
       let res;
       try {
-        res = await testUserAction(loginUser, [loginRequestBody], 200, 'success', 'User signed in successfully');
+        res = await validateApiResponse(loginUser, [loginRequestBody], 200, 'success', 'User signed in successfully');
       } catch (e) {
         handleException(res, e);
       }
     });
     describe('400 Bad request: Body Format Error', () => {
-      const userTest = new UserRequestBodyTest(patchUser, userData, userData);
+      const userTest = new BadRequestBodyTest(patchUser, userData, userData);
       userTest.fieldDataFormatError();
 
       it('JSON Format Error', async () => {
@@ -237,7 +237,7 @@ const UserTest = async (server) => {
         const originalPassword = requestBody.password;
         try {
           requestBody.password = 'p';
-          res = await testUserAction(patchUser, [requestBody, authToken], 400, 'fail', 'must be at least 6 characters long', 'toMatch');
+          res = await validateApiResponse(patchUser, [requestBody, authToken], 400, 'fail', 'must be at least 6 characters long', 'toMatch');
         } catch (e) {
           handleException(res, e);
         } finally {
@@ -249,7 +249,7 @@ const UserTest = async (server) => {
         const originalEmail = requestBody.email;
         try {
           requestBody.email = 'test1234';
-          res = await testUserAction(patchUser, [requestBody, authToken], 400, 'fail', 'must be a valid email', 'toMatch');
+          res = await validateApiResponse(patchUser, [requestBody, authToken], 400, 'fail', 'must be a valid email', 'toMatch');
         } catch (e) {
           handleException(res, e);
         } finally {
@@ -261,7 +261,7 @@ const UserTest = async (server) => {
       it('Missing JWT', async () => {
         let res;
         try {
-          res = await testUserAction(patchUser, [requestBody], 401, 'fail', 'Missing JWT');
+          res = await validateApiResponse(patchUser, [requestBody], 401, 'fail', 'Missing JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -269,7 +269,7 @@ const UserTest = async (server) => {
       it('Invalid JWT', async () => {
         let res;
         try {
-          res = await testUserAction(patchUser, [requestBody, 123], 401, 'fail', 'Invalid JWT');
+          res = await validateApiResponse(patchUser, [requestBody, 123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -281,7 +281,7 @@ const UserTest = async (server) => {
       it('delete without authToken', async () => {
         let res;
         try {
-          res = await testUserAction(deleteUser, [], 401);
+          res = await validateApiResponse(deleteUser, [], 401);
         } catch (e) {
           handleException(res, e);
         }
@@ -289,7 +289,7 @@ const UserTest = async (server) => {
       it('delete with incorrect authToken', async () => {
         let res;
         try {
-          res = await testUserAction(deleteUser, [123], 401, 'fail', 'Invalid JWT');
+          res = await validateApiResponse(deleteUser, [123], 401, 'fail', 'Invalid JWT');
         } catch (e) {
           handleException(res, e);
         }
@@ -299,8 +299,8 @@ const UserTest = async (server) => {
       it('delete success and register again success', async () => {
         let res;
         try {
-          res = await testUserAction(deleteUser, [authToken], 204); // 在前面測試已經被刪掉，要再加authToken
-          res = await testUserAction(registerUser, [userData], 201, 'success', 'User signed up successfully.');
+          res = await validateApiResponse(deleteUser, [authToken], 204); // 在前面測試已經被刪掉，要再加authToken
+          res = await validateApiResponse(registerUser, [userData], 201, 'success', 'User signed up successfully.');
           authToken = res.body.token;
         } catch (e) {
           handleException(res, e);
@@ -309,8 +309,8 @@ const UserTest = async (server) => {
       it('delete success and login again fail', async () => {
         let res;
         try {
-          res = await testUserAction(deleteUser, [authToken], 204);
-          res = await testUserAction(loginUser, [userData], 404, 'fail', 'User not found or invalid email');
+          res = await validateApiResponse(deleteUser, [authToken], 204);
+          res = await validateApiResponse(loginUser, [userData], 404, 'fail', 'User not found or invalid email');
         } catch (e) {
           handleException(res, e);
         }
