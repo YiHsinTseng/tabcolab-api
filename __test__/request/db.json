@@ -104,7 +104,7 @@
               "item_id": "11",
               "item_type": 2,
               "doneStatus": false,
-              "note_content": "",
+              "note_content": "itemToDelete",
               "note_bgColor": "#ffffff"
             },
             {

@@ -63,47 +63,6 @@ const ItemTest = async (server) => {
             handleException(notice, e);
           }
         });
-        it('one blank', async () => {
-          req.params.keyword = ' ';
-          let res;
-          try {
-            res = await getSearchItems(req.params.keyword, authToken);
-
-            const allowedTitles = ['Tab Title', 'Browser', '123', '123', 'Browser', 'LowerCase', 'SidebarTab_title', 'Tab Title'];
-
-            const filteredTitles = res.body
-              .filter((item) => allowedTitles.includes(item.browserTab_title))
-              .map((item) => item.browserTab_title);
-
-            expect(filteredTitles).toEqual(expect.arrayContaining(allowedTitles));
-          } catch (e) {
-            handleException(res, e);
-          }
-        });
-        it('two blank', async () => {
-          req.params.keyword = '  ';
-          let notice;
-
-          try {
-            let res;
-            let oldResult;
-
-            [oldResult, res] = await Promise.all([
-              getSearchItems(' ', authToken),
-              getSearchItems(req.params.keyword, authToken),
-            ]);
-
-            notice = res;
-            const result = ArraysChanges(oldResult.body, res.body);
-            notice = result;
-
-            expect(res.status).toEqual(200);
-            expect(result.addedItems).toEqual([]);
-            expect(result.deletedItems).toEqual([]);
-          } catch (e) {
-            handleException(notice, e);
-          }
-        });
       });
       describe('one keyword', () => {
         test('onekeyword within a groups', async () => {
@@ -166,104 +125,121 @@ const ItemTest = async (server) => {
           }
         });
       });
+    });
+    describe('single blank', () => {
+      describe('no keyword', () => {
+        it('only one blank: no keyword return All', async () => {
+          req.params.keyword = ' ';
+          let res;
+          try {
+            res = await getSearchItems(req.params.keyword, authToken);
 
-      describe('single blank', () => {
-        describe('no keyword', () => {
-          test('no keyword return All', async () => {
-            req.params.keyword = ' ';
-            let notice;
-            try {
-              let res;
-              let oldResult;
+            const allowedTitles = ['Tab Title', 'Browser', '123', '123', 'Browser', 'LowerCase', 'SidebarTab_title', 'Tab Title'];
 
-              [oldResult, res] = await Promise.all([
-                getSearchItems('  ', authToken),
-                getSearchItems(req.params.keyword, authToken),
-              ]);
+            const filteredTitles = res.body
+              .filter((item) => allowedTitles.includes(item.browserTab_title))
+              .map((item) => item.browserTab_title);
 
-              notice = res;
-
-              const result = ArraysChanges(oldResult.body, res.body);
-              notice = result;
-
-              expect(result.addedItems).toEqual([]);
-              expect(result.deletedItems).toEqual([]);
-            } catch (e) {
-              handleException(notice, e);
-            }
-          });
+            expect(filteredTitles).toEqual(expect.arrayContaining(allowedTitles));
+          } catch (e) {
+            handleException(res, e);
+          }
         });
-        describe('one keyword', () => {
-          test('unusal case: blank prefix', async () => {
-            req.params.keyword = ' 123';
-            let notice;
-            try {
-              let res;
-              let oldResult;
-
-              [oldResult, res] = await Promise.all([
-                getSearchItems(' ', authToken),
-                getSearchItems(req.params.keyword, authToken),
-              ]);
-
-              notice = res;
-              const result = ArraysChanges(oldResult.body, res.body);
-              notice = result;
-
-              expect(result.addedItems).toEqual([]);
-              expect(result.deletedItems).toEqual([]);
-            } catch (e) {
-              handleException(notice, e);
-            }
-          });
-          test('unusal case: blank suffix', async () => {
-            req.params.keyword = '123 ';
-            let notice;
-            try {
-              let res;
-              let oldResult;
-
-              [oldResult, res] = await Promise.all([
-                getSearchItems(' ', authToken),
-                getSearchItems(req.params.keyword, authToken),
-              ]);
-
-              notice = res;
-              const result = ArraysChanges(oldResult.body, res.body);
-              notice = result;
-
-              expect(result.addedItems).toEqual([]);
-              expect(result.deletedItems).toEqual([]);
-            } catch (e) {
-              handleException(notice, e);
-            }
-          });
-        });
-        describe('two keyword', () => {
-          test('split to two keyword', async () => {
-            req.params.keyword = 'Test Title';
+      });
+      describe('one keyword', () => {
+        test('unusal case: blank prefix', async () => {
+          req.params.keyword = ' 123';
+          let notice;
+          try {
             let res;
-            try {
-              res = await getSearchItems(req.params.keyword, authToken);
+            let oldResult;
 
-              res.body.forEach((item) => {
-                const browserTabTitle = item.browserTab_title.toLowerCase();
-                if (browserTabTitle.includes('test')) {
-                  expect(browserTabTitle).toMatch('test');
-                } else if (browserTabTitle.includes('title')) {
-                  expect(browserTabTitle).toMatch('title');
-                } else {
-                  throw new Error('Fail');
-                }
-              });
-            } catch (e) {
-              handleException(res, e);
-            }
-          });
+            [oldResult, res] = await Promise.all([
+              getSearchItems('123', authToken),
+              getSearchItems(req.params.keyword, authToken),
+            ]);
+
+            notice = res;
+            const result = ArraysChanges(oldResult.body, res.body);
+            notice = result;
+
+            expect(result.addedItems).toEqual([]);
+            expect(result.deletedItems).toEqual([]);
+          } catch (e) {
+            handleException(notice, e);
+          }
+        });
+        test('unusal case: blank suffix', async () => {
+          req.params.keyword = '123 ';
+          let notice;
+          try {
+            let res;
+            let oldResult;
+
+            [oldResult, res] = await Promise.all([
+              getSearchItems('123', authToken),
+              getSearchItems(req.params.keyword, authToken),
+            ]);
+
+            notice = res;
+            const result = ArraysChanges(oldResult.body, res.body);
+            notice = result;
+
+            expect(result.addedItems).toEqual([]);
+            expect(result.deletedItems).toEqual([]);
+          } catch (e) {
+            handleException(notice, e);
+          }
+        });
+      });
+      describe('two keyword', () => {
+        test('split to two keyword', async () => {
+          req.params.keyword = 'Test Title';
+          let res;
+          try {
+            res = await getSearchItems(req.params.keyword, authToken);
+
+            res.body.forEach((item) => {
+              const browserTabTitle = item.browserTab_title.toLowerCase();
+              if (browserTabTitle.includes('test')) {
+                expect(browserTabTitle).toMatch('test');
+              } else if (browserTabTitle.includes('title')) {
+                expect(browserTabTitle).toMatch('title');
+              } else {
+                throw new Error('Fail');
+              }
+            });
+          } catch (e) {
+            handleException(res, e);
+          }
         });
       });
     });
     describe('two blank', () => {
+      it('only two blank: no keyword return All', async () => {
+        req.params.keyword = '  ';
+        let notice;
+
+        try {
+          let res;
+          let oldResult;
+
+          [oldResult, res] = await Promise.all([
+            getSearchItems(' ', authToken),
+            getSearchItems(req.params.keyword, authToken),
+          ]);
+
+          notice = res;
+          const result = ArraysChanges(oldResult.body, res.body);
+          notice = result;
+
+          expect(res.status).toEqual(200);
+          expect(result.addedItems).toEqual([]);
+          expect(result.deletedItems).toEqual([]);
+        } catch (e) {
+          handleException(notice, e);
+        }
+      });
       describe('onekeyword', () => {
         test('unusal case: blank prefix*2', async () => {
           req.params.keyword = '  123';
@@ -273,7 +249,7 @@ const ItemTest = async (server) => {
             let oldResult;
 
             [oldResult, res] = await Promise.all([
-              getSearchItems(' ', authToken),
+              getSearchItems('123', authToken),
               getSearchItems(req.params.keyword, authToken),
             ]);
 
@@ -295,7 +271,7 @@ const ItemTest = async (server) => {
             let oldResult;
 
             [oldResult, res] = await Promise.all([
-              getSearchItems(' ', authToken),
+              getSearchItems('123', authToken),
               getSearchItems(req.params.keyword, authToken),
             ]);
 
@@ -317,7 +293,7 @@ const ItemTest = async (server) => {
             let oldResult;
 
             [oldResult, res] = await Promise.all([
-              getSearchItems(' ', authToken),
+              getSearchItems('123', authToken),
               getSearchItems(req.params.keyword, authToken),
             ]);
 
@@ -341,7 +317,7 @@ const ItemTest = async (server) => {
             let oldResult;
 
             [oldResult, res] = await Promise.all([
-              getSearchItems(' ', authToken),
+              getSearchItems('Test Title', authToken),
               getSearchItems(req.params.keyword, authToken),
             ]);
 
@@ -363,7 +339,7 @@ const ItemTest = async (server) => {
             let oldResult;
 
             [oldResult, res] = await Promise.all([
-              getSearchItems(' ', authToken),
+              getSearchItems('Test Title', authToken),
               getSearchItems(req.params.keyword, authToken),
             ]);
 
@@ -385,7 +361,7 @@ const ItemTest = async (server) => {
             let oldResult;
 
             [oldResult, res] = await Promise.all([
-              getSearchItems(' ', authToken),
+              getSearchItems('Test Title', authToken),
               getSearchItems(req.params.keyword, authToken),
             ]);
 

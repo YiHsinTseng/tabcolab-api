@@ -32,9 +32,12 @@ ItemSchema.statics.searchItemsInGroups = async function searchItemsInGroups(keyw
 
   if (!Array.isArray(groups)) return [];
 
-  const keywords = [...new Set(keyword.split(/\s{1}/))]; // NOTE 接受單一空格就代表空字串
-
-  if (keywords.length === 0) return [];
+  if (keyword === '') {
+    return [];
+  }
+  let keywords;
+  keywords = [...new Set(keyword.trim().split(/\s+/))].filter((item) => item !== '');
+  if (keywords.length === 0) { keywords = ['']; }// 如果結果是單純得[""]就保留，即實現空白搜尋全部
 
   const regexes = keywords.map((currentKeyword) => new RegExp(`${currentKeyword}`, 'i'));
 
