@@ -1,5 +1,6 @@
 const request = require('supertest');
 const { handleException } = require('../../utils/testErrorHandler');
+const { getGroup } = require('../apis/groupsAPI');
 const { ArraysChanges } = require('../../utils/groupsChanges');
 const { validateApiResponse } = require('../../utils/apiTestHelper');
 const { BadRequestBodyTest } = require('../../classes/BadRequestBodyTest');
@@ -27,7 +28,7 @@ const ItemTest = async (server) => {
 
   describe('Get /items/search', () => {
     beforeEach(() => {
-      req.params.keywords = ' ';
+      req.params.keyword = ' ';
     });
     describe('401: JWT problem', () => {
       it('Missing JWT', async () => {
@@ -50,13 +51,55 @@ const ItemTest = async (server) => {
     describe('no blank', () => {
       describe('no keyword', () => {
         it('empty keyword para', async () => {
-          req.params.keywords = '     ';
+          req.params.keyword = '';
           let notice;
           try {
-            const res = await getSearchItems(req.params.keywords, authToken);
-            console.log(res.body);
+            const res = await getSearchItems(req.params.keyword, authToken);
             notice = res;
-            // throw new Error('Incompelte !!!');
+            expect(res.status).toEqual(400);
+            expect(res.body.status).toEqual('fail');
+            expect(res.body.message).toEqual('Invalid Query Parameters');
+          } catch (e) {
+            handleException(notice, e);
+          }
+        });
+        it('one blank', async () => {
+          req.params.keyword = ' ';
+          let res;
+          try {
+            res = await getSearchItems(req.params.keyword, authToken);
+
+            const allowedTitles = ['Tab Title', 'Browser', '123', '123', 'Browser', 'LowerCase', 'SidebarTab_title', 'Tab Title'];
+
+            const filteredTitles = res.body
+              .filter((item) => allowedTitles.includes(item.browserTab_title))
+              .map((item) => item.browserTab_title);
+
+            expect(filteredTitles).toEqual(expect.arrayContaining(allowedTitles));
+          } catch (e) {
+            handleException(res, e);
+          }
+        });
+        it('two blank', async () => {
+          req.params.keyword = '  ';
+          let notice;
+
+          try {
+            let res;
+            let oldResult;
+
+            [oldResult, res] = await Promise.all([
+              getSearchItems(' ', authToken),
+              getSearchItems(req.params.keyword, authToken),
+            ]);
+
+            notice = res;
+            const result = ArraysChanges(oldResult.body, res.body);
+            notice = result;
+
+            expect(res.status).toEqual(200);
+            expect(result.addedItems).toEqual([]);
+            expect(result.deletedItems).toEqual([]);
           } catch (e) {
             handleException(notice, e);
           }
@@ -64,13 +107,10 @@ const ItemTest = async (server) => {
       });
       describe('one keyword', () => {
         test('onekeyword within a groups', async () => {
-          req.params.keywords = '123';
+          req.params.keyword = '123';
           let res;
           try {
-            // 并行获取旧的和新的组数据
-
-            res = await getSearchItems(req.params.keywords, authToken);
-            // console.log(res.body);// 重構後無法顯示
+            res = await getSearchItems(req.params.keyword, authToken);
             expect(res.body[0].browserTab_title).toEqual('123');
             expect(res.body[1].browserTab_title).toEqual('123');
           } catch (e) {
@@ -78,17 +118,16 @@ const ItemTest = async (server) => {
           }
         });
         test('onekeyword is acceptable in any case within a groups', async () => {
-          req.params.keywords = 'LowercasE';
+          req.params.keyword = 'LowercasE';
           let notice;
 
           try {
-            // 并行获取旧的和新的组数据
             let res;
             let oldResult;
 
             [oldResult, res] = await Promise.all([
               getSearchItems('lowercase', authToken),
-              getSearchItems(req.params.keywords, authToken),
+              getSearchItems(req.params.keyword, authToken),
             ]);
 
             notice = res;
@@ -103,10 +142,10 @@ const ItemTest = async (server) => {
         });
 
         test('onekeyword in different groups', async () => {
-          req.params.keywords = 'Browser';
+          req.params.keyword = 'Browser';
           let res;
           try {
-            res = await getSearchItems(req.params.keywords, authToken);
+            res = await getSearchItems(req.params.keyword, authToken);
             // console.log(res.body);// 重構後無法顯示
             expect(res.body[0].browserTab_title).toEqual('Browser');
             expect(res.body[1].browserTab_title).toEqual('Browser');
@@ -116,10 +155,10 @@ const ItemTest = async (server) => {
         });
 
         test('onekeyword not in groups', async () => {
-          req.params.keywords = 'xxxxxx';
+          req.params.keyword = 'xxxxxx';
           let notice;
           try {
-            const res = await getSearchItems(req.params.keywords, authToken);
+            const res = await getSearchItems(req.params.keyword, authToken);
             notice = res;
             expect(res.body).toEqual([]);
           } catch (e) {
@@ -131,7 +170,7 @@ const ItemTest = async (server) => {
       describe('single blank', () => {
         describe('no keyword', () => {
           test('no keyword return All', async () => {
-            req.params.keywords = ' ';
+            req.params.keyword = ' ';
             let notice;
             try {
               let res;
@@ -139,7 +178,7 @@ const ItemTest = async (server) => {
 
               [oldResult, res] = await Promise.all([
                 getSearchItems('  ', authToken),
-                getSearchItems(req.params.keywords, authToken),
+                getSearchItems(req.params.keyword, authToken),
               ]);
 
               notice = res;
@@ -156,16 +195,15 @@ const ItemTest = async (server) => {
         });
         describe('one keyword', () => {
           test('unusal case: blank prefix', async () => {
-            req.params.keywords = ' 123';
+            req.params.keyword = ' 123';
             let notice;
             try {
-              // 并行获取旧的和新的组数据
               let res;
               let oldResult;
 
               [oldResult, res] = await Promise.all([
                 getSearchItems(' ', authToken),
-                getSearchItems(req.params.keywords, authToken),
+                getSearchItems(req.params.keyword, authToken),
               ]);
 
               notice = res;
@@ -179,16 +217,15 @@ const ItemTest = async (server) => {
             }
           });
           test('unusal case: blank suffix', async () => {
-            req.params.keywords = '123 ';
+            req.params.keyword = '123 ';
             let notice;
             try {
-              // 并行获取旧的和新的组数据
               let res;
               let oldResult;
 
               [oldResult, res] = await Promise.all([
                 getSearchItems(' ', authToken),
-                getSearchItems(req.params.keywords, authToken),
+                getSearchItems(req.params.keyword, authToken),
               ]);
 
               notice = res;
@@ -204,10 +241,10 @@ const ItemTest = async (server) => {
         });
         describe('two keyword', () => {
           test('split to two keyword', async () => {
-            req.params.keywords = 'Test Title';
+            req.params.keyword = 'Test Title';
             let res;
             try {
-              res = await getSearchItems(req.params.keywords, authToken);
+              res = await getSearchItems(req.params.keyword, authToken);
 
               res.body.forEach((item) => {
                 const browserTabTitle = item.browserTab_title.toLowerCase();
@@ -229,16 +266,15 @@ const ItemTest = async (server) => {
     describe('two blank', () => {
       describe('onekeyword', () => {
         test('unusal case: blank prefix*2', async () => {
-          req.params.keywords = '  123';
+          req.params.keyword = '  123';
           let notice;
           try {
-            // 并行获取旧的和新的组数据
             let res;
             let oldResult;
 
             [oldResult, res] = await Promise.all([
               getSearchItems(' ', authToken),
-              getSearchItems(req.params.keywords, authToken),
+              getSearchItems(req.params.keyword, authToken),
             ]);
 
             notice = res;
@@ -252,16 +288,15 @@ const ItemTest = async (server) => {
           }
         });
         test('unusal case: blank prefix and suffix', async () => {
-          req.params.keywords = ' 123 ';
+          req.params.keyword = ' 123 ';
           let notice;
           try {
-            // 并行获取旧的和新的组数据
             let res;
             let oldResult;
 
             [oldResult, res] = await Promise.all([
               getSearchItems(' ', authToken),
-              getSearchItems(req.params.keywords, authToken),
+              getSearchItems(req.params.keyword, authToken),
             ]);
 
             notice = res;
@@ -275,16 +310,15 @@ const ItemTest = async (server) => {
           }
         });
         test('unusal case: blank suffix*2', async () => {
-          req.params.keywords = '123  ';
+          req.params.keyword = '123  ';
           let notice;
           try {
-            // 并行获取旧的和新的组数据
             let res;
             let oldResult;
 
             [oldResult, res] = await Promise.all([
               getSearchItems(' ', authToken),
-              getSearchItems(req.params.keywords, authToken),
+              getSearchItems(req.params.keyword, authToken),
             ]);
 
             notice = res;
@@ -300,16 +334,15 @@ const ItemTest = async (server) => {
       });
       describe('twokeyword', () => {
         test('unusal case: blank prefix', async () => {
-          req.params.keywords = ' Test Title';
+          req.params.keyword = ' Test Title';
           let notice;
           try {
-            // 并行获取旧的和新的组数据
             let res;
             let oldResult;
 
             [oldResult, res] = await Promise.all([
               getSearchItems(' ', authToken),
-              getSearchItems(req.params.keywords, authToken),
+              getSearchItems(req.params.keyword, authToken),
             ]);
 
             notice = res;
@@ -323,16 +356,15 @@ const ItemTest = async (server) => {
           }
         });
         test('unusal case: blank *2 between', async () => {
-          req.params.keywords = 'Test  Title';
+          req.params.keyword = 'Test  Title';
           let notice;
           try {
-            // 并行获取旧的和新的组数据
             let res;
             let oldResult;
 
             [oldResult, res] = await Promise.all([
               getSearchItems(' ', authToken),
-              getSearchItems(req.params.keywords, authToken),
+              getSearchItems(req.params.keyword, authToken),
             ]);
 
             notice = res;
@@ -346,16 +378,15 @@ const ItemTest = async (server) => {
           }
         });
         test('unusal case: blank suffix', async () => {
-          req.params.keywords = 'Test Title ';
+          req.params.keyword = 'Test Title ';
           let notice;
           try {
-            // 并行获取旧的和新的组数据
             let res;
             let oldResult;
 
             [oldResult, res] = await Promise.all([
               getSearchItems(' ', authToken),
-              getSearchItems(req.params.keywords, authToken),
+              getSearchItems(req.params.keyword, authToken),
             ]);
 
             notice = res;
