@@ -43,62 +43,69 @@ const createGroup = async (req, res, next) => {
     const validKeysForSidebarTab = ['group_icon', 'group_title', ...Object.keys(browserTabData)];
     const validKeysForGroupTab = ['sourceGroup_id', 'group_icon', 'group_title', 'item_id'];
 
-    let result;
-    let newGroup;
-    let newUserGroup;
+    const createGroupAtBlank = async ({ user_id, group_icon, group_title }) => {
+      const newGroup = new Group({ group_icon, group_title, items: [] });
+      const newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
 
-    if (group_icon
-      && group_title
-      && keys.every((key) => validKeysForatBlank.includes(key))) {
-      newGroup = new Group({ group_icon, group_title, items: [] });
-      newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
-      result = await newUserGroup.createGroupatBlank(user_id);
-      if (result.success) {
-        return res.status(201).json({ message: result.message, group_id: newGroup.group_id });
-      }
-    } else if (
-      group_icon
-      && group_title
-      && Object.values(browserTabData).every((value) => value !== undefined)
-      && keys.every((key) => validKeysForSidebarTab.includes(key))
-    ) {
-      // Check if all required keys are present in req.body
+      const result = await newUserGroup.createGroupatBlank(user_id);
+      return { result, newGroup };
+    };
+
+    const createGroupWithSidebarTab = async ({
+      user_id, group_icon, group_title, browserTabData,
+    }) => {
+      const newTab = new Tab(browserTabData);
+      const newGroup = new Group({ group_icon, group_title, items: [newTab] });
+      const newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
+
+      const result = await newUserGroup.createGroupwithSidebarTab(user_id);
+      return { result, newGroup, newTab };
+    };
+
+    const createGroupWithGroupTab = async ({
+      user_id, group_icon, group_title, sourceGroup_id, item_id,
+    }) => {
+      // Ensure this method exists in UserGroup class
+      const { sourceGroupItem } = await UserGroup.findGroupItem(user_id, sourceGroup_id, item_id);
+      const newGroup = new Group({ group_icon, group_title, items: [sourceGroupItem] });
+      const newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
+
+      const result = await newUserGroup.createGroupwithGroupTab(user_id, sourceGroup_id, item_id);
+      return { result, newGroup };
+    };
+
+    let result;
+
+    if (group_icon && group_title && keys.every((key) => validKeysForatBlank.includes(key))) {
+      result = await createGroupAtBlank({ user_id, group_icon, group_title });
+    } else if (group_icon && group_title && Object.values(browserTabData).every((value) => value !== undefined) && keys.every((key) => validKeysForSidebarTab.includes(key))) {
       const missingKeys = validKeysForSidebarTab.filter((key) => !(key in req.body));
       if (missingKeys.length > 0) {
         return errorResponse(res, 400, `"${missingKeys[0]}" is required`);
       }
-      const newTab = new Tab(browserTabData);
-
-      newGroup = new Group({ group_icon, group_title, items: [newTab] });
-      newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
-
-      result = await newUserGroup.createGroupwithSidebarTab(user_id);
-      if (result.success) {
-        return res.status(201).json({ message: result.message, group_id: newGroup.group_id, item_id: newTab.item_id });
-      }
-    } else if (
-      sourceGroup_id
-      && group_icon
-      && group_title
-      && item_id
-      && keys.every((key) => validKeysForGroupTab.includes(key))
-    ) {
+      result = await createGroupWithSidebarTab({
+        user_id, group_icon, group_title, browserTabData,
+      });
+    } else if (group_icon && group_title && sourceGroup_id && item_id && keys.every((key) => validKeysForGroupTab.includes(key))) {
       const missingKeys = validKeysForGroupTab.filter((key) => !(key in req.body));
       if (missingKeys.length > 0) {
         return errorResponse(res, 400, `"${missingKeys[0]}" is required`);
       }
-      const { sourceGroupItem } = await UserGroup.findGroupItem(user_id, sourceGroup_id, item_id);
-      newGroup = new Group({ group_icon, group_title, items: [sourceGroupItem] });
-      newUserGroup = new UserGroup({ user_id, groups: [newGroup] });
-      result = await newUserGroup.createGroupwithGroupTab(user_id, sourceGroup_id, item_id);
-      if (result.success) {
-        return res.status(201).json({ message: result.message, group_id: newGroup.group_id });
-      }
+      result = await createGroupWithGroupTab({
+        user_id, sourceGroup_id, item_id, group_icon, group_title,
+      });
     } else {
       return errorResponse(res, 400, 'Invalid request body');
     }
 
-    return errorResponse(res, 400, 'Group failed to create');
+    if (result.result.success) {
+      const response = { message: result.result.message, group_id: result.newGroup.group_id };
+      if (result.newTab) {
+        response.item_id = result.newTab.item_id;
+      }
+      return res.status(201).json(response);
+    }
+    return res.status(400).json({ error: 'Group creation failed' });
   } catch (error) {
     next(error);
   }
