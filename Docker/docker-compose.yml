@@ -1,28 +1,42 @@
 version: "3.9"
 services:
-  # mock-server:
-  #   environment:
-  #     - API_VERSION=1.0
-  #   build:
-  #     context: ../
-  #     dockerfile: Docker/mock-server/Dockerfile
-  #   volumes:
-  #     - ../mock-server/db.json:/app/mock-server/db.json
-  #     - ../.env:/app/.env
-  #   ports:
-  #     - "5050:5050"
 
-  # prod-server-local-db:
+  server-cloud-db:
+    env_file:
+      - ../.env
+    environment:
+      - API_VERSION=1.0
+      - USE_CLOUD_DB=true
+      - PORT=5000
+    build:
+      context: ../
+      dockerfile: Docker/server/Dockerfile
+    volumes:
+      - ../.env:/app/.env
+    ports:
+      - "5000:5000"
+      
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - server-cloud-db
+      # - server-local-db
+      # - mongodb
+      
+  # server-local-db:
   #   env_file:
   #     - ../.env
   #   environment:
   #     - API_VERSION=1.0
   #     - USE_CLOUD_DB=false
-  #     - PROD_PORT=4000
-  #     - MONGODB_URI_LOCAL=mongodb://mongodb:27017/TabcolabDB
+  #     - PORT=4000
   #   build:
   #     context: ../
-  #     dockerfile: Docker/prod-server/Dockerfile
+  #     dockerfile: Docker/server/Dockerfile
   #   volumes:
   #     - ../.env:/app/.env
   #   ports:
@@ -35,35 +49,5 @@ services:
   #   ports:
   #     - "27017:27017"
   #   volumes:
-  #     - ../prod-server/mongodb_data:/data/db
+  #     - ../server/mongodb_data:/data/db
   #   privileged: true
-
-  prod-server-cloud-db:
-    env_file:
-      - ../.env
-    environment:
-      - API_VERSION=1.0
-      - USE_CLOUD_DB=true
-      - PROD_PORT=5000
-      - MONGODB_URI_LOCAL=mongodb://mongodb:27017/TabcolabDB
-    build:
-      context: ../
-      dockerfile: Docker/prod-server/Dockerfile
-    volumes:
-      - ../.env:/app/.env
-    ports:
-      - "5000:5000"
-      
-  nginx:
-    environment:
-      - SERVER_NAME=13.115.132.26
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    ports:
-      - "80:80"
-    depends_on:
-      # - mock-server
-      - prod-server-cloud-db
-      # - prod-server-local-db
-      # - mongodb

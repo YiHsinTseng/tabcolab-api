@@ -1,0 +1,187 @@
+{
+  "user_groups":[
+    {
+      "user_id":"1",
+      "groups": [
+        {
+          "group_id": "1",
+          "group_icon": "group_icon_url",
+          "group_title": "Group 1",
+          "items": [
+            {
+              "_id": "1",
+              "item_id": "1",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "Tab Title",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 123,
+              "browserTab_index": 12,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 1348438505,
+              "note_content": "",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "_id": "2",
+              "item_id": "2",
+              "item_type": 1,
+              "note_content": "Note content2",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "_id": "3",
+              "item_id": "3",
+              "item_type": 2,
+              "doneStatus": true,
+              "note_content": "Note content3",
+              "note_bgColor": "#ffffff"
+            }
+          ]
+        },
+        {
+          "group_id": "2",
+          "group_icon": "group_icon_url",
+          "group_title": "Group 2",
+          "items": [
+            {
+              "_id": "4",
+              "item_id": "4",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "Tab Title",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 456,
+              "browserTab_index": 7,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513405
+            },
+            {
+              "_id": "5",
+              "item_id": "5",
+              "item_type": 1,
+              "note_content": "Note content5",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "_id": "6",
+              "item_id": "6",
+              "item_type": 2,
+              "doneStatus": false,
+              "note_content": "todo",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "_id": "7",
+              "item_id": "7",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "Browser",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 1017,
+              "browserTab_index": 9,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513407
+            }
+          ]
+        },
+        {
+          "group_id": "10",
+          "group_icon": "group_icon_url",
+          "group_title": "Group 10",
+          "items": []
+        },
+        {
+          "group_id": "11",
+          "group_icon": "group_icon_url",
+          "group_title": "Group 11",
+          "items": [
+            {
+              "_id": "11",
+              "item_id": "11",
+              "item_type": 2,
+              "doneStatus": false,
+              "note_content": "itemToDelete",
+              "note_bgColor": "#ffffff"
+            },
+            {
+              "_id": "12",
+              "item_id": "12",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "123",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 8910,
+              "browserTab_index": 8,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513408
+            },
+            {
+              "_id": "13",
+              "item_id": "13",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "123",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 10112,
+              "browserTab_index": 9,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513403
+            },
+            {
+              "_id": "14",
+              "item_id": "14",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "Browser",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 10114,
+              "browserTab_index": 9,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513404
+            },
+            {
+              "_id": "15",
+              "item_id": "15",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "LowerCase",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 10114,
+              "browserTab_index": 9,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513404
+            },
+            {
+              "_id": "16",
+              "item_id": "16",
+              "item_type": 0,
+              "browserTab_favIconURL": "favicon_url",
+              "browserTab_title": "lowercase",
+              "browserTab_url": "tab_url",
+              "browserTab_id": 10114,
+              "browserTab_index": 9,
+              "browserTab_active": false,
+              "browserTab_status": "complete",
+              "windowId": 8438513404
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "user_id": "1",
+      "email": "user@example.com",
+      "password": "$2a$10$hceXwRBwcdo/uPO/WL6kDuWY7QtcsbP5o/QSw7zr5Zye231PeR0xG"
+    }
+  ]
+}

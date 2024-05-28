@@ -2,8 +2,12 @@
 
 node_modules
 
+package-lock.json
+
 .env
 
 swaggerSplit.yml
 
 **/mongodb_data/
+
+coverage

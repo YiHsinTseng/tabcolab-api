@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main
+      - feature/clean-code
 
 jobs:
   Deploy:
@@ -13,17 +13,14 @@ jobs:
       API_VERSION: ${{ secrets.API_VERSION }}
       PASSPORT_SECRET: ${{ secrets.PASSPORT_SECRET }}
       USE_CLOUD_DB: ${{ secrets.USE_CLOUD_DB }}
-      PROD_PORT: ${{ secrets.PROD_PORT }}
-      DEV_PORT: ${{ secrets.DEV_PORT }}
+      PORT: ${{ secrets.PORT }}
       MONGODB_URI_LOCAL: ${{ secrets.MONGODB_URI_LOCAL }}
       MONGODB_URI_CLOUD: ${{ secrets.MONGODB_URI_CLOUD }}
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       GOOGLE_AUTH_CALLBACK_URL: ${{ secrets.GOOGLE_AUTH_CALLBACK_URL }}
-      CLOUD_GITHUB_CLIENT_ID: ${{ secrets.CLOUD_GITHUB_CLIENT_ID }}
-      CLOUD_GITHUB_CLIENT_SECRET: ${{ secrets.CLOUD_GITHUB_CLIENT_SECRET }}
-      CLOUD_GITHUB_AUTH_CALLBACK_URL: ${{ secrets.CLOUD_GITHUB_AUTH_CALLBACK_URL }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      WHITE_LIST: ${{ secrets.WHITE_LIST }}
 
     steps:
       - name: Checkout code
@@ -35,31 +32,28 @@ jobs:
           host: ${{ secrets.EC2_HOST }} # Ipv4 address of EC2 instance
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }} # Add public key to EC2 instance and private key to Github secrets
-          envs: API_VERSION,PASSPORT_SECRET,USE_CLOUD_DB,PROD_PORT,DEV_PORT,MONGODB_URI_LOCAL,MONGODB_URI_CLOUD,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_AUTH_CALLBACK_URL,SESSION_SECRET,CLOUD_GITHUB_CLIENT_ID,CLOUD_GITHUB_CLIENT_SECRET,CLOUD_GITHUB_AUTH_CALLBACK_URL
+          envs: API_VERSION,PASSPORT_SECRET,USE_CLOUD_DB,PORT,MONGODB_URI_LOCAL,MONGODB_URI_CLOUD,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_AUTH_CALLBACK_URL,SESSION_SECRET,WHITE_LIST
           script: |
             if [ ! -d "tabcolab" ]; then 
-              git clone -b main git@github.com:SideProjectAC/tabcolab.git
+              git clone -b feature/clean-code git@github.com:SideProjectAC/tabcolab.git
               cd tabcolab
             else
               cd tabcolab
-              git pull origin main
+              git fetch origin
+              git reset --hard origin/feature/clean-code
             fi
             echo API_VERSION=$API_VERSION > .env
             echo PASSPORT_SECRET=$PASSPORT_SECRET >> .env
             echo USE_CLOUD_DB=$USE_CLOUD_DB >> .env
-            echo PROD_PORT=$PROD_PORT >> .env
-            echo DEV_PORT=$DEV_PORT >> .env
+            echo PORT=$PORT >> .env
             echo MONGODB_URI_LOCAL=$MONGODB_URI_LOCAL >> .env
             echo MONGODB_URI_CLOUD=$MONGODB_URI_CLOUD >> .env
             echo GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID >> .env
             echo GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET >> .env
             echo GOOGLE_AUTH_CALLBACK_URL=$GOOGLE_AUTH_CALLBACK_URL >> .env
-            echo CLOUD_GITHUB_CLIENT_ID=$CLOUD_GITHUB_CLIENT_ID >> .env
-            echo CLOUD_GITHUB_CLIENT_SECRET=$CLOUD_GITHUB_CLIENT_SECRET >> .env
-            echo CLOUD_GITHUB_AUTH_CALLBACK_URL=$CLOUD_GITHUB_AUTH_CALLBACK_URL >> .env
             echo SESSION_SECRET=$SESSION_SECRET >> .env
+            echo WHITE_LIST=$WHITE_LIST >> .env
             sudo chmod 600 .env
-            sudo chown -R $USER /home/***/tabcolab/prod-server/mongodb_data
             cd Docker
             sudo docker system prune -a -f
             docker-compose down --rmi all

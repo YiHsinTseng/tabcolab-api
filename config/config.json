@@ -1,0 +1,16 @@
+{
+  "production": {
+    "app": {
+      "name": "server",
+      "path": "./server/server.js",
+      "host": "localhost",
+      "port": 4000
+    },
+    "db": {
+      "host": "localhost",
+      "name": "mongoDB",
+      "path": "",
+      "modelpath": "models"
+    }
+  }
+}
