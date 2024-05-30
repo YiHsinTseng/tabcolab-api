@@ -36,6 +36,10 @@ jobs:
           script: |
             sudo yum update -y
             sudo yum install -y git
+            sudo yum install -y docker
+            sudo yum install -y docker-compose
+            sudo systemctl start docker
+            sudo usermod -aG docker $USER
             if [ ! -d "tabcolab-api" ]; then 
               git clone -b feature/deploy-testing git@github.com:YiHsinTseng/tabcolab-api.git
               cd tabcolab-api
