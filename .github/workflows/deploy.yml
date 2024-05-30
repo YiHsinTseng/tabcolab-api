@@ -37,12 +37,12 @@ jobs:
             sudo yum update -y
             sudo yum install -y git
             if [ ! -d "tabcolab" ]; then 
-              git clone -b feature/clean-code git@github.com:SideProjectAC/tabcolab.git
+              git clone -b feature/deploy-testing git@github.com:SideProjectAC/tabcolab.git
               cd tabcolab
             else
               cd tabcolab
               git fetch origin
-              git reset --hard origin/feature/clean-code
+              git reset --hard origin/feature/deploy-testing
             fi
             echo API_VERSION=$API_VERSION > .env
             echo PASSPORT_SECRET=$PASSPORT_SECRET >> .env
