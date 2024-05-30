@@ -36,11 +36,11 @@ jobs:
           script: |
             sudo yum update -y
             sudo yum install -y git
-            if [ ! -d "tabcolab" ]; then 
+            if [ ! -d "tabcolab-api" ]; then 
               git clone -b feature/deploy-testing git@github.com:YiHsinTseng/tabcolab-api.git
-              cd tabcolab
+              cd tabcolab-api
             else
-              cd tabcolab
+              cd tabcolab-api
               git fetch origin
               git reset --hard origin/feature/deploy-testing
             fi
