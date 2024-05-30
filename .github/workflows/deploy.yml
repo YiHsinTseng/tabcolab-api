@@ -37,7 +37,7 @@ jobs:
             sudo yum update -y
             sudo yum install -y git
             if [ ! -d "tabcolab" ]; then 
-              git clone -b feature/deploy-testing git@github.com:SideProjectAC/tabcolab.git
+              git clone -b feature/deploy-testing git@github.com:YiHsinTseng/tabcolab.git
               cd tabcolab
             else
               cd tabcolab
