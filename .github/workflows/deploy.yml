@@ -34,13 +34,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }} # Add public key to EC2 instance and private key to Github secrets
           envs: API_VERSION,PASSPORT_SECRET,USE_CLOUD_DB,PORT,MONGODB_URI_LOCAL,MONGODB_URI_CLOUD,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_AUTH_CALLBACK_URL,SESSION_SECRET,WHITE_LIST
           script: |
-            sudo yum update -y
-            sudo yum install -y git
-            sudo yum install -y docker
-            sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/bin/docker-compose && sudo chmod +x /usr/bin/docker-compose && docker-compose --version
-            sudo systemctl start docker
-            sudo usermod -aG docker $USER
-            newgrp docker
             if [ ! -d "tabcolab-api" ]; then 
               git clone -b feature/deploy-testing git@github.com:YiHsinTseng/tabcolab-api.git
               cd tabcolab-api
