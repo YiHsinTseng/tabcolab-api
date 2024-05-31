@@ -9,6 +9,12 @@ jobs:
   Deploy:
     name: Deploy to EC2
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo
+        ports:
+          - 27017:27017
+        options: --name mongodb
     env:
       API_VERSION: ${{ secrets.API_VERSION }}
       PASSPORT_SECRET: ${{ secrets.PASSPORT_SECRET }}
