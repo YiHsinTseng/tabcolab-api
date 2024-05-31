@@ -284,7 +284,7 @@ const GroupTest = async (server) => {
   });
 
   describe('PATCH /groups/:group_id', () => {
-    const groupId = '1000'; // 假設這是要刪除的群組的ID，無法預先指定
+    const groupId = '10'; // 假設這是要刪除的群組的ID，無法預先指定
     let patchGroupRequest;
     describe('Patch Group Title', () => {
       patchGroupRequest = {
