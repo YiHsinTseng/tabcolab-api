@@ -37,7 +37,7 @@ jobs:
 
       - name: Run tests
         id: test
-        run: npm run test2
+        run: npm run test3
       
       - name: Connect to EC2
         uses: appleboy/ssh-action@master

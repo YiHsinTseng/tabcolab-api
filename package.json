@@ -8,6 +8,7 @@
     "docker-compose": "cd Docker && docker-compose up --build -d",
     "test": "DEBUG=* cross-env NODE_ENV=production jest --verbose > test.log",
     "test2": "cross-env NODE_ENV=production jest --verbose",
+    "test3": "cross-env NODE_ENV=production jest --verbose --detectOpenHandles --forceExit",
     "mongodb-dump": "mongodump --uri='mongodb://localhost:27017/TabcolabDB' --out=./",
     "mongodb-store": "mongorestore --uri='mongodb://localhost:27017/TabcolabDBTest' ./TabcolabDB"
   },
