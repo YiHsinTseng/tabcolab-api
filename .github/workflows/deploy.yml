@@ -25,9 +25,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      
+      - name: Install dependencies
+        run: npm install
 
+      - name: Run tests
+        id: test
+        run: npm run test2
+      
       - name: Connect to EC2
         uses: appleboy/ssh-action@master
+        if: steps.test.outcome == 'success'
         with:
           host: ${{ secrets.EC2_HOST }} # Ipv4 address of EC2 instance
           username: ${{ secrets.EC2_USERNAME }}
