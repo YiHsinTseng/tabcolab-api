@@ -53,7 +53,7 @@ Swagger: [https://tabcolab.site/api-doc/](https://tabcolab.site/api-doc/)
 
 ## **Screenshot**
 
-![Screenshot]()
+![Screenshot](img/Screenshot.png)
 
 ## **How to start (Developer Installation Guide)**
 
@@ -74,4 +74,4 @@ Swagger: [https://tabcolab.site/api-doc/](https://tabcolab.site/api-doc/)
 
 ## **System architecture**
 
-![deploy_diagram.svg]()
+![deploy_diagram.svg](img/deploy_diagram.svg)
