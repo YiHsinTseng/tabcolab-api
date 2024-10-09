@@ -8,6 +8,8 @@ const { registerUser } = require('../apis/usersAPI');
 const { validateApiResponse } = require('../../utils/apiTestHelper');
 const { BadRequestBodyTest } = require('../../classes/BadRequestBodyTest');
 
+// group_id 10,100用於刪除 2-4移動
+
 const GroupTest = async (server) => {
   let authToken;
   let userData = { email: 'user@example.com', password: 'mySecurePassword123' };

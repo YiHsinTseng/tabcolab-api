@@ -36,7 +36,7 @@ const soloTest = (server) => {
   // 寫入用例
 
   jest.mock('../../validations/uuid');
-  const { checkUUIDv4Format } = jest.requireMock('../../validations/uuid');
+  const { checkUUIDv4Format } = jest.requireMock('../../validations/uuid');// 在此次測試的test.js中全局替換，只是為了暫時不報錯。但可在別的test.js中測試
   checkUUIDv4Format.mockImplementation((value) => true);
 
   const UserTest = require('./UserTest');
