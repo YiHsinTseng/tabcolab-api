@@ -5,6 +5,8 @@ const { ArraysChanges } = require('../../utils/groupsChanges');
 const { validateApiResponse } = require('../../utils/apiTestHelper');
 const { BadRequestBodyTest } = require('../../classes/BadRequestBodyTest');
 
+// 1-1 2-5 11-11用於刪除修改
+
 const ItemTest = async (server) => {
   let authToken;
   let userData = { email: 'user@example.com', password: 'mySecurePassword123' };

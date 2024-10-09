@@ -3,6 +3,8 @@ const { handleException } = require('../../utils/testErrorHandler');
 const { validateApiResponse } = require('../../utils/apiTestHelper');
 const { BadRequestBodyTest } = require('../../classes/BadRequestBodyTest');
 
+// 1-2 1-3用於patch 9 100找不到
+
 const SpecItemTest = async (server) => {
   let authToken;
   let userData = { email: 'user@example.com', password: 'mySecurePassword123' };

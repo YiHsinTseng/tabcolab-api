@@ -1,5 +1,5 @@
 require('dotenv').config();
-const fs = require('fs');
+const fs = require('fs').promises; // 使用 fs.promises
 const { MongoClient } = require('mongodb');
 const { UserGroup } = require('../src/models/group');
 const User = require('../src/models/user');
@@ -56,30 +56,21 @@ async function saveJSONToMongoDB(jsonData) {
 }
 
 // 將 JSON 資料加載到資料庫中的函式
-async function loadJSONToMongoDB() {
+async function loadJSON() {
   try {
-    const jsonData = await new Promise((resolve, reject) => {
-      // 讀取 JSON 檔案
-      fs.readFile('./__test__/request/db.json', 'utf8', (err, data) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(JSON.parse(data));
-      });
-    });
-
-    // 呼叫函式將資料存入資料庫
-    await saveJSONToMongoDB(jsonData);
+    const data = await fs.readFile('./__test__/request/db.json', 'utf8');
+    return JSON.parse(data);
   } catch (error) {
-    console.error('Error loading JSON to MongoDB:', error);
+    console.error('Error loading JSON:', error);
+    throw error;
   }
 }
 
 // 在所有測試之前先清空資料庫，然後加載 JSON 資料到資料庫中
 beforeAll(async () => {
   await clearDatabase();
-  await loadJSONToMongoDB();
+  const jsonData = await loadJSON();
+  await saveJSONToMongoDB(jsonData);
 });
 
 // 多使用者併發測試
