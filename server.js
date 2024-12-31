@@ -21,6 +21,7 @@ const groupRoutes = require('./src/routes/group');
 const itemRoutes = require('./src/routes/item');
 const specItemRoutes = require('./src/routes/specItem');
 const oauthRoutes = require('./src/routes/oauth');
+const shareRoutes = require('./src/routes/share');
 
 // middlewares
 const { authenticateJwt } = require('./src/middlewares/authenticate');
@@ -40,12 +41,14 @@ server.use(bodyParser.urlencoded({ extended: true }));
 // cors
 server.use(cors(corsOptions));
 
+
 // oauth and user routes
 server.use(`/api/${API_VERSION}/oauth`, oauthRoutes);
 server.use(`/api/${API_VERSION}`, userRoutes);
 
 // group, item, specItem routes, with JWT authentication middleware
 server.use(`/api/${API_VERSION}/groups`, authenticateJwt, [groupRoutes, itemRoutes, specItemRoutes]);
+server.use(`/api/${API_VERSION}`, shareRoutes);
 
 // 404 error handler
 server.use(pageNotFoundHandler);
