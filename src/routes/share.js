@@ -8,7 +8,6 @@ router.delete('/sharing',controller.deleteHtml)
 
 // JWT authentication middleware
 router.use(authenticateJwt);
-
 router.post('/sharing',controller.shareHtml)
 
 module.exports = router;
