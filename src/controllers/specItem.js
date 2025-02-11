@@ -6,11 +6,14 @@ const addTab = async (req, res, next) => {
     const { group_id } = req.params;
     const { user_id } = req.user;
 
-    const allowedFields = ['targetItem_position', 'browserTab_favIconURL', 'browserTab_title', 'browserTab_url', 'browserTab_id', 'browserTab_index', 'browserTab_active', 'browserTab_status', 'windowId'];
+    const requiredFields = ['targetItem_position', 'browserTab_title', 'browserTab_url', 'browserTab_id', 'browserTab_index', 'browserTab_active', 'browserTab_status', 'windowId'];
     const bodyKeys = Object.keys(req.body);
 
+    const optionalFields = ['browserTab_favIconURL'];
+
+    const allowedFields = [...requiredFields, ...optionalFields];
     // Check if all required keys are present in req.body and no extra fields in req.body
-    const missingKeys = allowedFields.filter((key) => !bodyKeys.includes(key));
+    const missingKeys = requiredFields.filter((key) => !bodyKeys.includes(key));
     const extraKeys = bodyKeys.filter((key) => !allowedFields.includes(key));
 
     if (missingKeys.length > 0) {
@@ -27,7 +30,7 @@ const addTab = async (req, res, next) => {
     } = req.body;
 
     const browserTabData = {
-      browserTab_favIconURL: browserTabReq.browserTab_favIconURL,
+      browserTab_favIconURL: browserTabReq.browserTab_favIconURL ?? null,
       browserTab_title: browserTabReq.browserTab_title,
       browserTab_url: browserTabReq.browserTab_url,
       browserTab_id: Number(browserTabReq.browserTab_id),
